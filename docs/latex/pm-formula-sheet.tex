@@ -591,6 +591,117 @@ Implementation: \texttt{core.pm\_integrate\_orbit},
 \texttt{scripts/perihelion\_precession\_comparison.py}
 
 %====================================================================
+\section{Cosmological Structure Growth: PM vs $\Lambda$CDM}
+
+\subsection*{PM Refractive-Redshift Background}
+
+In the PM framework, cosmological redshift arises from a monotonically
+decreasing refractive index $n(t)$: the photon wavelength stretches as
+$1+z = n(t_{\rm emit})/n(t_{\rm obs})$.  This yields an effective Hubble rate
+\[
+  H_{\rm PM}(z;\beta) = H_0\,(1+z)^{\beta},
+  \qquad \beta_{\rm calib} = 0.8.
+\]
+With $\beta=0.8$ the luminosity distance $D_L$ matches $\Lambda$CDM to within
+$\sim3\%$ over $z=0.1$--$1.5$:
+\begin{center}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+$z$ & $D_L^{\Lambda\rm CDM}$ [Mpc] & $D_L^{\rm PM}$ [Mpc] & Diff [\%] \\
+\midrule
+0.1 &   478 &   471 & $-1.4$ \\
+0.5 &  2927 &  2818 & $-3.7$ \\
+1.0 &  6803 &  6614 & $-2.8$ \\
+1.5 & 11205 & 11182 & $-0.2$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Despite matching $D_L$, the \emph{expansion history} differs: at $z=2$,
+$H_{\rm PM}(2)=2.41\,H_0$ vs.\ $H_{\Lambda\rm CDM}(2)=3.03\,H_0$.
+Less Hubble friction means PM growth is \emph{faster} than $\Lambda$CDM
+at high redshift.
+
+\subsection*{PM Structure-Growth Scenarios}
+
+\textbf{Scenario 1 — PM-Static} (density perturbation in
+$H_{\rm PM}$ background with no friction term from the drag force):
+\[
+  \ddot\delta = 4\pi G\rho_m\,\delta
+  \quad\Longrightarrow\quad
+  \delta(t)\propto e^{\Gamma t},
+  \quad
+  \Gamma = \sqrt{\tfrac{3}{2}}\,H_0\sqrt{\Omega_m}
+  \approx 0.687\,H_0
+\]
+The growth rate observable $f_{\rm static}(z) = \Gamma / H_{\rm PM}(z)$
+\emph{increases with redshift} (opposite to ΛCDM), grossly over-predicting
+cluster abundances.
+
+\textbf{Scenario 2 — PM-Drag} (index decay provides Hubble-like friction):
+\[
+  D'' + \frac{3-\beta}{a}\,D' - \frac{3\Omega_{\rm eff}}{2\,a^{5-2\beta}}\,D = 0,
+\]
+where primes denote $d/da$ and $E(a)=a^{-\beta}$.  The characteristic
+power-law growing mode $D\propto a^p$ satisfies
+\[
+  p^2 + (2-\beta)\,p - \tfrac{3}{2}\Omega_{\rm eff} = 0
+  \quad\Longrightarrow\quad
+  p = \tfrac{1}{2}\!\left[(\beta-2)+\sqrt{(2-\beta)^2+6\Omega_{\rm eff}}\right].
+\]
+For $\beta=\tfrac{3}{2}$ (ΛCDM matter-domination), $p=1$ exactly.
+
+\textbf{Falsification — runaway growth at $\Omega_{\rm eff}=1$:}
+For $\beta=0.8$, the gravity term $\propto a^{-3.4}$ grows much faster than
+the friction term $\propto a^{-2}$ at early times.  There is no valid
+power-law matter-dominated era; the ODE solver (DOP853) fails with
+step-size exhaustion.  PM with $\Omega_{\rm eff}=1$ and $\beta=0.8$
+predicts catastrophic exponential over-growth — \emph{excluded}.
+
+\subsection*{$f\sigma_8$ Comparison with RSD Data}
+
+The growth rate observable is $f\sigma_8(z)=f(z)\,\sigma_{8,0}\,D(z)/D(0)$.
+
+\begin{center}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Model & $\chi^2$ ($N=14$) & $\chi^2/N$ \\
+\midrule
+$\Lambda$CDM (Planck: $\Omega_m=0.315$, $\sigma_8=0.811$)
+  & 12.45 & 0.889 \\
+PM-Static $\beta=0.8$
+  & 23.02 & 1.644 \\
+PM-Drag $\beta=0.8$, $\Omega_{\rm eff}=0.315$
+  & 10.44 & 0.746 \\
+PM-Drag $\beta=0.8$, $\Omega_{\rm eff}=1.0$
+  & \multicolumn{2}{c}{ODE fails (runaway growth)} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Data: 14 published RSD $f\sigma_8$ measurements, $z=0.02$--$1.40$
+(6dFGS, SDSS MGS, WiggleZ, BOSS LOWZ/CMASS, FastSound, etc.).
+
+\textbf{Key conclusions:}
+\begin{enumerate}
+  \item PM-Drag with $\Omega_{\rm eff}=0.315$ achieves marginally \emph{lower}
+        $\chi^2/N$ than $\Lambda$CDM on current data, but only because it
+        effectively uses $\Omega_{\rm eff}$ as a free parameter separately from
+        the $D_L$ calibration.  There is \emph{no} parameter-free PM prediction.
+  \item PM-Static is excluded at $\chi^2/N\approx1.6$ (wrong slope).
+  \item PM with $\Omega_{\rm eff}=1$ (no dark energy) is excluded by ODE failure:
+        it cannot reproduce a matter-dominated era.
+  \item A joint fit $[\beta, \Omega_{\rm eff}, \sigma_{8,0}]$ constrained
+        simultaneously by $D_L$ supernovae + $f\sigma_8$ RSD surveys would
+        tightly constrain or rule out the refractive model.
+\end{enumerate}
+
+Implementation:
+\texttt{src/pushing\_medium/cosmology.py},
+\texttt{src/general\_relativity/cosmology.py},
+\texttt{scripts/fsigma8\_comparison.py},
+\texttt{tests/test\_cosmology\_growth.py} (35 tests).
+
+%====================================================================
 
 \begin{tabular}{@{}lll@{}}
 \toprule
@@ -633,6 +744,7 @@ Stellar structure impl.\ & \texttt{stellar\_structure.py} \\
 Surface redshift track & \texttt{scripts/surface\_redshift\_track.py} \\
 GW ringdown / QNM echoes & \texttt{scripts/gw\_ringdown\_comparison.py} \\
 Perihelion precession & \texttt{scripts/perihelion\_precession\_comparison.py} \\
+Cosmology ($f\sigma_8$ / $D_L$) & \texttt{scripts/fsigma8\_comparison.py} \\
 Calibration derivation & \texttt{calibration-constants-derivation.tex} \\
 Coupling constants & \texttt{coupling-constants-reference.tex} \\
 Cross-force analysis & \texttt{cross-force-hierarchy-honest.tex} \\

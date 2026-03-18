@@ -1,3 +1,14 @@
+from .cosmology import (
+    lcdm_hubble,
+    lcdm_luminosity_distance,
+    lcdm_om_z,
+    lcdm_growth_factor_rate,
+    lcdm_growth_rate_approx,
+    lcdm_fsigma8,
+    H0_PLANCK as GR_H0_PLANCK,
+    OM0_PLANCK as GR_OM0_PLANCK,
+    SIGMA8_PLANCK as GR_SIGMA8_PLANCK,
+)
 from .classical import (
     deflection_angle_point_mass,
     shapiro_delay_point_mass,
@@ -32,4 +43,13 @@ __all__ = [
     'gr_qnm_frequency',
     'gr_qnm_damping_time',
     'gr_photon_sphere_radius',
+    'lcdm_hubble',
+    'lcdm_luminosity_distance',
+    'lcdm_om_z',
+    'lcdm_growth_factor_rate',
+    'lcdm_growth_rate_approx',
+    'lcdm_fsigma8',
+    'GR_H0_PLANCK',
+    'GR_OM0_PLANCK',
+    'GR_SIGMA8_PLANCK',
 ]

@@ -78,3 +78,15 @@ __all__ = [
     'pm_precession_arcsec_per_century',
     'pm_integrate_orbit',
 ]
+
+from .cosmology import (
+    pm_hubble_effective,
+    pm_luminosity_distance,
+    pm_static_growth_exponent,
+    pm_static_fsigma8,
+    pm_drag_growing_power,
+    pm_growth_factor_rate,
+    pm_drag_fsigma8,
+    BETA_CALIB as PM_BETA_CALIB,
+    OM0_DEFAULT as PM_OM0_DEFAULT,
+)
