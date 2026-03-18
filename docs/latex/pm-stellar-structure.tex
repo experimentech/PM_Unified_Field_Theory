@@ -1,0 +1,409 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{physics}
+\geometry{margin=2.5cm}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  urlcolor=blue,
+  citecolor=blue,
+}
+
+\newcommand{\PM}{\text{PM}}
+\newcommand{\GR}{\text{GR}}
+\newcommand{\Msun}{M_\odot}
+\newcommand{\rhonuc}{\rho_\text{nuc}}
+\newcommand{\rhocrit}{\rho_\text{crit}}
+\newcommand{\pcrit}{P_\text{crit}}
+\newcommand{\half}{\tfrac{1}{2}}
+\newcommand{\muG}{\mu_G}
+
+\title{PM Compact-Star Structure:\\Derivation, Equations, and Observational Predictions}
+\author{Pushing-Medium Framework}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+%==========================================================================
+\section{Overview}
+%==========================================================================
+
+This document derives the structure equations for a compact star within the
+Pushing-Medium (PM) framework.  The PM scalar field $\varphi$ plays the role
+of the gravitational potential, and the deformation energy of the medium
+provides a self-consistent equation of state (EOS).
+
+The key results are:
+\begin{itemize}
+  \item The corrected massive-particle force law $\mathbf{a} = +\tfrac{c^2}{2}\nabla\varphi$,
+    which gives \emph{exactly} Newtonian gravitational acceleration at all
+    compactnesses via the PM Poisson equation and Gauss's theorem.
+  \item A self-consistent PM EOS $P = \tfrac{c^2}{2}(\rho - \rhonuc)$, derived
+    solely from PM hydrostatics without borrowing GR results.
+  \item PM stellar structure equations that are \emph{exact within PM} — not
+    a weak-field approximation.  The PM and GR structure equations differ
+    because they come from different physical frameworks, not because one is
+    a limit of the other.
+  \item A firm density ceiling $\rho_c \le \rhocrit = e\,\rhonuc$ from the
+    PM deformation-energy stability criterion.
+  \item A maximum-mass prediction that can be tested against current NICER
+    and gravitational-wave observations.
+\end{itemize}
+
+%==========================================================================
+\section{PM Sign Convention and Scalar Field}
+%==========================================================================
+
+\subsection{PM effective metric}
+
+The PM framework models gravity as a compressed elastic medium with
+refractive index $n(\mathbf{x}) = e^{\varphi}$.  The optical metric
+(wave propagation metric) seen by all particles is (in isotropic
+Cartesian coordinates)
+
+\begin{equation}
+  ds^2 = -c^2(1 + 2\varphi)\,dt^2 + (1 - 2\varphi)\,d\ell^2,
+  \label{eq:metric}
+\end{equation}
+
+where $d\ell^2 = dx^2 + dy^2 + dz^2$.  Outside a point mass $M$ at the
+origin, the field is
+
+\begin{equation}
+  \varphi(r) = \frac{\muG M}{r}, \qquad \muG \equiv \frac{2G}{c^2}
+             = 1.4861 \times 10^{-27}\;\text{m}^2\,\text{kg}^{-1}.
+  \label{eq:phi_exterior}
+\end{equation}
+
+This gives $\varphi > 0$ near the mass (converging medium, $n > 1$), consistent
+with PM lensing predictions.
+
+\subsection{Gradient direction near a mass}
+
+For a mass at the origin and a test point at $\mathbf{r} = r\hat{\mathbf{r}}$:
+
+\begin{equation}
+  \nabla\varphi = -\frac{\muG M}{r^2}\hat{\mathbf{r}}
+               = -\frac{2GM}{c^2 r^2}\hat{\mathbf{r}}.
+  \label{eq:grad_phi}
+\end{equation}
+
+The gradient points \emph{inward} (toward the mass), i.e.\ in the $-\hat{r}$
+direction.
+
+%==========================================================================
+\section{Massive-Particle Force Law}
+%==========================================================================
+
+\subsection{Light vs.\ massive particles: the factor of 2}
+
+The well-known PM result for the light-deflection angle by a point mass $M$
+(impact parameter $b$) is
+
+\begin{equation}
+  \alpha_\text{light} = \frac{4GM}{c^2 b},
+  \label{eq:deflection}
+\end{equation}
+
+which requires $\varphi = 2GM/(c^2 r)$ — twice the Newtonian potential
+$\Phi_N = -GM/r$ (up to sign).  This factor-of-2 arises because light is
+sensitive to \emph{both} metric components: $g_{tt}$ (time dilation) and
+$g_{rr}$ (spatial stretching) contribute equally.
+
+Massive particles in the non-relativistic limit couple only to $g_{tt}$ (time
+dilation alone sets the geodesic acceleration to leading order in $v/c$).
+This halves the effective coupling:
+
+\begin{equation}
+  \boxed{\mathbf{a}_\PM = +\tfrac{c^2}{2}\,\nabla\varphi.}
+  \label{eq:force_law}
+\end{equation}
+
+\subsection{Verification}
+
+Inserting Eq.~(\ref{eq:grad_phi}) into Eq.~(\ref{eq:force_law}):
+
+\begin{equation}
+  \mathbf{a}_\PM = +\tfrac{c^2}{2}\left(-\frac{2GM}{c^2 r^2}\hat{\mathbf{r}}\right)
+                = -\frac{GM}{r^2}\hat{\mathbf{r}}.
+  \label{eq:newton}
+\end{equation}
+
+This is \emph{exactly} the Newtonian gravitational acceleration, attracting the
+test particle toward the mass. $\checkmark$
+
+\subsection{Common pitfall in PM implementations}
+
+An incorrect sign $\mathbf{a} = -c^2\nabla\varphi$ was historically used in
+some PM implementations.  With $\nabla\varphi$ pointing inward, this gives
+\emph{outward} (repulsive) acceleration with magnitude $2GM/r^2$ — twice
+Newtonian and in the wrong direction.  Eq.~(\ref{eq:force_law}) is the
+physically correct form.
+
+%==========================================================================
+\section{PM Hydrostatic Equilibrium}
+%==========================================================================
+
+\subsection{Static PM fluid}
+
+Consider a spherically symmetric distribution of PM medium in static
+equilibrium.  The PM momentum equation in the static limit ($\mathbf{u}=0$)
+for a fluid element reduces to a balance between the pressure gradient and
+the PM body force:
+
+\begin{equation}
+  \nabla P = \rho(\varphi)\,\mathbf{a}_\PM = \rho(\varphi)\cdot\tfrac{c^2}{2}\,\nabla\varphi.
+  \label{eq:hydrostatic}
+\end{equation}
+
+In the radial direction this is
+
+\begin{equation}
+  \frac{dP}{dr} = \rho(r)\cdot\frac{c^2}{2}\frac{d\varphi}{dr}.
+  \label{eq:hydrostatic_1d}
+\end{equation}
+
+With $d\varphi/dr = -2GM_\text{enc}(r)/(c^2 r^2)$ this becomes exactly the
+Newtonian hydrostatic equation:
+
+\begin{equation}
+  \frac{dP}{dr} = -\frac{G\,m(r)\,\rho(r)}{r^2}.
+  \label{eq:dPdr}
+\end{equation}
+
+\subsection{Comparison with GR (TOV)}
+
+The general-relativistic Tolman--Oppenheimer--Volkoff equation is
+
+\begin{equation}
+  \frac{dP}{dr} = -\frac{G(m + 4\pi r^3 P/c^2)(\rho + P/c^2)}{r^2(1 - 2Gm/c^2r)}.
+\end{equation}
+
+Compared to Eq.~(\ref{eq:dPdr}), the TOV equation has three extra terms:
+\begin{itemize}
+  \item $+4\pi r^3 P/c^2$ in the mass term (pressure as active gravitational source
+    in GR),
+  \item $+P/c^2$ in the density term (pressure as inertial mass in GR),
+  \item $1/(1-2Gm/c^2r)$ in the denominator (spacetime curvature factor in GR).
+\end{itemize}
+These terms are absent in the PM structure equation \emph{because PM does not
+use curved spacetime}.  Spacetime is flat in PM; the optical metric
+$n = e^\varphi$ describes wave propagation in the medium, not spacetime
+curvature.  Consequently there is no Schwarzschild radius, no event horizon,
+and no GR compactness limit $Gm/(c^2r) < 1/2$ in PM.
+
+The two frameworks produce different structure equations because they are
+based on different physical assumptions, not because one is an approximation
+to the other.  The key PM prediction distinguishing it from all GR models is
+the hard density ceiling $\rhocrit$, which sets an absolute upper bound on
+the central density of all stable PM compact stars.
+
+%==========================================================================
+\section{PM Self-Consistent Equation of State}
+%==========================================================================
+
+\subsection{Density–field relation}
+
+In PM, the mass density of the compressed medium is
+
+\begin{equation}
+  \rho(\varphi) = \rhonuc\,e^{\varphi},
+  \label{eq:rho_phi}
+\end{equation}
+
+where $\rhonuc \approx 2.3\times10^{17}\;\text{kg/m}^3$ is the nuclear saturation
+density (medium density in the undeformed state at $\varphi = 0$).
+
+\subsection{EOS derivation}
+
+Combining the hydrostatic condition Eq.~(\ref{eq:hydrostatic}) with
+Eq.~(\ref{eq:rho_phi}):
+
+\begin{equation}
+  dP = \rho(\varphi)\cdot\tfrac{c^2}{2}\,d\varphi
+     = \rhonuc e^{\varphi}\cdot\tfrac{c^2}{2}\,d\varphi.
+\end{equation}
+
+Integrating from vacuum ($\varphi = 0$, $P = 0$) to field $\varphi$:
+
+\begin{equation}
+  P(\varphi) = \tfrac{c^2}{2}\rhonuc(e^{\varphi} - 1).
+\end{equation}
+
+Substituting $\rho = \rhonuc e^{\varphi}$:
+
+\begin{equation}
+  \boxed{P = \frac{c^2}{2}(\rho - \rhonuc).}
+  \label{eq:eos}
+\end{equation}
+
+\subsection{EOS properties}
+
+\begin{center}
+\begin{tabular}{lll}
+  \toprule
+  Property & Value & Note \\
+  \midrule
+  Surface pressure & $P(\rhonuc) = 0$ & Correct surface condition \\
+  Sound speed & $c_s = c/\!\sqrt{2}$ & Causal ($c_s < c$) \\
+  Stiffness & $dP/d\rho = c^2/2$ & Linear (``$\Gamma = 2$''-type) \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+A linear EOS $P = K(\rho - \rho_0)$ with $K = c^2/2$ is comparable in
+stiffness to nuclear physics polytropes SLy and APR with $\Gamma \approx
+2$--$3$ above saturation density.
+
+%==========================================================================
+\section{PM Stellar Structure System}
+%==========================================================================
+
+\subsection{Structure equations}
+
+The full PM stellar structure system in spherical symmetry is:
+
+\begin{align}
+  \frac{dm}{dr} &= 4\pi r^2\,\rho(r),  \label{eq:dmdr} \\[6pt]
+  \frac{dP}{dr} &= -\frac{G\,m(r)\,\rho(r)}{r^2},  \label{eq:dPdr2}
+\end{align}
+
+with $\rho = \rhonuc + 2P/c^2$ from the PM EOS.
+
+\subsection{Boundary conditions}
+
+\begin{align}
+  m(0) &= 0,  \\
+  P(0) &= P_c = \tfrac{c^2}{2}(\rho_c - \rhonuc), \quad \rho_c \le \rhocrit, \\
+  P(R) &= 0,  \quad M_\star = m(R).
+\end{align}
+
+\subsection{PM critical density constraint}
+
+The PM critical density arises from the deformation-energy stability criterion
+at $\varphi_\text{crit} = 1$:
+
+\begin{equation}
+  \rhocrit = \rhonuc\,e^1 = e\,\rhonuc \approx 6.25\times10^{17}\;\text{kg/m}^3.
+  \label{eq:rho_crit}
+\end{equation}
+
+No stable PM compact star can have a central density exceeding $\rhocrit$.
+This is an absolute PM prediction.  The corresponding central pressure limit is
+
+\begin{equation}
+  \pcrit = \half c^2(\rhocrit - \rhonuc) = \half c^2\,\rhonuc(e-1)
+         \approx 1.87\times10^{34}\;\text{Pa}.
+\end{equation}
+
+%==========================================================================
+\section{Observational Predictions and Kill Criteria}
+%==========================================================================
+
+\subsection{PM M–R curve}
+
+Sweeping the central density $\rho_c$ from $\rhonuc$ to $\rhocrit$ and
+integrating the structure system Eqs.~(\ref{eq:dmdr})--(\ref{eq:dPdr2})
+generates the PM mass–radius curve.
+
+The maximum-mass PM star occurs at $\rho_c = \rhocrit$.  The predicted
+$M_\text{max}$ and $R$ at $M_\text{max}$ depend on the stiffness of the PM EOS
+and the PM structure equations (exact within PM).
+
+\subsection{Comparison to GR / TOV}
+
+The PM and GR structure equations differ because they come from different
+physical frameworks (flat medium vs.\ curved spacetime).  The observable
+consequences are:
+\begin{itemize}
+  \item PM gives \emph{larger radii} than GR for the same central density,
+    because the GR metric factor $1/(1-2Gm/c^2r)$ (absent in PM) compresses
+    the pressure gradient and shrinks the star.
+  \item PM imposes a \emph{hard density ceiling} $\rhocrit = e\,\rhonuc$ with
+    no GR analogue.  This limits the peak of the PM M\u2013R curve independently
+    of EOS stiffness.
+\end{itemize}
+
+\subsection{Key observational tests}
+
+\begin{center}
+\begin{tabular}{p{4.5cm} p{4.5cm} p{4.5cm}}
+  \toprule
+  Observation & Constraint & PM implication \\
+  \midrule
+  PSR J0952-0607 & $M = 2.35 \pm 0.17\,\Msun$ & PM must predict $M_\text{max} \ge 2.18\,\Msun$ \\[4pt]
+  PSR J0740+6620 (NICER) & $M = 2.08\,\Msun$, $R \approx 12.4\,$km & Check PM M–R passes through box \\[4pt]
+  PSR J0030+0451 (NICER) & $M \approx 1.34\,\Msun$, $R \approx 12.7\,$km & Check PM M–R passes through box \\[4pt]
+  GW170817 & $R_{1.4} \approx 11.9\,$km & PM must predict $R_{1.4}$ in this range \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{PM falsification criterion}
+
+\begin{description}
+  \item[Kills PM if:] The PM M–R curve does not pass through the NICER
+    observational boxes, OR $M_\text{max} < 2.18\,\Msun$ (PM cannot support
+    the heaviest known pulsar).
+
+  \item[Supports PM if:] The PM M–R curve passes through both NICER boxes and
+    predicts $R_{1.4}$ within the GW170817 window, with
+    $M_\text{max} \ge 2.18\,\Msun$.
+\end{description}
+
+The PM structure equations integrated here are exact within the PM framework.
+No GR metric corrections are missing or approximated.  The M\u2013R curve
+computed by \texttt{solve\_pm\_star} is the genuine PM prediction.
+
+%==========================================================================
+\section{Implementation Notes}
+%==========================================================================
+
+The stellar structure equations are implemented in
+\texttt{src/pushing\_medium/stellar\_structure.py}:
+
+\begin{itemize}
+  \item \texttt{pm\_eos\_pressure(rho)} — Eq.~(\ref{eq:eos})
+  \item \texttt{pm\_eos\_density(P)} — inverse EOS
+  \item \texttt{pm\_eos\_sound\_speed()} — $c/\sqrt{2}$
+  \item \texttt{solve\_pm\_star(rho\_central)} — ODE integrator using
+    \texttt{scipy.integrate.solve\_ivp} (DOP853 method) with an event
+    function to stop at $P = 0$
+  \item \texttt{compute\_mr\_curve(n\_points)} — sweeps $\rho_c \in [\rhonuc,\rhocrit]$
+\end{itemize}
+
+The M--R curve script \texttt{scripts/pm\_mass\_radius\_curve.py} produces
+a plot with NICER observation boxes and GW170817 constraints overlaid.
+
+\appendix
+%==========================================================================
+\section{Useful PM Constants}
+%==========================================================================
+
+\begin{center}
+\begin{tabular}{lll}
+  \toprule
+  Symbol & Value & Meaning \\
+  \midrule
+  $c$ & $2.998 \times 10^8\;\text{m/s}$ & Speed of light \\
+  $G$ & $6.674 \times 10^{-11}\;\text{N\,m}^2\text{kg}^{-2}$ & Newton constant \\
+  $\muG = 2G/c^2$ & $1.486 \times 10^{-27}\;\text{m}^2/\text{kg}$ & PM coupling \\
+  $\rhonuc$ & $2.3 \times 10^{17}\;\text{kg/m}^3$ & Nuclear saturation density \\
+  $\rhocrit = e\,\rhonuc$ & $6.25 \times 10^{17}\;\text{kg/m}^3$ & PM critical density \\
+  $\pcrit$ & $1.87 \times 10^{34}\;\text{Pa}$ & PM central pressure limit \\
+  $\varphi_\text{crit}$ & $1$ & Critical PM scalar field \\
+  $c_s$ & $c/\sqrt{2} \approx 2.12 \times 10^8\;\text{m/s}$ & PM sound speed \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}

@@ -1,0 +1,242 @@
+\documentclass{article}
+\usepackage{amsmath, amssymb}
+
+\begin{document}
+
+\section*{Pushing--Medium Gravity: Stress--Energy Tensor v1}
+
+This document presents the stress--energy tensor of the Pushing--Medium (PM)
+medium derived from the PM-fluid Lagrangian. The tensor describes the energy,
+momentum, and stresses carried by the scalar field $\phi$ and the flow field
+$\mathbf u$.
+
+\section*{1. PM Lagrangian Density}
+
+The PM-fluid Lagrangian on a flat background $\eta_{\mu\nu} =
+\mathrm{diag}(-1,1,1,1)$ is
+
+
+\[
+\mathcal{L}
+=
+\frac{1}{2c_\phi^2}(\partial_t \phi)^2
+- \frac{1}{2}|\nabla \phi|^2
++
+\frac{1}{2c_u^2}|\partial_t \mathbf u|^2
+- \frac{1}{2}|\nabla \mathbf u|^2
++
+\phi\,\nabla\cdot(\phi\mathbf u)
++
+\phi\,S_\phi
++
+\mathbf u\cdot\mathbf S_u.
+\]
+
+
+
+For the stress--energy tensor we omit the explicit source terms
+$\phi S_\phi$ and $\mathbf u\cdot\mathbf S_u$, which represent external
+couplings.
+
+\section*{2. Canonical Stress--Energy Tensor}
+
+For fields $\Psi \in \{\phi, u_i\}$, the canonical tensor is
+
+
+\[
+T^{\mu}{}_{\nu}
+=
+\sum_{\Psi}
+\frac{\partial \mathcal{L}}{\partial(\partial_\mu \Psi)}\,
+\partial_\nu \Psi
+- \delta^{\mu}{}_{\nu}\,\mathcal{L}.
+\]
+
+
+
+We use $x^0 = t$ and spatial indices $i,j = 1,2,3$.
+
+\section*{3. Conjugate Momenta}
+
+\subsection*{3.1 Scalar Field}
+
+
+
+\[
+\pi_\phi
+=
+\frac{\partial \mathcal{L}}{\partial(\partial_t \phi)}
+=
+\frac{1}{c_\phi^2}\,\partial_t \phi.
+\]
+
+
+
+\subsection*{3.2 Vector Field}
+
+
+
+\[
+\pi_{u_i}
+=
+\frac{\partial \mathcal{L}}{\partial(\partial_t u_i)}
+=
+\frac{1}{c_u^2}\,\partial_t u_i.
+\]
+
+
+
+\section*{4. Energy Density}
+
+The energy density is
+
+
+\[
+\mathcal{E}
+=
+T^{00}
+=
+\pi_\phi\,\partial_t \phi
++
+\pi_{u_i}\,\partial_t u_i
+- \mathcal{L}.
+\]
+
+
+
+Substituting the momenta and Lagrangian (without sources):
+
+
+\[
+\mathcal{E}
+=
+\frac{1}{2c_\phi^2}(\partial_t \phi)^2
++ \frac{1}{2}|\nabla \phi|^2
++
+\frac{1}{2c_u^2}|\partial_t \mathbf u|^2
++ \frac{1}{2}|\nabla \mathbf u|^2
+- \phi\,\nabla\cdot(\phi\mathbf u).
+\]
+
+
+
+This is the total energy stored in the PM medium.
+
+\section*{5. Momentum Density}
+
+The momentum density is
+
+
+\[
+T^{0i}
+=
+\pi_\phi\,\partial_i \phi
++
+\pi_{u_j}\,\partial_i u_j.
+\]
+
+
+
+Explicitly:
+
+
+\[
+T^{0i}
+=
+\frac{1}{c_\phi^2}(\partial_t \phi)(\partial_i \phi)
++
+\frac{1}{c_u^2}(\partial_t u_j)(\partial_i u_j).
+\]
+
+
+
+\section*{6. Spatial Stress Tensor}
+
+The spatial stress tensor is
+
+
+\[
+T^{ij}
+=
+\frac{\partial \mathcal{L}}{\partial(\partial_i \phi)}\,\partial^j \phi
++
+\frac{\partial \mathcal{L}}{\partial(\partial_i u_k)}\,\partial^j u_k
+- \delta^{ij}\,\mathcal{L}.
+\]
+
+
+
+From the gradient terms:
+
+
+\[
+\frac{\partial \mathcal{L}}{\partial(\partial_i \phi)}
+= -\partial_i \phi,
+\qquad
+\frac{\partial \mathcal{L}}{\partial(\partial_i u_k)}
+= -\partial_i u_k.
+\]
+
+
+
+Thus:
+
+
+\[
+T^{ij}
+=
+- (\partial_i \phi)(\partial^j \phi)
+- (\partial_i u_k)(\partial^j u_k)
+- \delta^{ij}\,\mathcal{L}_{\text{PM}},
+\]
+
+
+where
+
+
+\[
+\mathcal{L}_{\text{PM}}
+=
+\frac{1}{2c_\phi^2}(\partial_t \phi)^2
+- \frac{1}{2}|\nabla \phi|^2
++
+\frac{1}{2c_u^2}|\partial_t \mathbf u|^2
+- \frac{1}{2}|\nabla \mathbf u|^2
++
+\phi\,\nabla\cdot(\phi\mathbf u).
+\]
+
+
+
+\section*{7. Conservation Law}
+
+In the absence of explicit sources:
+
+
+\[
+\partial_\mu T^{\mu\nu} = 0.
+\]
+
+
+
+This expresses local conservation of energy and momentum in the PM medium.
+
+\section*{8. Physical Interpretation}
+
+\begin{itemize}
+    \item The terms $(\partial_t \phi)^2$ and $(\partial_t \mathbf u)^2$ represent kinetic energy of scalar and vector PM waves.
+    \item The terms $|\nabla \phi|^2$ and $|\nabla \mathbf u|^2$ represent stored gradient energy, analogous to tension or pressure.
+    \item The term $-\phi\,\nabla\cdot(\phi\mathbf u)$ represents compressive work done by the flow field on the scalar field.
+    \item The momentum density $T^{0i}$ describes transport of PM energy by waves and flows.
+    \item The stress tensor $T^{ij}$ describes directional tensions and pressures within the PM medium.
+\end{itemize}
+
+\section*{9. Summary}
+
+The PM stress--energy tensor provides a complete description of energy,
+momentum, and stresses in the PM medium. It is derived directly from the
+PM-fluid Lagrangian and is consistent with the dynamic PM equations and the
+effective metric structure.
+
+\end{document}
+

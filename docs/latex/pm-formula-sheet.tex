@@ -1,0 +1,472 @@
+\documentclass[10pt,twocolumn]{article}
+\usepackage{amsmath, amssymb, booktabs, geometry, titlesec, parskip}
+\geometry{a4paper, margin=1.5cm, columnsep=1.2em}
+\titleformat{\section}{\normalfont\bfseries\small}{}{0em}{}[\vspace{-0.4em}\rule{\columnwidth}{0.4pt}]
+\titlespacing{\section}{0pt}{0.8em}{0.3em}
+\setlength{\parskip}{2pt}
+\setlength{\parindent}{0pt}
+\pagestyle{plain}
+
+\begin{document}
+
+\twocolumn[{%
+  \centering
+  {\large\bfseries Pushing Medium (PM) — Consolidated Formula Sheet}\\[0.3em]
+  {\small March 2026}\\[0.8em]
+}]
+
+%====================================================================
+\section{Core Assumptions}
+%====================================================================
+
+\begin{enumerate}\setlength{\itemsep}{2pt}
+  \item \textbf{Flat spacetime.}
+        Space is a compressible physical medium on a fixed Euclidean background.
+        No GR curvature, no Einstein equations, no horizons, no TOV.
+
+  \item \textbf{Scalar compression field.}
+        Gravity arises from the scalar field $\phi$ with refractive index
+        $n=e^{\phi}$.  Sources: $\nabla^2\phi = -\tfrac{8\pi G}{c^2}\rho$.
+
+  \item \textbf{Density law.}
+        \[ \rho = \rho_{\mathrm{nuc}}\,e^{\phi} \]
+
+  \item \textbf{Force law for massive particles.}
+        \[ \mathbf{a} = \tfrac{c^2}{2}\,\nabla\phi \]
+        (Half the photon coupling; recovers $-GM/r^2\,\hat{\mathbf{r}}$ exactly.)
+
+  \item \textbf{Light propagation.}
+        Follows Fermat's principle in the optical metric:
+        \[ ds_{\mathrm{opt}}^2 = -\frac{c^2}{n^2}\,dt^2
+           + (d\mathbf{r} - \mathbf{u}\,dt)^2 \]
+
+  \item \textbf{Self-consistent EOS.}
+        \[ P = \frac{c^2}{2}\!\left(\rho - \rho_{\mathrm{nuc}}\right) \]
+
+  \item \textbf{Stability cap.}
+        The medium cannot be compressed beyond $\phi = 1$ ($n = e$,
+        $\rho = e\,\rho_{\mathrm{nuc}}$).  This is the only strong-field limit
+        in PM; it is not a compactness bound from GR.
+\end{enumerate}
+
+%====================================================================
+\section{Fields and Notation}
+%====================================================================
+
+\textbf{Gravitational sector:}
+\[
+  \phi(\mathbf r,t) = \text{scalar compression field},\quad
+  \mathbf u(\mathbf r,t) = \text{flow field}
+\]
+
+\textbf{Electromagnetic sector:}
+\[
+  \psi(\mathbf r,t) = \text{scalar EM field},\quad
+  \mathbf w(\mathbf r,t) = \text{vector EM field}
+\]
+
+\textbf{Refractive index:}
+\[
+  \boxed{n(\mathbf r,t) = e^{\phi(\mathbf r,t)}}
+  \quad\Longleftrightarrow\quad
+  \phi = \ln n
+\]
+
+%====================================================================
+\section{Static Gravity}
+%====================================================================
+
+\textbf{Scalar field (Poisson):}
+\[
+  \nabla^2 \phi = -4\pi G_{\mathrm{eff}}\,\rho_M
+\]
+
+\textbf{Point mass $M$:}
+\[
+  \phi(r) = \frac{\mu_G M}{r}, \qquad
+  n(r) = 1 + \frac{\mu_G M}{r} + \mathcal{O}(r^{-2})
+\]
+
+\textbf{Continuous distribution:}
+\[
+  \phi(\mathbf r) = \mu_G \int \frac{\rho_M(\mathbf r')}{|\mathbf r - \mathbf r'|}\,d^3r'
+\]
+
+\textbf{Vector flow field:}
+\[
+  \nabla^2 \mathbf u = -A_M\,\mathbf J_M
+\]
+
+For a moving point mass with velocity $\mathbf v$:
+\[
+  \mathbf u(\mathbf r) = A_M M\,\frac{\mathbf v}{|\mathbf r - \mathbf r_M|}
+\]
+
+%====================================================================
+\section{Unified Source Structure}
+%====================================================================
+
+\textbf{Scalar sources (gravity + EM + plasma):}
+\[
+  S_\phi = 4\pi\!\left(G_{\mathrm{eff}}\,\rho_M + K_E\,\rho_q + K_{\mathrm{plasma}}\,n_e\right)
+\]
+
+\textbf{Vector sources (mass + charge currents):}
+\[
+  \mathbf S_u = A_M\,\mathbf J_M + A_q\,\mathbf J_q
+\]
+
+\textbf{EM sources:}
+\[
+  S_\psi = 4\pi K_E\,\rho_q, \qquad
+  \mathbf S_w = B_q\,\mathbf J_q
+\]
+
+%====================================================================
+\section{Dynamic PM-Fluid Equations}
+%====================================================================
+
+\textbf{Scalar field:}
+\[
+  \frac{\partial\phi}{\partial t} + \nabla\cdot(\phi\,\mathbf u)
+  = S_\phi + \frac{1}{c_\phi^2}\frac{\partial^2\phi}{\partial t^2}
+\]
+
+\textbf{Vector flow:}
+\[
+  \frac{\partial\mathbf u}{\partial t} + (\mathbf u\cdot\nabla)\mathbf u
+  = -\nabla\phi + \mathbf S_u + \frac{1}{c_u^2}\frac{\partial^2\mathbf u}{\partial t^2}
+\]
+
+%====================================================================
+\section{PM Lagrangian Density}
+%====================================================================
+
+\textbf{Gravitational sector:}
+\[
+  \mathcal{L} =
+  \frac{(\partial_t\phi)^2}{2c_\phi^2}
+  - \frac{|\nabla\phi|^2}{2}
+  + \frac{|\partial_t\mathbf u|^2}{2c_u^2}
+  - \frac{|\nabla\mathbf u|^2}{2}
+  + \phi\,\nabla\cdot(\phi\mathbf u)
+  + \phi\,S_\phi + \mathbf u\cdot\mathbf S_u
+\]
+
+\textbf{Electromagnetic sector:}
+\[
+  \mathcal{L}_{\mathrm{EM}} =
+  \frac{(\partial_t\psi)^2}{2c_\psi^2}
+  - \frac{|\nabla\psi|^2}{2}
+  + \frac{|\partial_t\mathbf w|^2}{2c_w^2}
+  - \frac{|\nabla\mathbf w|^2}{2}
+  + \psi\,S_\psi + \mathbf w\cdot\mathbf S_w
+\]
+
+Structurally identical with $(\phi,\mathbf u) \to (\psi,\mathbf w)$.
+
+%====================================================================
+\section{Hamiltonian Formulation}
+%====================================================================
+
+\textbf{Canonical momenta:}
+\[
+  \pi_\phi = \frac{\partial_t\phi}{c_\phi^2}, \qquad
+  \pi_{u_i} = \frac{\partial_t u_i}{c_u^2}
+\]
+
+\textbf{Hamiltonian density:}
+\[
+  \mathcal{H} =
+  \frac{c_\phi^2\pi_\phi^2}{2}
+  + \frac{|\nabla\phi|^2}{2}
+  + \frac{c_u^2|\pi_u|^2}{2}
+  + \frac{|\nabla\mathbf u|^2}{2}
+  - \phi\,\nabla\cdot(\phi\mathbf u)
+\]
+
+Kinetic and gradient terms are positive-definite; the system is stable in the linear regime.
+
+\textbf{Hamilton's equations:}
+\[
+  \partial_t\phi = c_\phi^2\,\pi_\phi
+\]
+\[
+  \partial_t\pi_\phi = \nabla^2\phi + \nabla\cdot(\phi\mathbf u) + \phi\,\nabla\cdot\mathbf u
+\]
+\[
+  \partial_t u_i = c_u^2\,\pi_{u_i}
+\]
+\[
+  \partial_t\pi_{u_i} = \nabla^2 u_i + \partial_i(\phi^2)
+\]
+
+%====================================================================
+\section{Stress--Energy Tensor}
+%====================================================================
+
+\textbf{Canonical form:}
+\[
+  T^{\mu}{}_{\nu}
+  = \sum_{\Psi\in\{\phi,\,u_i\}}
+    \frac{\partial\mathcal{L}}{\partial(\partial_\mu\Psi)}\,\partial_\nu\Psi
+    - \delta^{\mu}{}_{\nu}\,\mathcal{L}
+\]
+
+\textbf{Energy density} $T^{00}$:
+\[
+  \mathcal{E} =
+  \frac{(\partial_t\phi)^2}{2c_\phi^2}
+  + \frac{|\nabla\phi|^2}{2}
+  + \frac{|\partial_t\mathbf u|^2}{2c_u^2}
+  + \frac{|\nabla\mathbf u|^2}{2}
+  - \phi\,\nabla\cdot(\phi\mathbf u)
+\]
+
+\textbf{Momentum density} $T^{0i}$:
+\[
+  T^{0i} =
+  \frac{\partial_t\phi\;\partial_i\phi}{c_\phi^2}
+  + \frac{\partial_t u_j\;\partial_i u_j}{c_u^2}
+\]
+
+\textbf{Stress tensor} $T^{ij}$:
+\[
+  T^{ij} =
+  -(\partial_i\phi)(\partial^j\phi)
+  -(\partial_i u_k)(\partial^j u_k)
+  - \delta^{ij}\,\mathcal{L}_{\mathrm{PM}}
+\]
+
+\textbf{Conservation:}
+\[
+  \partial_\mu T^{\mu\nu} = 0 \quad \text{(no external sources)}
+\]
+
+%====================================================================
+\section{Electromagnetic Field Equations}
+%====================================================================
+
+\textbf{Scalar EM (electric-like):}
+\[
+  \frac{\partial\psi}{\partial t} + \nabla\cdot(\psi\,\mathbf u)
+  = S_\psi + \frac{1}{c_\psi^2}\frac{\partial^2\psi}{\partial t^2}
+\]
+Static limit: $\nabla^2\psi = -4\pi K_E\,\rho_q$
+
+\textbf{Vector EM (magnetic-like):}
+\[
+  \frac{\partial\mathbf w}{\partial t} + (\mathbf u\cdot\nabla)\mathbf w
+  = -\nabla\psi + \mathbf S_w + \frac{1}{c_w^2}\frac{\partial^2\mathbf w}{\partial t^2}
+\]
+Static limit: $\nabla^2\mathbf w = -B_q\,\mathbf J_q$
+
+\textbf{Effective fields:}
+\[
+  \mathbf E_{\mathrm{eff}} = -\nabla\psi - \partial_t\mathbf w, \qquad
+  \mathbf B_{\mathrm{eff}} = \nabla\times\mathbf w
+\]
+
+\textbf{Maxwell-like equations} (linear, no-flow limit):
+\[
+  \nabla\cdot\mathbf E_{\mathrm{eff}} = 4\pi K_E\,\rho_q, \qquad
+  \nabla\cdot\mathbf B_{\mathrm{eff}} = 0
+\]
+\[
+  \nabla\times\mathbf E_{\mathrm{eff}} = -\partial_t\mathbf B_{\mathrm{eff}}, \quad
+  \nabla\times\mathbf B_{\mathrm{eff}} = \frac{\partial_t\mathbf E_{\mathrm{eff}}}{c^2} + B_q\,\mathbf J_q
+\]
+
+%====================================================================
+\section{Ray and Particle Kinematics}
+%====================================================================
+
+\textbf{Ray position:}
+\[
+  \frac{d\mathbf r}{ds} = c\,\hat{\mathbf k} + k_{\mathrm{Fizeau}}\,\mathbf u
+  \qquad (k_{\mathrm{Fizeau}} = 1)
+\]
+
+\textbf{Ray direction:}
+\[
+  \frac{d\hat{\mathbf k}}{ds}
+  = \nabla_\perp\phi + \mathcal{F}(\hat{\mathbf k},\mathbf u,\nabla\mathbf u)
+\]
+
+\textbf{Massive particle acceleration (exact, all speeds):}
+\[
+  \boxed{\mathbf a_{\mathrm{PM}} = +\tfrac{c^2}{2}\,\nabla\phi}
+\]
+Light sees both metric components ($g_{tt}$ and $g_{rr}$) → factor $c^2$.
+Massive slow particles see only $g_{tt}$ → factor $c^2/2$.  With
+$\phi = \mu_G M/r$: $\mathbf a = -GM/r^2\,\hat{\mathbf r}$ (Newtonian, exact). \\
+Implementation: \texttt{core.massive\_accel\_medium}
+
+\textbf{Weak-field deflection angle:}
+\[
+  \alpha_{\mathrm{PM}}(b) = \int_{-\infty}^{+\infty}
+    \frac{-\mu_G M\,b}{n(r)\,r^3}\,dz
+  \;\xrightarrow[]{n\to1}\;
+  \frac{2\mu_G M}{b} = \frac{4GM}{c^2 b}
+\]
+
+Moving-lens correction:
+\[
+  \alpha_{\mathrm{moving}} = \alpha_{\mathrm{static}}\!\left(1 + \frac{v}{c}\right)
+\]
+
+%====================================================================
+\section{Effective Metric}
+%====================================================================
+
+\textbf{Optical metric (exact):}
+\[
+  ds_{\mathrm{opt}}^2
+  = -\frac{c^2}{n^2}\,dt^2 + (d\mathbf r - \mathbf u\,dt)^2
+\]
+
+\textbf{First-order expansion} (small $\phi$, small $\mathbf u$):
+\[
+  ds^2
+  = -(1+2\phi)c^2 dt^2
+  - 2\,\mathbf u\cdot d\mathbf r\,dt
+  + (1-2\phi)\,d\mathbf r^2
+\]
+
+\textbf{Metric components:}
+\[
+  g_{tt} = -(1+2\phi), \qquad g_{rr} = (1-2\phi)
+\]
+
+\textbf{PPN parameters:}
+\[
+  \gamma = 1, \qquad \beta = 1
+\]
+
+%====================================================================
+\section{Deformation Energy and Critical State}
+%====================================================================
+
+\textbf{Landau--Ginzburg deformation energy:}
+\[
+  U(\phi) = \varepsilon_0\!\left(\phi^2 - \frac{\phi^3}{3}\right),
+  \qquad \varepsilon_0 = \rho_{\mathrm{nuc}}\,c^2
+\]
+\[
+  U'(\phi) = \varepsilon_0(2\phi - \phi^2), \qquad
+  U''(\phi) = 2\varepsilon_0(1-\phi)
+\]
+
+\textbf{Stability criterion:} $U''(\phi)>0 \;\Leftrightarrow\; \phi < 1$
+
+\textbf{Critical point} (onset of instability, $U''=0$):
+\[
+  \boxed{\phi_{\mathrm{crit}} = 1, \qquad n_{\mathrm{crit}} = e}
+\]
+
+\textbf{Density from field (exact):}
+\[
+  \rho(\phi) = \rho_{\mathrm{nuc}}\,e^{\phi}
+\]
+
+\textbf{Self-consistent PM EOS} (from $dP = \rho\tfrac{c^2}{2}d\phi$, $P\to 0$ at $\rho\to\rho_{\mathrm{nuc}}$):
+\[
+  \boxed{P = \tfrac{c^2}{2}\!\left(\rho - \rho_{\mathrm{nuc}}\right)}
+\]
+Properties: $P(\rho_{\mathrm{nuc}})=0$; sound speed $c_s = c/\sqrt{2}$.
+
+\textbf{Critical thermodynamic values:}
+\[
+  \rho_{\mathrm{crit}}
+  = e\,\rho_{\mathrm{nuc}} \approx 6.25\times10^{17}\;\mathrm{kg\,m^{-3}}
+  \;\approx 2.7\,\rho_{\mathrm{nuc}}
+\]
+\[
+  P_{\mathrm{crit}} \approx 1.87\times10^{34}\;\mathrm{Pa}
+\]
+
+Implementation: \texttt{src/pushing\_medium/critical\_state.py}
+
+%====================================================================
+\section{Compact Star Structure (exact within PM)}
+%====================================================================
+
+PM uses flat space; no GR corrections at any compactness.
+Gauss's theorem on $\nabla^2\phi = -\mu_G\cdot 4\pi\rho$ gives the
+structure ODE system exactly:
+
+\textbf{ODE system} (interior, $r>0$):
+\[
+  \frac{dm}{dr} = 4\pi r^2\rho, \quad
+  \frac{dP}{dr} = -\frac{Gm(r)\,\rho}{r^2}, \quad
+  \frac{d\phi}{dr} = -\frac{\mu_G\,m(r)}{r^2}
+\]
+
+\textbf{Boundary conditions} (at centre $r\to 0$):
+\[
+  m(0)=0,\quad P(0) = \tfrac{c^2}{2}(\rho_c-\rho_{\mathrm{nuc}}),\quad
+  \phi(0) = \ln\!\left(\rho_c/\rho_{\mathrm{nuc}}\right)
+\]
+
+\textbf{Surface:} integrate until $P=0$ ($\rho\to\rho_{\mathrm{nuc}}$, $\phi\to 0$).
+
+\textbf{Hard stability cap:}
+\[
+  \rho_c < \rho_{\mathrm{crit}} = e\,\rho_{\mathrm{nuc}}
+  \quad\Leftrightarrow\quad \phi_c < 1
+\]
+(From $U''(\phi_{\mathrm{crit}})=0$; medium cannot be compressed past this.)
+
+Self-consistency: $\phi$ from Poisson = $\ln(\rho/\rho_{\mathrm{nuc}})$ from
+EOS, verified algebraically. Implementation: \texttt{src/pushing\_medium/stellar\_structure.py}
+
+%====================================================================
+\section{Calibration Constants}
+%====================================================================
+
+\begin{tabular}{@{}lll@{}}
+\toprule
+Symbol & Value & Physical meaning \\
+\midrule
+$c$ & $2.99792458\times10^8$ m/s & Speed of light \\
+$G$ & $6.67430\times10^{-11}$ m$^3$ kg$^{-1}$ s$^{-2}$ & Newton's constant \\
+$\mu_G$ & $1.4861356\times10^{-27}$ m$^2$ kg$^{-1}$ & Grav.\ index coefficient \\
+& $= 2G/c^2$ (theory) & \\
+$k_{\mathrm{TT}}$ & $1.0$ (exact) & GW power normalisation \\
+$k_{\mathrm{Fizeau}}$ & $1.0$ (exact) & Moving-lens drag \\
+$A_M$ & $G/c^2 \approx 7.43\times10^{-28}$ m$^3$ kg$^{-1}$ s$^{-1}$ & Mass-current coupling \\
+$A_q$ & $< 3\times10^{-10}$ m$^3$ C$^{-1}$ s$^{-1}$ & Charge-current coupling \\
+$\kappa_B$ & $\approx 0$ (ruled out) & Magnetic potential coupling \\
+$\rho_{\mathrm{nuc}}$ & $2.3\times10^{17}$ kg m$^{-3}$ & Nuclear saturation density \\
+\midrule
+\multicolumn{3}{@{}l@{}}{\textit{Unconstrained:}
+  $\mu_E$, $K_E$, $B_q$, $K_{\mathrm{plasma}}$, $\alpha_{\mathrm{plasma}}$,
+  $c_\phi$, $c_u$ (assumed $\approx c$)} \\
+\bottomrule
+\end{tabular}
+
+%====================================================================
+\section{Document Map}
+%====================================================================
+
+\begin{tabular}{@{}ll@{}}
+\toprule
+Topic & Canonical source \\
+\midrule
+All field equations & \texttt{v2-gravity.tex} \\
+Unified + EM sources & \texttt{v1-unified-formulations.tex} \\
+Lagrangian derivation & \texttt{hamiltonian-formulation-v1.tex} \\
+Hamiltonian + stability & \texttt{hamiltonian-formulation-v1.tex} \\
+Stress-energy tensor & \texttt{stress--energy-tensorv1.1.tex} \\
+EM field equations & \texttt{em-field-equations-v1.tex} \\
+Critical state impl.\ & \texttt{critical\_state.py} \\
+Compact star structure & \texttt{pm-stellar-structure.tex} \\
+Stellar structure impl.\ & \texttt{stellar\_structure.py} \\
+Calibration derivation & \texttt{calibration-constants-derivation.tex} \\
+Coupling constants & \texttt{coupling-constants-reference.tex} \\
+Cross-force analysis & \texttt{cross-force-hierarchy-honest.tex} \\
+GR comparison table & \texttt{pm-gr-cross-force-comparison.tex} \\
+\bottomrule
+\end{tabular}
+
+\end{document}

@@ -1,0 +1,214 @@
+\documentclass{article}
+\usepackage{amsmath, amssymb}
+
+\begin{document}
+
+\section*{Pushing--Medium Gravity: Effective Metric from Fermat’s Principle}
+
+This document derives the effective spacetime metric of the Pushing--Medium (PM)
+model directly from Fermat’s principle applied to a moving refractive medium.
+The derivation uses only the static PM gravitational fields:
+
+
+
+\[
+\phi(\mathbf r) \equiv \ln n(\mathbf r),
+\qquad
+\mathbf u(\mathbf r) \equiv \text{gravitational flow field}.
+\]
+
+
+
+The resulting metric matches the weak-field isotropic form of general
+relativity with PPN parameters $\gamma = \beta = 1$.
+
+\section*{1. Fermat’s Principle in a Moving Medium}
+
+For a medium with refractive index $n(\mathbf r)$ and flow velocity
+$\mathbf u(\mathbf r)$, the travel time functional for a ray is:
+
+
+
+\[
+T[\mathbf r(s)]
+=
+\int
+\left[
+\frac{n(\mathbf r)}{c}
++
+\frac{k_{\mathrm{Fizeau}}}{c^2}\,
+\mathbf u(\mathbf r)\cdot\frac{d\mathbf r}{ds}
+\right]
+ds.
+\]
+
+
+
+The PM model is empirically consistent with $k_{\mathrm{Fizeau}} = 1$.
+
+The ray path extremizes $T$, yielding the PM ray equations.
+
+\section*{2. Effective Optical Metric}
+
+The optical metric $g^{\mathrm{opt}}_{\mu\nu}$ is defined such that null
+geodesics of this metric reproduce the stationary points of $T$. For a moving
+medium, the optical metric takes the form:
+
+
+
+\[
+ds_{\mathrm{opt}}^2
+=
+-\frac{c^2}{n^2}\,dt^2
++
+\left(d\mathbf r - \mathbf u\,dt\right)^2.
+\]
+
+
+
+Expanding:
+
+
+
+\[
+ds_{\mathrm{opt}}^2
+=
+-\frac{c^2}{n^2}\,dt^2
++
+d\mathbf r^2
+- 2\,\mathbf u\cdot d\mathbf r\,dt
++
+|\mathbf u|^2 dt^2.
+\]
+
+
+
+This metric encodes both the gravitational index field and the flow field.
+
+\section*{3. Weak-Field Expansion}
+
+In the PM gravitational sector:
+
+
+
+\[
+n = e^\phi \approx 1 + \phi,
+\qquad
+|\phi| \ll 1,
+\qquad
+|\mathbf u| \ll c.
+\]
+
+
+
+Expanding the optical metric to first order:
+
+
+
+\[
+ds_{\mathrm{opt}}^2
+\approx
+-(1 - 2\phi)c^2 dt^2
++
+d\mathbf r^2
+- 2\,\mathbf u\cdot d\mathbf r\,dt.
+\]
+
+
+
+The $|\mathbf u|^2$ term is second order and is neglected here.
+
+\section*{4. Identification with an Effective Spacetime Metric}
+
+We identify the optical metric with an effective spacetime metric
+$g_{\mu\nu}^{\mathrm{eff}}$ whose null geodesics reproduce PM ray trajectories:
+
+
+
+\[
+ds^2 = g_{\mu\nu}^{\mathrm{eff}} dx^\mu dx^\nu.
+\]
+
+
+
+Thus:
+
+
+
+\[
+g_{tt}^{\mathrm{eff}} = -(1 + 2\phi),
+\qquad
+g_{ti}^{\mathrm{eff}} = -u_i,
+\qquad
+g_{ij}^{\mathrm{eff}} = (1 - 2\phi)\,\delta_{ij}.
+\]
+
+
+
+This is the standard weak-field isotropic metric of general relativity with a
+gravitomagnetic term $g_{ti}$.
+
+\section*{5. PPN Parameters}
+
+From the effective metric:
+
+
+
+\[
+g_{tt} = -(1 + 2\phi),
+\qquad
+g_{rr} = (1 - 2\phi),
+\]
+
+
+
+the post-Newtonian parameters are:
+
+
+
+\[
+\gamma = 1,
+\qquad
+\beta = 1.
+\]
+
+
+
+These match the general-relativistic values in the weak-field regime.
+
+\section*{6. Interpretation}
+
+\begin{itemize}
+    \item The scalar PM field $\phi = \ln n$ plays the role of the Newtonian
+          gravitational potential.
+    \item The flow field $\mathbf u$ plays the role of a gravitomagnetic vector
+          potential.
+    \item Fermat’s principle in a moving medium naturally produces the
+          weak-field GR metric.
+    \item No tensor field is required; the metric emerges from optical
+          properties of the PM medium.
+\end{itemize}
+
+\section*{7. Summary}
+
+The PM gravitational sector, when interpreted through Fermat’s principle,
+produces an effective spacetime metric:
+
+
+
+\[
+ds^2
+=
+-(1 + 2\phi)c^2 dt^2
+- 2\,\mathbf u\cdot d\mathbf r\,dt
++
+(1 - 2\phi)\,d\mathbf r^2,
+\]
+
+
+
+with PPN parameters $\gamma = \beta = 1$. This provides a direct bridge between
+the PM refractive-medium picture and the weak-field limit of general relativity.
+
+\end{document}
+

@@ -1,0 +1,65 @@
+# ─── Legacy reference copy ────────────────────────────────────────────────────
+legacy/
+
+# ─── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# ─── Virtual environments ─────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+
+# ─── Test / lint caches ───────────────────────────────────────────────────────
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+
+# ─── LaTeX build artefacts (keep sources; ignore compiled output in latex/) ───
+docs/latex/*.aux
+docs/latex/*.log
+docs/latex/*.out
+docs/latex/*.toc
+docs/latex/*.synctex.gz
+docs/latex/*.fls
+docs/latex/*.fdb_latexmk
+docs/latex/*.bbl
+docs/latex/*.blg
+# The PDF built directly beside the source is a build artefact;
+# the canonical copy lives in docs/pdf/ (tracked).
+docs/latex/*.pdf
+
+# ─── Run outputs ──────────────────────────────────────────────────────────────
+logs/
+results/
+
+# ─── OS / editor noise ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# ─── Jupyter ──────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ─── Misc ─────────────────────────────────────────────────────────────────────
+*.orig
+*.rej

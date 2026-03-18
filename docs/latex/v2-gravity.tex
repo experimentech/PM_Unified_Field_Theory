@@ -1,0 +1,416 @@
+\documentclass{article}
+\usepackage{amsmath, amssymb}
+
+\begin{document}
+
+\section*{Pushing--Medium Gravity v2: Complete Unified Formulation with Numerical Constraints}
+
+This document presents the full gravitational sector of the Pushing--Medium (PM)
+model, including static fields, dynamic equations, the Lagrangian formulation,
+ray and particle kinematics, the effective metric derived from Fermat’s
+principle, and constraints from numerical tests. Version 2 incorporates
+convergence, iterative-deflection, and weak-bending constraints.
+
+The PM gravitational field is encoded in two fields:
+
+
+
+\[
+\phi(\mathbf r,t) \equiv \ln n(\mathbf r,t),
+\qquad
+\mathbf u(\mathbf r,t) \equiv \text{gravitational flow field}.
+\]
+
+
+
+The scalar field $\phi$ determines the refractive index $n$, while the flow
+field $\mathbf u$ encodes moving-mass effects.
+
+\section*{1. Unified Source Structure}
+
+\subsection*{1.1 Scalar Sources}
+
+
+
+\[
+S_\phi = 4\pi G_{\mathrm{eff}}\,\rho_M(\mathbf r,t),
+\]
+
+
+
+where $\rho_M$ is mass density.
+
+\subsection*{1.2 Vector Sources}
+
+
+
+\[
+\mathbf S_u = A_M\,\mathbf J_M(\mathbf r,t),
+\]
+
+
+
+where $\mathbf J_M$ is mass current density.
+
+\section*{2. Static PM Gravity}
+
+\subsection*{2.1 Scalar Index Field}
+
+In the static limit ($\partial_t \phi = 0$, $\mathbf u = 0$):
+
+
+
+\[
+\nabla^2 \phi(\mathbf r)
+=
+-4\pi G_{\mathrm{eff}}\,\rho_M(\mathbf r).
+\]
+
+
+
+The refractive index is:
+
+
+
+\[
+n(\mathbf r) = \exp(\phi(\mathbf r)).
+\]
+
+
+
+\subsection*{2.2 Point Mass}
+
+For a point mass $M$:
+
+
+
+\[
+\phi(r) = \frac{\mu_G M}{r},
+\qquad
+n(r) = 1 + \frac{\mu_G M}{r} + \mathcal{O}(r^{-2}).
+\]
+
+
+
+\subsection*{2.3 Continuous Mass Distribution}
+
+
+
+\[
+\phi(\mathbf r)
+=
+\mu_G
+\int
+\frac{\rho_M(\mathbf r')}{|\mathbf r - \mathbf r'|}
+\,d^3r'.
+\]
+
+
+
+\subsection*{2.4 Static Flow Field}
+
+
+
+\[
+\nabla^2 \mathbf u(\mathbf r)
+=
+- A_M\,\mathbf J_M(\mathbf r).
+\]
+
+
+
+For a moving point mass:
+
+
+
+\[
+\mathbf u(\mathbf r)
+=
+A_M M
+\frac{\mathbf v}{|\mathbf r - \mathbf r_M|}.
+\]
+
+
+
+\section*{3. Dynamic PM-Fluid Equations}
+
+The PM medium behaves as a compressible, advective fluid with finite
+propagation speeds $c_\phi$ and $c_u$.
+
+\subsection*{3.1 Scalar Field Equation}
+
+
+
+\[
+\frac{\partial \phi}{\partial t}
++ \nabla\cdot(\phi\,\mathbf u)
+=
+S_\phi
++
+\frac{1}{c_\phi^2}\frac{\partial^2 \phi}{\partial t^2}.
+\]
+
+
+
+\subsection*{3.2 Vector Flow Equation}
+
+
+
+\[
+\frac{\partial \mathbf u}{\partial t}
++ (\mathbf u\cdot\nabla)\mathbf u
+=
+-\nabla \phi
++ \mathbf S_u
++ \frac{1}{c_u^2}\frac{\partial^2 \mathbf u}{\partial t^2}.
+\]
+
+
+
+These reduce to the static PM gravity equations when $\partial_t = 0$ and
+$\mathbf u = 0$.
+
+\section*{4. Lagrangian Formulation}
+
+The PM-fluid equations arise from the Lagrangian density:
+
+
+
+\[
+\mathcal{L}
+=
+\frac{1}{2c_\phi^2}(\partial_t \phi)^2
+- \frac{1}{2}|\nabla \phi|^2
++
+\frac{1}{2c_u^2}|\partial_t \mathbf u|^2
+- \frac{1}{2}|\nabla \mathbf u|^2
++
+\phi\,\nabla\cdot(\phi\mathbf u)
++
+\phi\,S_\phi
++
+\mathbf u\cdot\mathbf S_u.
+\]
+
+
+
+The terms represent:
+
+\begin{itemize}
+    \item scalar and vector kinetic energies,
+    \item spatial gradient energies,
+    \item advection/compressibility,
+    \item unified source couplings.
+\end{itemize}
+
+\section*{5. Ray and Particle Kinematics}
+
+Rays propagate according to:
+
+
+
+\[
+\frac{d\mathbf r}{ds}
+= c\,\hat{\mathbf k}
++ k_{\mathrm{Fizeau}}\,\mathbf u(\mathbf r,t),
+\]
+
+
+
+
+
+\[
+\frac{d\hat{\mathbf k}}{ds}
+= \nabla_\perp \phi(\mathbf r,t)
++ \mathcal{F}\big(\hat{\mathbf k}, \mathbf u, \nabla \mathbf u\big).
+\]
+
+
+
+Empirically, $k_{\mathrm{Fizeau}} = 1$.
+
+\section*{6. Effective Metric from Fermat’s Principle}
+
+For a moving medium with index $n = e^\phi$ and flow $\mathbf u$, the optical
+metric is:
+
+
+
+\[
+ds_{\mathrm{opt}}^2
+=
+-\frac{c^2}{n^2}\,dt^2
++
+\left(d\mathbf r - \mathbf u\,dt\right)^2.
+\]
+
+
+
+Expanding to first order in $\phi$ and $\mathbf u$:
+
+
+
+\[
+ds^2
+=
+-(1 + 2\phi)c^2 dt^2
+- 2\,\mathbf u\cdot d\mathbf r\,dt
++
+(1 - 2\phi)\,d\mathbf r^2.
+\]
+
+
+
+\subsection*{6.1 PPN Parameters}
+
+
+
+\[
+g_{tt} = -(1 + 2\phi),
+\qquad
+g_{rr} = (1 - 2\phi),
+\]
+
+
+
+yielding:
+
+
+
+\[
+\gamma = 1,
+\qquad
+\beta = 1.
+\]
+
+
+
+\section*{7. Numerical Constraints (v2 Additions)}
+
+\subsection*{7.1 Weak/Semistrong Deflection}
+
+Tests show:
+
+
+
+\[
+\alpha(b) \propto \frac{1}{b},
+\]
+
+
+
+with log–log slope $k \approx 1$ and $\alpha b$ approximately constant.
+
+This confirms:
+
+\begin{itemize}
+    \item linearity of the scalar field in this regime,
+    \item no saturation or super-divergence,
+    \item consistency with the PM-fluid v1 equations.
+\end{itemize}
+
+\subsection*{7.2 Deflection Convergence}
+
+Numerical convergence tests show:
+
+\begin{itemize}
+    \item stable refinement under decreasing step size,
+    \item no stiffness or divergence in the ray equation,
+    \item no need for viscosity-like or higher-derivative stabilizers.
+\end{itemize}
+
+Thus the PM-fluid v1 equations require no additional regularization.
+
+\subsection*{7.3 Iterative Deflection}
+
+Iterative-deflection tests show:
+
+\begin{itemize}
+    \item fixed-point iteration converges without damping,
+    \item no evidence of nonlinear feedback,
+    \item no need for nonlinear advection or potential terms.
+\end{itemize}
+
+\subsection*{7.4 Weak-Bending Numeric}
+
+Weak-bending tests confirm:
+
+
+
+\[
+\alpha_{\mathrm{PM}}(b)
+=
+C\,\frac{1}{b}
+\quad\text{with constant } C,
+\]
+
+
+
+matching the PM index field and the effective metric.
+
+This validates:
+
+\begin{itemize}
+    \item the linear scalar field equation,
+    \item the PM ray equation,
+    \item the weak-field metric structure.
+\end{itemize}
+
+\section*{8. Critical Compression and Matter Stability}
+
+In the high-compression regime the PM scalar field $\phi$ develops
+non-linear self-interactions that set an upper stability limit for matter
+configurations.  The deformation energy density (see
+\texttt{hamiltonian-formulation-v1.tex}, \S7) is:
+
+
+\[
+U(\phi) = \varepsilon_0\!\left(\phi^2 - \frac{\phi^3}{3}\right),
+\qquad
+U''(\phi) = 2\varepsilon_0(1-\phi).
+\]
+
+
+The critical compression $\phi_{\mathrm{crit}} = 1$ is where $U'' = 0$.  Using
+the PM density mapping $\rho = \rho_{\mathrm{nuc}}e^\phi$ and ultra-relativistic
+EOS $P = \rho c^2/3$:
+
+
+\[
+\phi_{\mathrm{crit}} = 1,
+\qquad
+n_{\mathrm{crit}} = e,
+\qquad
+\rho_{\mathrm{crit}} \approx 6.25\times10^{17}\;\mathrm{kg\,m^{-3}},
+\qquad
+P_{\mathrm{crit}} \approx 1.87\times10^{34}\;\mathrm{Pa}.
+\]
+
+
+This places the PM matter/energy transition at $\approx 2.7\,\rho_{\mathrm{nuc}}$,
+within the expected nuclear-failure band and consistent with the broad
+Einstein--Oppenheimer--Volkoff picture.  Full documentation, implementation,
+and tests are in \texttt{critical\_state\_computation.md},
+\texttt{src/pushing\_medium/critical\_state.py}, and
+\texttt{tests/test\_critical\_state.py}.
+
+\section*{9. Summary}
+
+The PM gravitational sector consists of:
+
+\begin{itemize}
+    \item a scalar index field sourced by mass density,
+    \item a flow field sourced by mass currents,
+    \item dynamic PM-fluid equations with advection and finite propagation,
+    \item a Lagrangian generating the full dynamics,
+    \item an effective metric matching weak-field GR,
+    \item numerical validation of linearity, convergence, and weak/semistrong bending,
+    \item a deformation-energy stability criterion fixing the matter/energy transition at $\phi_{\mathrm{crit}} = 1$.
+\end{itemize}
+
+This v2 formulation incorporates all current numerical constraints and provides
+a complete, self-consistent gravitational theory within the Pushing--Medium
+framework.
+
+\end{document}
+

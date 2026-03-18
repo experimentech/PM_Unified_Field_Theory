@@ -1,0 +1,509 @@
+\documentclass{article}
+\usepackage{amsmath, amssymb, booktabs, xcolor}
+
+\begin{document}
+
+\section*{Pushing--Medium: Cross-Force Interactions and Observational Hierarchy}
+
+\textbf{Status Tags:}
+\textcolor{blue}{[CALIBRATED]}, \textcolor{green}{[GR-MAPPED]}, \textcolor{orange}{[DIMENSIONAL]}, \textcolor{red}{[CONSTRAINED]}, \textcolor{gray}{[RULED OUT]}
+
+\section*{1. What PM Allows That GR Does Not Include}
+
+\subsection*{1.1 Structural Differences}
+
+In General Relativity, gravity is geometric (spacetime curvature) and
+electromagnetism is a gauge field on that spacetime. The only coupling between
+them is via the stress--energy tensor $T_{\mu\nu}$.
+
+In Pushing--Medium, both are excitations of the same medium ($\phi$ and
+$\mathbf u$ fields). This structure allows \emph{field-level couplings} that do
+not appear in GR. Any analogous GR effect would have to arise via
+$T_{\mu\nu}$—which is typically negligible.
+
+\subsection*{1.2 Four Interaction Mechanisms}
+
+\subsubsection*{A. Unified Index Superposition}
+
+\textbf{PM structure:}
+
+
+
+\[
+\ln n_{\text{tot}} = \mu_G\,\Phi_G + \mu_E\,\Phi_E - \alpha_{\text{plasma}}\,n_e
+\]
+
+
+
+\textbf{Consequence:} Mass, charge, and plasma all contribute to the same
+refractive index field. A charged mass produces both gravitational and
+electrostatic lensing contributions.
+
+\textbf{GR:} Only total mass-energy lenses (via metric curvature). Charge
+contributes via $E^2/(2\varepsilon_0)$ energy density, which is negligible for
+macroscopic objects.
+
+\textbf{Status:}
+
+\begin{itemize}
+    \item $\mu_G$: \textcolor{blue}{[CALIBRATED]} --- $1.486 \times 10^{-27}$ m$^2$/kg from weak-field tests.
+    \item $\mu_E$: \textcolor{orange}{[DIMENSIONAL]} --- Estimated $\sim 10^{-37}$ m$^2$/C; unconstrained by data.
+    \item $\alpha_{\text{plasma}}$: \textcolor{orange}{[DIMENSIONAL]} --- Estimated $\sim 10^{-15}$ m$^3$ from standard plasma optics; choice to include in gravity sector is \emph{modeling ansatz}.
+\end{itemize}
+
+\subsubsection*{B. Current-Induced Dragging}
+
+\textbf{PM structure:}
+
+
+
+\[
+\nabla^2 \mathbf u = -A_M\,\mathbf J_M - A_q\,\mathbf J_q
+\]
+
+
+
+\textbf{Consequence:} Both mass currents ($\mathbf J_M = \rho_M \mathbf v$) and
+charge currents ($\mathbf J_q$) source flow fields that drag light via:
+
+
+
+\[
+\frac{d\mathbf r}{ds} = c\,\hat{\mathbf k} + \mathbf u_{\text{tot}}.
+\]
+
+
+
+\textbf{GR:} Frame-dragging comes from rotating mass-energy (metric perturbation
+$g_{t\phi}$). Electric currents contribute via $T^{0i}$ (stress-energy flux),
+which for lab fields is $\sim 10^{-40}$ smaller than PM's $A_M$ term.
+
+\textbf{Status:}
+
+\begin{itemize}
+    \item $A_M$: \textcolor{green}{[GR-MAPPED]} --- $G/c^2 \approx 7.4 \times 10^{-28}$ m$^3$/(kg$\cdot$s) from matching Lense--Thirring formula.
+    \item $A_q$: \textcolor{red}{[CONSTRAINED]} --- Lab magnet null results require $A_q < 10^{-10}$ m$^3$/(C$\cdot$s). See Section 3 for derivation.
+    \item $\kappa_B$ (magnetic potential coupling): \textcolor{gray}{[RULED OUT]} --- Would predict $\alpha \sim 10$ rad near lab solenoids. Set to zero.
+\end{itemize}
+
+\subsubsection*{C. Plasma in the Gravitational Index}
+
+\textbf{PM structure:} Electron density $n_e$ contributes to the refractive
+index alongside gravitational and electrostatic terms.
+
+\textbf{GR:} Plasma affects light via electromagnetic dispersion
+($n_{\text{plasma}}(\omega)$), not via metric geometry. Gravitational lensing
+and plasma dispersion are independent.
+
+\textbf{Status:} \textcolor{orange}{[MODELING ANSATZ]} --- Including plasma in
+$\ln n_{\text{tot}}$ is a PM design choice. Could lead to frequency-dependent
+lensing corrections; not yet tested.
+
+\subsubsection*{D. Dynamic Field Mixing (Advection)}
+
+\textbf{PM structure:}
+
+
+
+\[
+\frac{\partial \phi}{\partial t} + \nabla\cdot(\phi\,\mathbf u) = S_\phi + \ldots
+\]
+
+
+
+Scalar field $\phi$ and flow field $\mathbf u$ are dynamically coupled. Since
+$\mathbf u$ includes contributions from multiple sources, energy can transfer
+between gravitational and EM excitations via the $-\phi\,\nabla\cdot(\phi\,\mathbf u)$ interaction.
+
+\textbf{GR:} Gravitational field $g_{\mu\nu}$ and EM field $F_{\mu\nu}$ evolve
+independently except via one-way coupling through $T_{\mu\nu}$.
+
+\textbf{Status:} \textcolor{orange}{[PREDICTED BY STRUCTURE]} --- Required by PM
+Lagrangian; not yet tested in dynamic regimes.
+
+\section*{2. The Observational Hierarchy}
+
+\begin{center}
+\begin{tabular}{llllp{4cm}}
+\toprule
+\textbf{Symbol} & \textbf{Sector} & \textbf{Value/Bound} & \textbf{Status} & \textbf{Determined By} \\
+\midrule
+$k_{\text{Fizeau}}$ & Kinematic & $1.0$ & \textcolor{blue}{[CALIBRATED]} & Moving lens tests \\
+$k_{\text{TT}}$ & Kinematic & $1.0$ & \textcolor{blue}{[CALIBRATED]} & Time delay tests \\
+\midrule
+$\mu_G$ & Gravity & $1.486 \times 10^{-27}$ & \textcolor{blue}{[CALIBRATED]} & Weak-field deflection \\
+$A_M$ & Gravity & $7.426 \times 10^{-28}$ & \textcolor{green}{[GR-MAPPED]} & Lense--Thirring match \\
+\midrule
+$\mu_E$ & EM & $\sim 10^{-37}$ & \textcolor{orange}{[DIMENSIONAL]} & Unconstrained \\
+$A_q$ & EM & $< 10^{-10}$ & \textcolor{red}{[CONSTRAINED]} & Lab magnet null \\
+$\alpha_{\text{plasma}}$ & Plasma & $\sim 10^{-15}$ & \textcolor{orange}{[DIMENSIONAL]} & Standard plasma \\
+$\kappa_B$ & EM & $\approx 0$ & \textcolor{gray}{[RULED OUT]} & Lab magnet null \\
+\midrule
+$c_\phi$ & Dynamics & $c$ & \textcolor{orange}{[ASSUMED]} & Pending GW tests \\
+$c_u$ & Dynamics & $c$ & \textcolor{orange}{[ASSUMED]} & Pending GW tests \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Units:}
+$\mu_G$ (m$^2$/kg), $A_M$ (m$^3$/(kg$\cdot$s)), $\mu_E$ (m$^2$/C), $A_q$
+(m$^3$/(C$\cdot$s)), $\alpha_{\text{plasma}}$ (m$^3$), $\kappa_B$
+((m/s)/(T$\cdot$m$^2$)).
+
+\subsection*{2.1 The Coupling Hierarchy}
+
+Given the PM structure, the coupling constants are \emph{free parameters}.
+Observations impose:
+
+
+
+\[
+\frac{A_q}{A_M} < 4 \times 10^{17}
+\quad\text{(charge currents couple $\gtrsim 10^{17}\times$ more weakly)}.
+\]
+
+
+
+This hierarchy is an \emph{empirical property of the medium}, not a theoretical
+necessity. It explains why gravitational effects dominate in all tested regimes
+and why GR (which omits EM-gravity cross-terms) succeeds.
+
+\section*{3. Derivation of Observational Bounds}
+
+\subsection*{3.1 Constraint on $A_q$: Laboratory Solenoid Null Result}
+
+\textbf{Setup:}
+
+\begin{itemize}
+    \item Superconducting solenoid: $I = 10^6$ A, length $L = 1$ m.
+    \item Light beam passes at distance $r = 0.1$ m.
+    \item Path length through interaction region: $\ell_{\text{path}} = 1$ m.
+    \item Detection threshold: $\alpha_{\text{det}} \sim 10^{-10}$ rad (optical interferometry limit).
+\end{itemize}
+
+\textbf{PM prediction:}
+
+If charge currents couple via $\nabla^2\mathbf u_q = -A_q\,\mathbf J_q$, the
+flow field magnitude is:
+
+
+
+\[
+|\mathbf u_q| \sim A_q\,I\,\frac{L}{r}.
+\]
+
+
+
+Angular deflection:
+
+
+
+\[
+\alpha \sim \frac{|\mathbf u_q|}{c}\,\frac{\ell_{\text{path}}}{r}
+= A_q\,I\,\frac{L\,\ell_{\text{path}}}{c\,r^2}.
+\]
+
+
+
+\textbf{Observational constraint:}
+
+No deflection observed above $\sim 10^{-10}$ rad. Therefore:
+
+
+
+\[
+A_q < \frac{\alpha_{\text{det}}\,c\,r^2}{I\,L\,\ell_{\text{path}}}
+\sim \frac{10^{-10} \times 3 \times 10^8 \times 0.01}{10^6 \times 1 \times 1}
+\sim 3 \times 10^{-10}\,\text{m}^3/(\text{C}\cdot\text{s}).
+\]
+
+
+
+\textbf{Comparison to gravity:}
+
+
+
+\[
+\frac{A_q}{A_M} < 4 \times 10^{17}.
+\]
+
+
+
+\textbf{Interpretation:} This is an \emph{order-of-magnitude illustrative
+bound} based on reasonable lab parameters. Tighter bounds could be derived from:
+
+\begin{itemize}
+    \item MRI systems (routine operation with no anomalous optical effects),
+    \item tokamak diagnostics (optical systems in mega-ampere environments),
+    \item precision magnetometry (interferometric setups near strong fields).
+\end{itemize}
+
+For practical PM implementations: $A_q \approx 0$.
+
+\subsection*{3.2 Constraint on $\kappa_B$: Magnetic Potential Coupling}
+
+\textbf{Initial formulation:} $\mathbf u_B = \kappa_B\,\mathbf A$.
+
+\textbf{Problem:} For the same solenoid, $|\mathbf A| \sim \mu_0 I L / (4\pi r)
+\sim 10^{-2}$ T$\cdot$m. With $\kappa_B \sim c$:
+
+
+
+\[
+|\mathbf u_B| \sim c \times 10^{-2} \sim 10^6\,\text{m/s}.
+\]
+
+
+
+Predicted deflection: $\alpha \sim 10$ rad.
+
+\textbf{Observational verdict:} Not seen.
+
+\textbf{Resolution:} Set $\kappa_B = 0$. The magnetic vector potential does
+\emph{not} couple directly to the PM flow field. This avoids double-counting
+(since $\mathbf A$ is already a functional of $\mathbf J_q$) and respects
+observations.
+
+\section*{4. Structural Resolution: Sources, Not Potentials}
+
+The correct PM coupling is:
+
+
+
+\[
+\mathbf S_u = A_M\,\mathbf J_M + A_q\,\mathbf J_q.
+\]
+
+
+
+\textbf{Rationale:}
+
+\begin{itemize}
+    \item Couples at \emph{source level} (current densities), not field level (potentials).
+    \item Treats mass and charge currents on equal structural footing.
+    \item Avoids double-counting ($\mathbf A$ is derived from $\mathbf J_q$).
+    \item Respects ``no special cases'' principle.
+    \item Consistent with all laboratory null results.
+\end{itemize}
+
+\textbf{Comparison to electromagnetism:}
+
+In Maxwell's equations, sources ($\rho$, $\mathbf J$) determine fields
+($\mathbf E$, $\mathbf B$). We don't couple sources to \emph{both} $\mathbf J$
+and derived fields like $\mathbf B$. PM follows the same principle.
+
+\section*{5. What Is Solid, What Is Aspirational}
+
+\subsection*{5.1 Solid (Observationally Anchored)}
+
+\begin{itemize}
+    \item PM gravity reproduces GR weak-field predictions exactly.
+    \item $\mu_G$, $k_{\text{Fizeau}}$, $k_{\text{TT}}$ are calibrated to data.
+    \item $A_M$ matches GR frame-dragging structure.
+    \item $\kappa_B$ is ruled out by lab null results.
+    \item $A_q$ has an observational upper bound (though still $\sim 27$ orders above dimensional estimate).
+\end{itemize}
+
+\subsection*{5.2 Aspirational (Structural Predictions)}
+
+\begin{itemize}
+    \item $\mu_E$ coupling exists in structure but is unconstrained.
+    \item Charge-dependent lensing predicted but not tested.
+    \item $\alpha_{\text{plasma}}$ term is modeling ansatz (putting plasma in gravity sector).
+    \item Dynamic field mixing ($\nabla\cdot(\phi\,\mathbf u)$) predicted but not tested.
+    \item Multiple wave speeds ($c_\phi$, $c_u$) assumed equal to $c$ pending GW data.
+\end{itemize}
+
+\subsection*{5.3 What PM Does NOT Claim}
+
+\begin{itemize}
+    \item PM does \emph{not} claim to have measured $\mu_E$ or $A_q$ directly.
+    \item PM does \emph{not} claim EM-gravity cross-terms are large or easily observable.
+    \item PM does \emph{not} claim to explain anomalies unexplained by GR (yet).
+\end{itemize}
+
+What PM \emph{does} claim:
+
+\begin{itemize}
+    \item The unified structure is mathematically consistent.
+    \item It reproduces GR where tested.
+    \item It makes testable predictions at precision frontiers.
+    \item It respects ``no special cases''—same equations, different couplings.
+\end{itemize}
+
+\section*{6. The Observational Message}
+
+The hierarchy $A_M \gg A_q$ (by $\gtrsim 10^{17}$) tells us:
+
+\begin{quote}
+\emph{The PM medium responds vastly more strongly to mass than to charge.}
+\end{quote}
+
+This is not fine-tuning. Given the PM structure, the couplings are free
+parameters—observations then \emph{measure} them and impose the hierarchy.
+
+Analogy: The Standard Model has three gauge couplings ($g_1$, $g_2$, $g_3$)
+with a hierarchy $\alpha_{\text{strong}} \gg \alpha_{\text{EM}}$. This is
+empirical, not derived. PM's $A_M \gg A_q$ is the same kind of fact.
+
+\section*{7. Why This Is Not a Problem}
+
+The small/zero values for EM couplings mean:
+
+\begin{itemize}
+    \item Gravitational sector dominates (as observed).
+    \item PM reduces to ``pure gravity'' in all tested regimes.
+    \item Cross-terms exist \emph{in principle} but are negligible \emph{in practice}.
+    \item GR's simpler structure (omitting cross-terms) is empirically justified.
+\end{itemize}
+
+But PM remains \emph{structurally richer}:
+
+\begin{itemize}
+    \item Predicts where to look for deviations (charged beams, extreme plasmas).
+    \item Offers unified framework for future precision tests.
+    \item Shows how forces \emph{could} be unified via medium excitations.
+\end{itemize}
+
+\section*{8. The Landmine: Documented and Resolved}
+
+\subsection*{8.1 What Went Wrong Initially}
+
+Naive dimensional analysis suggested $\mathbf u_B = \kappa_B\,\mathbf A$ with
+$\kappa_B \sim c$. This predicts:
+
+
+
+\[
+|\mathbf u_B| \sim 10^6\,\text{m/s} \quad\Rightarrow\quad \alpha \sim 10\,\text{rad}
+\]
+
+
+
+near 1 MA lab solenoids.
+
+\textbf{Not observed.}
+
+\subsection*{8.2 The Fix}
+
+\begin{itemize}
+    \item \textbf{Drop:} $\kappa_B\,\mathbf A$ term (set $\kappa_B = 0$).
+    \item \textbf{Keep:} $A_M\,\mathbf J_M + A_q\,\mathbf J_q$ (source coupling only).
+    \item \textbf{Reason:} $\mathbf A$ is derived from $\mathbf J_q$ via $\nabla^2\mathbf A = -\mu_0\mathbf J_q$. Coupling to both is double-counting.
+\end{itemize}
+
+\subsection*{8.3 Why This Is Better}
+
+\begin{enumerate}
+    \item Structurally cleaner (source-level coupling).
+    \item Observationally consistent (no huge lab predictions).
+    \item Philosophically correct (``no special cases''—all currents treated uniformly).
+    \item Provides testable constraint on $A_q$.
+\end{enumerate}
+
+This resolution \emph{strengthens} PM by removing an ad-hoc, problematic term
+and leaving a cleaner, more symmetric structure.
+
+\section*{9. Honest Summary}
+
+\subsection*{9.1 What PM Has Achieved}
+
+\begin{itemize}
+    \item A gravity theory that passes all GR tests in weak/semistrong regimes.
+    \item Calibrated constants: $\mu_G$, $k_{\text{Fizeau}}$, $k_{\text{TT}}$.
+    \item A unified structure that \emph{allows} cross-force interactions.
+    \item Observational constraints showing these interactions are tiny.
+\end{itemize}
+
+\subsection*{9.2 What PM Has Not Yet Done}
+
+\begin{itemize}
+    \item Measured $\mu_E$, $A_q$, or $\alpha_{\text{plasma}}$ directly.
+    \item Explained an anomaly that GR cannot explain.
+    \item Tested in strong-field or dynamic regimes where PM and GR must differ.
+\end{itemize}
+
+\subsection*{9.3 What PM Offers}
+
+\begin{itemize}
+    \item A mathematically consistent alternative to GR.
+    \item Structural unity (all forces as medium excitations).
+    \item Testable predictions at precision frontiers.
+    \item A framework for exploring gravity-EM unification.
+\end{itemize}
+
+\section*{10. Recommended Language for PM Presentations}
+
+\subsection*{10.1 Avoid}
+
+\begin{itemize}
+    \item ``PM reveals interactions that cannot exist in GR'' $\rightarrow$ too absolute.
+    \item ``This explains [unsolved problem]'' $\rightarrow$ unless you've actually fit the data.
+    \item ``The hierarchy is natural'' $\rightarrow$ implies derivation; it's actually empirical.
+\end{itemize}
+
+\subsection*{10.2 Use}
+
+\begin{itemize}
+    \item ``PM allows field-level couplings not included in GR; analogous GR effects via $T_{\mu\nu}$ are negligible.''
+    \item ``Observations constrain EM couplings to be $\gtrsim 10^{17}$ weaker than gravity couplings.''
+    \item ``Given the PM structure, the couplings are free parameters; data then impose the hierarchy.''
+    \item ``PM predicts [X]; testing this requires [Y precision/environment].''
+\end{itemize}
+
+\section*{11. When Someone Asks: ``Why doesn't this blow up in an MRI?''}
+
+\textbf{Short answer:}
+
+``The magnetic potential coupling ($\kappa_B\,\mathbf A$) is ruled out by
+exactly that consideration—we set $\kappa_B = 0$. The remaining charge-current
+coupling ($A_q\,\mathbf J_q$) is constrained by the same null results to be
+$< 10^{-10}$ m$^3$/(C$\cdot$s), making it negligible.''
+
+\textbf{Long answer:} See Section 3.
+
+\section*{12. Future Work}
+
+\subsection*{12.1 Immediate (Refine Bounds)}
+
+\begin{itemize}
+    \item Systematic review of lab magnet environments for tighter $A_q$ bound.
+    \item Charged-particle beam deflection experiments to constrain $\mu_E$.
+    \item Frequency-dependent cluster lensing to test $\alpha_{\text{plasma}}$ ansatz.
+\end{itemize}
+
+\subsection*{12.2 Medium-Term (Explore Predictions)}
+
+\begin{itemize}
+    \item Strong-field regime (where PM has no singularities, GR has horizons).
+    \item Dynamic advection effects (where $\nabla\cdot(\phi\,\mathbf u)$ matters).
+    \item Multi-messenger GW tests (for $c_\phi \neq c_u$ possibility).
+\end{itemize}
+
+\subsection*{12.3 Long-Term (Theoretical)}
+
+\begin{itemize}
+    \item Derive coupling ratios from PM microphysics (if any).
+    \item Explore quantum corrections to couplings.
+    \item Connect to other unification frameworks.
+\end{itemize}
+
+\section*{13. Bottom Line}
+
+PM's unified field structure is:
+
+\begin{itemize}
+    \item \textbf{Mathematically consistent} (passes internal checks).
+    \item \textbf{Observationally consistent} (no glaring contradictions).
+    \item \textbf{Conceptually unified} (``no special cases'').
+    \item \textbf{Empirically constrained} (hierarchy imposed by data).
+\end{itemize}
+
+The cross-force interactions exist in the formalism but are naturally suppressed
+by the coupling hierarchy. This is \emph{not a bug but a feature}—it shows PM is
+richer than GR while remaining empirically viable.
+
+The path forward: measure the unconstrained couplings and test the structural
+predictions at the precision frontier.
+
+\end{document}

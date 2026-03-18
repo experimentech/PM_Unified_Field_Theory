@@ -1,0 +1,279 @@
+\documentclass{article}
+\usepackage{amsmath, amssymb, booktabs, hyperref}
+
+\title{Derivation of Pushing-Medium Calibration Constants:\\
+$\mu_G$, $k_{\mathrm{TT}}$, and $k_{\mathrm{Fizeau}}$}
+\author{Pushing-Medium Project}
+\date{March 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Three numerical constants appear throughout the Pushing-Medium (PM) numerical
+test suite and comparison code: the gravitational index coefficient
+$\mu_G = 1.4861 \times 10^{-27}$\,m$^2$\,kg$^{-1}$, the transverse-traceless
+power normalisation $k_{\mathrm{TT}} = 1.0$, and the Fizeau drag coupling
+$k_{\mathrm{Fizeau}} = 1.0$.  This document records exactly how each value is
+obtained, the underlying physical reasoning, and how each value connects to
+known General Relativity (GR) results.  The numbers are reproducible from
+first principles via the calibration fixture in
+\texttt{legacy/Pushing-Medium/tests/fixtures/calibration.py}.
+\end{abstract}
+
+% ------------------------------------------------------------------
+\section{Background: The PM Index Field for Gravity}
+% ------------------------------------------------------------------
+
+In the Pushing-Medium framework, spacetime is modelled as a medium whose
+refractive index $n$ encodes the gravitational field.  For a point mass $M$ the
+index at distance $r$ is
+
+\begin{equation}
+  n(r) = 1 + \frac{\mu_G\, M}{r},
+  \label{eq:index}
+\end{equation}
+
+where $\mu_G$ is the gravitational index coefficient (a coupling constant with
+SI units m$^2$\,kg$^{-1}$).  Light rays are governed by Fermat's principle in
+this medium: the deflection angle accumulated along a straight reference path at
+impact parameter $b$ is
+
+\begin{equation}
+  \alpha_{\mathrm{num}}(\mu_G)
+  = \int_{-z_{\max}}^{+z_{\max}}
+      \frac{\partial \ln n}{\partial x}\bigg|_{x=b,\,y=0}\, dz
+  = \int_{-z_{\max}}^{+z_{\max}}
+      \frac{-\mu_G M\, b}{\,n(r)\, r^{3}\,}\, dz,
+  \label{eq:alpha_num}
+\end{equation}
+
+where $r = \sqrt{b^2 + z^2}$.  The analytic weak-field GR (Schwarzschild)
+result that this must reproduce is
+
+\begin{equation}
+  \alpha_{\mathrm{GR}} = \frac{4GM}{c^2 b}.
+  \label{eq:gr_deflection}
+\end{equation}
+
+% ------------------------------------------------------------------
+\section{Calibration of $\mu_G$}
+\label{sec:mu}
+% ------------------------------------------------------------------
+
+\subsection{Theoretical expectation}
+
+Comparing the leading-order expansion of~\eqref{eq:alpha_num} (with $n \approx 1$
+in the denominator) to the GR result~\eqref{eq:gr_deflection} immediately gives
+
+\begin{equation}
+  \alpha_{\mathrm{num}} \approx
+  \mu_G M \int_{-\infty}^{+\infty} \frac{b}{\,(b^2+z^2)^{3/2}\,}\, dz
+  = \mu_G M \cdot \frac{2}{b}.
+\end{equation}
+
+Setting this equal to~\eqref{eq:gr_deflection} yields
+
+\begin{equation}
+  \mu_G^{\mathrm{theory}} = \frac{2G}{c^2}
+  = \frac{2 \times 6.67430\times10^{-11}}{(2.99792458\times10^8)^2}
+  \approx 1.4862 \times 10^{-27}\;\text{m}^2\,\text{kg}^{-1}.
+  \label{eq:mu_theory}
+\end{equation}
+
+\subsection{Numerical determination procedure}
+
+Because the full integrand in~\eqref{eq:alpha_num} retains the factor
+$1/n(r)$ rather than approximating $n \approx 1$, the exact numerical value
+of $\mu_G$ is obtained by a bisection search rather than the closed-form
+expression~\eqref{eq:mu_theory}.  The procedure is:
+
+\begin{enumerate}
+  \item Fix a solar test case: lens mass $M_\odot = 1.989\times10^{30}$\,kg,
+        impact parameter $b_\odot = 6.96\times10^8$\,m (solar radius).
+  \item Compute the GR target:
+        $\alpha^* = 4GM_\odot/(c^2 b_\odot) \approx 8.481\times10^{-6}$\,rad
+        ($\approx 1.75''$).
+  \item Bracket $\mu_G$ in the interval
+        $[0.25 \times 2G/c^2,\; 4.0 \times 2G/c^2]$.
+  \item Run 36 bisection iterations, each evaluating
+        $\alpha_{\mathrm{num}}(\mu_G)$ numerically via
+        \texttt{index\_deflection\_numeric} with
+        $z_{\max} = 200\,b_\odot$, $N = 2500$ steps.
+  \item Return the midpoint of the final bracket.
+\end{enumerate}
+
+The result converges to
+
+\begin{equation}
+  \mu_G = 1.4861356300677034 \times 10^{-27}\;\text{m}^2\,\text{kg}^{-1}.
+  \label{eq:mu_result}
+\end{equation}
+
+The relative difference from the analytic estimate~\eqref{eq:mu_theory} is
+$< 0.01\%$; the small discrepancy arises from the $1/n$ correction in the
+integrand and the finite integration window.
+
+\subsection{Physical interpretation}
+
+$\mu_G = 2G/c^2$ is the Schwarzschild radius per unit mass divided by $c$.
+Equivalently, it is the coefficient that makes the PM index gradient reproduce
+the standard PPN $\gamma = 1$ gravitational lensing result.  Its appearance at
+exactly $2G/c^2$ is not accidental: it is the value required so that
+Fermat's principle in the medium~\eqref{eq:index} is equivalent, to leading
+order, to null geodesics in the linearised Schwarzschild metric.
+
+% ------------------------------------------------------------------
+\section{Calibration of $k_{\mathrm{TT}}$}
+\label{sec:kTT}
+% ------------------------------------------------------------------
+
+\subsection{Role of $k_{\mathrm{TT}}$}
+
+The PM theory predicts gravitational-wave energy emission through a
+transverse-traceless (TT) quadrupole formula.  The PM expression for the
+radiated power from a circular binary (masses $M_1$, $M_2$, separation $a$) is
+
+\begin{equation}
+  P_{\mathrm{PM}} = \frac{32}{5}\,\frac{G^4\,(M_1 M_2)^2(M_1+M_2)}{c^5\,a^5}.
+  \label{eq:pm_power}
+\end{equation}
+
+The GR (Peters 1964) formula for the same system is
+
+\begin{equation}
+  P_{\mathrm{GR}} = \frac{32}{5}\,\frac{G^4\,(M_1 M_2)^2(M_1+M_2)}{c^5\,a^5}.
+  \label{eq:gr_power}
+\end{equation}
+
+The normalisation factor is defined as
+
+\begin{equation}
+  k_{\mathrm{TT}} = \frac{P_{\mathrm{GR}}}{P_{\mathrm{PM}}}.
+  \label{eq:kTT_def}
+\end{equation}
+
+\subsection{Numerical determination}
+
+The ratio is evaluated at a fiducial double neutron-star-like system:
+$M_1 = 1.4\,M_\odot$, $M_2 = 1.3\,M_\odot$, $a = 10^9$\,m.
+Because Equations~\eqref{eq:pm_power} and~\eqref{eq:gr_power} share identical
+functional forms—the PM TT sector was constructed to reproduce GR
+gravitational-wave predictions—the ratio is
+
+\begin{equation}
+  k_{\mathrm{TT}} = 1.0.
+  \label{eq:kTT_result}
+\end{equation}
+
+\subsection{Physical interpretation}
+
+$k_{\mathrm{TT}} = 1$ confirms that the PM quadrupole power formula is
+numerically identical to the GR Peters formula at the order implemented.
+This is by design: the TT projector and the $32/5$ pre-factor are imported
+directly from the linearised GR derivation.  A value differing from unity
+would indicate an inconsistency in the PM TT sector that would need to be
+resolved before the theory could be used for gravitational-wave predictions.
+
+% ------------------------------------------------------------------
+\section{Calibration of $k_{\mathrm{Fizeau}}$}
+\label{sec:kFizeau}
+% ------------------------------------------------------------------
+
+\subsection{Physical context}
+
+When a gravitational lens moves transversely with speed $v \ll c$, the
+deflection angle acquires a first-order correction relative to the static
+result.  In GR (with the standard PPN parameter $\gamma = 1$) the
+correction is
+
+\begin{equation}
+  \alpha_{\mathrm{moving}} \approx \alpha_{\mathrm{static}}
+  \left(1 + \frac{v}{c}\right) + \mathcal{O}\!\left(\frac{v^2}{c^2}\right).
+  \label{eq:gr_moving}
+\end{equation}
+
+In the PM framework this correction is parametrised as
+
+\begin{equation}
+  \alpha_{\mathrm{PM,moving}} = \alpha_{\mathrm{static}}
+  \left(1 + k_{\mathrm{Fizeau}}\,\frac{v}{c}\right),
+  \label{eq:pm_moving}
+\end{equation}
+
+where $k_{\mathrm{Fizeau}}$ is the Fizeau drag coupling.
+
+\subsection{Determination}
+
+Matching~\eqref{eq:pm_moving} to the GR result~\eqref{eq:gr_moving} gives
+directly
+
+\begin{equation}
+  k_{\mathrm{Fizeau}} = \frac{\left(\dfrac{\alpha_{\mathrm{moving}}}
+                                          {\alpha_{\mathrm{static}}} - 1\right)}
+                              {\dfrac{v}{c}}.
+  \label{eq:kFizeau_def}
+\end{equation}
+
+With the GR target ratio $\alpha_{\mathrm{moving}}/\alpha_{\mathrm{static}}
+= 1 + v/c$, this evaluates to
+
+\begin{equation}
+  k_{\mathrm{Fizeau}}
+  = \frac{(1 + v/c) - 1}{v/c}
+  = 1.0,
+  \label{eq:kFizeau_result}
+\end{equation}
+
+independent of the chosen test velocity (fiducial value $v = 30$\,km\,s$^{-1}$
+is used in the code).
+
+\subsection{Physical interpretation}
+
+$k_{\mathrm{Fizeau}} = 1$ means the PM medium-drag correction to moving-lens
+deflection equals the GR first-order $v/c$ correction when $\gamma = 1$.
+Physically, the Fizeau drag of light by a moving medium is the non-relativistic
+analogue of the gravitomagnetic contribution to bending in GR.  The unit value
+is consistent with the relativistic aberration / frame-dragging picture and
+acts as a sanity check that the PM kinematic sector correctly reproduces the
+PPN $\gamma = 1$ moving-lens result.  
+
+\textit{Note:} the designation ``Fizeau'' refers to the 19th-century Fizeau
+drag experiment (partial entrainment of light by a moving medium), and by
+analogy to the partial frame-dragging of null rays by a moving gravitational
+lens in the PM index picture.
+
+% ------------------------------------------------------------------
+\section{Summary}
+% ------------------------------------------------------------------
+
+\begin{center}
+\begin{tabular}{llll}
+\toprule
+\textbf{Constant} & \textbf{Value} & \textbf{Method} & \textbf{Reference} \\
+\midrule
+$\mu_G$ & $1.4861356 \times 10^{-27}$\,m$^2$\,kg$^{-1}$
+         & Bisection fit: PM path-integral $\to$ $4GM/c^2b$
+         & Sec.~\ref{sec:mu} \\
+$k_{\mathrm{TT}}$ & $1.0$
+         & Ratio: PM quadrupole power / GR Peters power
+         & Sec.~\ref{sec:kTT} \\
+$k_{\mathrm{Fizeau}}$ & $1.0$
+         & Algebraic: PM moving-lens model $\to$ GR $v/c$ correction
+         & Sec.~\ref{sec:kFizeau} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+All three constants reduce, up to numerical precision, to values expected from
+linearised GR with $\gamma = 1$.  This provides a self-consistency check: the
+PM framework recovers standard weak-field GR predictions in the appropriate
+limits when its index coupling is fixed to $\mu_G = 2G/c^2$.
+
+\bigskip\noindent
+\textit{Code reference:}
+\texttt{legacy/Pushing-Medium/tests/fixtures/calibration.py},
+function \texttt{load\_or\_calibrate()}.
+
+\end{document}

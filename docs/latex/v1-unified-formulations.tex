@@ -1,0 +1,406 @@
+\documentclass{article}
+\usepackage{amsmath, amssymb}
+
+\begin{document}
+
+\title{Pushing--Medium Unified Field Theory (Fluid Formulation v1.5)}
+\author{}
+\date{}
+\maketitle
+
+\section*{Overview}
+
+This document presents the unified Pushing--Medium (PM) field theory in a
+gravity-first structure. Part I contains the complete, validated gravitational
+sector (PM Gravity v2). Part II extends the same PM-medium fields to include
+electrostatics, magnetostatics, and plasma contributions through unified source
+terms.
+
+The PM medium is described by two dynamical fields:
+
+
+\[
+\phi(\mathbf r,t) = \ln n(\mathbf r,t),
+\qquad
+\mathbf u(\mathbf r,t) = \text{medium flow field}.
+\]
+
+
+
+The scalar field $\phi$ determines the refractive index $n$, while the vector
+field $\mathbf u$ encodes flow, advection, and moving-source effects.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Part I: PM Gravity v2 (Validated Gravitational Sector)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{1. Gravitational Source Structure}
+
+\subsection*{1.1 Scalar Source}
+
+
+\[
+S_\phi = 4\pi G_{\mathrm{eff}}\,\rho_M.
+\]
+
+
+
+\subsection*{1.2 Vector Source}
+
+
+\[
+\mathbf S_u = A_M\,\mathbf J_M.
+\]
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{2. Static PM Gravity}
+
+\subsection*{2.1 Scalar Index Field}
+
+
+\[
+\nabla^2 \phi = -4\pi G_{\mathrm{eff}}\,\rho_M.
+\]
+
+
+
+
+\[
+n(\mathbf r) = e^{\phi(\mathbf r)}.
+\]
+
+
+
+\subsection*{2.2 Point Mass}
+
+
+\[
+\phi(r) = \frac{\mu_G M}{r},
+\qquad
+n(r) = 1 + \frac{\mu_G M}{r} + \mathcal{O}(r^{-2}).
+\]
+
+
+
+\subsection*{2.3 Continuous Mass Distribution}
+
+
+\[
+\phi(\mathbf r)
+= \mu_G \int \frac{\rho_M(\mathbf r')}{|\mathbf r - \mathbf r'|}\,d^3r'.
+\]
+
+
+
+\subsection*{2.4 Static Flow Field}
+
+
+\[
+\nabla^2 \mathbf u = -A_M\,\mathbf J_M.
+\]
+
+
+For a moving point mass:
+
+
+\[
+\mathbf u(\mathbf r)
+= A_M M \frac{\mathbf v}{|\mathbf r - \mathbf r_M|}.
+\]
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{3. Dynamic PM-Fluid Equations}
+
+\subsection*{3.1 Scalar Field Equation}
+
+
+\[
+\frac{\partial \phi}{\partial t}
++ \nabla\cdot(\phi\,\mathbf u)
+=
+S_\phi
++
+\frac{1}{c_\phi^2}\frac{\partial^2 \phi}{\partial t^2}.
+\]
+
+
+
+\subsection*{3.2 Vector Flow Equation}
+
+
+\[
+\frac{\partial \mathbf u}{\partial t}
++ (\mathbf u\cdot\nabla)\mathbf u
+=
+-\nabla \phi
++ \mathbf S_u
++ \frac{1}{c_u^2}\frac{\partial^2 \mathbf u}{\partial t^2}.
+\]
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{4. Lagrangian Formulation}
+
+
+
+\[
+\mathcal{L}
+=
+\frac{1}{2c_\phi^2}(\partial_t \phi)^2
+- \frac{1}{2}|\nabla \phi|^2
++
+\frac{1}{2c_u^2}|\partial_t \mathbf u|^2
+- \frac{1}{2}|\nabla \mathbf u|^2
++
+\phi\,\nabla\cdot(\phi\mathbf u)
++
+\phi\,S_\phi
++
+\mathbf u\cdot\mathbf S_u.
+\]
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{5. Ray and Particle Kinematics}
+
+
+
+\[
+\frac{d\mathbf r}{ds}
+= c\,\hat{\mathbf k}
++ k_{\mathrm{Fizeau}}\,\mathbf u,
+\]
+
+
+
+
+\[
+\frac{d\hat{\mathbf k}}{ds}
+= \nabla_\perp \phi
++ \mathcal{F}(\hat{\mathbf k},\mathbf u,\nabla\mathbf u).
+\]
+
+
+
+Empirically:
+
+
+\[
+k_{\mathrm{Fizeau}} = 1.
+\]
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{6. Effective Metric and PPN Parameters}
+
+
+
+\[
+ds_{\mathrm{opt}}^2
+=
+-\frac{c^2}{n^2}\,dt^2
++
+(d\mathbf r - \mathbf u\,dt)^2.
+\]
+
+
+
+To first order:
+
+
+\[
+ds^2
+=
+-(1 + 2\phi)c^2 dt^2
+- 2\,\mathbf u\cdot d\mathbf r\,dt
++
+(1 - 2\phi)\,d\mathbf r^2.
+\]
+
+
+
+Thus:
+
+
+\[
+\gamma = 1,
+\qquad
+\beta = 1.
+\]
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{7. Numerical Constraints (v2)}
+
+\subsection*{7.1 Weak/Semistrong Deflection}
+
+
+\[
+\alpha(b) \propto \frac{1}{b},
+\qquad
+k \approx 1,
+\qquad
+\alpha b \approx \text{constant}.
+\]
+
+
+
+\subsection*{7.2 Convergence}
+\begin{itemize}
+    \item stable refinement under decreasing step size,
+    \item no stiffness or divergence,
+    \item no need for artificial stabilizers.
+\end{itemize}
+
+\subsection*{7.3 Iterative Deflection}
+\begin{itemize}
+    \item fixed-point iteration converges without damping,
+    \item no nonlinear feedback.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Part II: Unified PM Sources (Mass, Charge, Plasma, Currents)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{8. Unified Scalar Sources}
+
+
+
+\[
+S_\phi = 4\pi\left(
+G_{\mathrm{eff}}\,\rho_M
++ K_E\,\rho_q
++ K_{\mathrm{plasma}}\,n_e
+\right).
+\]
+
+
+
+\section*{9. Unified Vector Sources}
+
+
+
+\[
+\mathbf S_u
+= A_M\,\mathbf J_M
++ A_q\,\mathbf J_q.
+\]
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{10. Unified Dynamic Equations}
+
+The same PM-fluid equations now include all sources:
+
+
+
+\[
+\frac{\partial \phi}{\partial t}
++ \nabla\cdot(\phi\,\mathbf u)
+=
+4\pi(G_{\mathrm{eff}}\rho_M + K_E\rho_q + K_{\mathrm{plasma}}n_e)
++
+\frac{1}{c_\phi^2}\frac{\partial^2 \phi}{\partial t^2},
+\]
+
+
+
+\[
+\frac{\partial \mathbf u}{\partial t}
++ (\mathbf u\cdot\nabla)\mathbf u
+=
+-\nabla \phi
++ A_M\mathbf J_M + A_q\mathbf J_q
++ \frac{1}{c_u^2}\frac{\partial^2 \mathbf u}{\partial t^2}.
+\]
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{11. Static Limits of the Unified Theory}
+
+\subsection*{11.1 Gravity}
+
+
+\[
+\nabla^2 \phi = -4\pi G_{\mathrm{eff}}\rho_M.
+\]
+
+
+
+\subsection*{11.2 Electrostatics}
+
+
+\[
+\nabla^2 \phi = -4\pi K_E \rho_q.
+\]
+
+
+
+\subsection*{11.3 Plasma Lensing}
+
+
+\[
+\nabla^2 \phi = -4\pi K_{\mathrm{plasma}} n_e.
+\]
+
+
+
+\subsection*{11.4 Magnetostatics}
+
+
+\[
+\nabla^2 \mathbf u = -A_q \mathbf J_q.
+\]
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{12. Unified Ray and Particle Kinematics}
+
+
+
+\[
+\frac{d\mathbf r}{ds}
+= c\,\hat{\mathbf k}
++ \mathbf u,
+\]
+
+
+
+
+\[
+\frac{d\hat{\mathbf k}}{ds}
+= \nabla_\perp \phi
++ \mathcal{F}(\hat{\mathbf k},\mathbf u,\nabla\mathbf u).
+\]
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{13. Summary}
+
+The PM-fluid v1.5 formulation provides a unified dynamical framework for:
+\begin{itemize}
+    \item gravity,
+    \item electrostatics,
+    \item magnetostatics,
+    \item plasma lensing,
+    \item moving-mass and moving-charge effects.
+\end{itemize}
+
+It preserves the validated PM gravitational sector, extends the source
+structure to all known classical fields, and maintains consistency with
+weak-field GR and numerical bending tests.
+
+\end{document}
+

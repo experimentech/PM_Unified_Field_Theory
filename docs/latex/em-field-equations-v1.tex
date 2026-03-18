@@ -1,0 +1,264 @@
+\documentclass{article}
+\usepackage{amsmath, amssymb}
+
+\begin{document}
+
+\title{Pushing--Medium Electromagnetic Field Equations (v1)}
+\author{}
+\date{}
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{1. Overview}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Electromagnetism in the Pushing--Medium (PM) framework arises from additional
+excitations of the same compressible, advective medium that generates the
+gravitational fields $\phi$ and $\mathbf u$.  The PM medium supports two
+electromagnetic (EM) modes:
+
+
+\[
+\psi(\mathbf r,t) \quad \text{(scalar EM excitation)},
+\qquad
+\mathbf w(\mathbf r,t) \quad \text{(vector EM excitation)}.
+\]
+
+
+The scalar field $\psi$ represents compressive electric-like distortions, while
+the vector field $\mathbf w$ represents vortical or shear magnetic-like
+distortions.  These fields propagate through and are advected by the same medium
+flow $\mathbf u$ that appears in the gravitational sector
+(see \texttt{v1-unified-formulations.tex}).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{2. Electromagnetic Sources}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Charge density and electric current act as sources for the EM excitations:
+
+
+\[
+S_\psi = 4\pi K_E\,\rho_q,
+\qquad
+\mathbf S_w = B_q\,\mathbf J_q.
+\]
+
+
+Here $K_E$ and $B_q$ are coupling constants determining the strength of electric
+and magnetic interactions in the PM medium.  Observational constraints on these
+constants are given in \texttt{electromagnetic-coupling-constraints.tex}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{3. Dynamic PM-Fluid Equations for EM Fields}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{3.1 Scalar EM Equation (Electric-like)}
+
+
+\[
+\frac{\partial \psi}{\partial t}
++ \nabla\cdot(\psi\,\mathbf u)
+=
+S_\psi
++
+\frac{1}{c_\psi^2}\frac{\partial^2 \psi}{\partial t^2}.
+\]
+
+
+This equation includes:
+\begin{itemize}
+    \item advection by the medium flow $\mathbf u$,
+    \item compressibility via $\nabla\cdot(\psi\mathbf u)$,
+    \item finite propagation speed $c_\psi$,
+    \item sourcing by charge density.
+\end{itemize}
+
+In the static limit ($\partial_t \psi = 0$, $\mathbf u = 0$):
+
+
+\[
+\nabla^2 \psi = -4\pi K_E\,\rho_q,
+\]
+
+
+which is the PM analogue of Coulomb's law.
+
+\subsection*{3.2 Vector EM Equation (Magnetic-like)}
+
+
+\[
+\frac{\partial \mathbf w}{\partial t}
++ (\mathbf u\cdot\nabla)\mathbf w
+=
+-\nabla \psi
++ \mathbf S_w
++
+\frac{1}{c_w^2}\frac{\partial^2 \mathbf w}{\partial t^2}.
+\]
+
+
+This equation includes:
+\begin{itemize}
+    \item advection by $\mathbf u$,
+    \item coupling to the scalar EM field via $-\nabla\psi$,
+    \item finite propagation speed $c_w$,
+    \item sourcing by electric current.
+\end{itemize}
+
+In the static limit:
+
+
+\[
+\nabla^2 \mathbf w = -B_q\,\mathbf J_q,
+\]
+
+
+the PM analogue of Amp\`ere's law.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{4. Linear, No-Flow Limit and EM Wave Equations}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In the weak-field, no-flow limit ($\mathbf u = 0$) and for small perturbations,
+the EM equations reduce to:
+
+
+\[
+\frac{1}{c^2}\frac{\partial^2 \psi}{\partial t^2}
+- \nabla^2 \psi
+= -4\pi K_E\,\rho_q,
+\]
+
+
+
+\[
+\frac{1}{c^2}\frac{\partial^2 \mathbf w}{\partial t^2}
+- \nabla^2 \mathbf w
+= -B_q\,\mathbf J_q.
+\]
+
+
+These are PM analogues of the Lorenz-gauge wave equations for scalar and vector potentials.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{5. Effective Electromagnetic Fields}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Define the effective electric and magnetic fields:
+
+
+\[
+\mathbf E_{\mathrm{eff}}
+= -\nabla \psi - \frac{\partial \mathbf w}{\partial t},
+\qquad
+\mathbf B_{\mathrm{eff}}
+= \nabla \times \mathbf w.
+\]
+
+
+These definitions parallel the standard relations between electromagnetic
+potentials and fields.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{6. Emergence of Maxwell-like Equations}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{6.1 Faraday's Law}
+
+
+\[
+\nabla \times \mathbf E_{\mathrm{eff}}
+= -\frac{\partial \mathbf B_{\mathrm{eff}}}{\partial t}.
+\]
+
+
+\subsection*{6.2 No Magnetic Monopoles}
+
+
+\[
+\nabla\cdot \mathbf B_{\mathrm{eff}} = 0.
+\]
+
+
+\subsection*{6.3 Gauss's Law}
+
+Using the scalar wave equation and a Lorenz-like gauge condition:
+
+
+\[
+\nabla\cdot \mathbf E_{\mathrm{eff}}
+= 4\pi K_E\,\rho_q.
+\]
+
+
+\subsection*{6.4 Amp\`ere--Maxwell Law}
+
+Taking the curl of the vector wave equation yields:
+
+
+\[
+\nabla\times \mathbf B_{\mathrm{eff}}
+=
+\frac{1}{c^2}\frac{\partial \mathbf E_{\mathrm{eff}}}{\partial t}
++ B_q\,\mathbf J_q.
+\]
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{7. Lagrangian for the EM Sector}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\[
+\mathcal{L}_{\mathrm{EM}}
+=
+\frac{1}{2c_\psi^2}(\partial_t \psi)^2
+- \frac{1}{2}|\nabla \psi|^2
++
+\frac{1}{2c_w^2}|\partial_t \mathbf w|^2
+- \frac{1}{2}|\nabla \mathbf w|^2
++
+\psi\,S_\psi
++
+\mathbf w\cdot\mathbf S_w.
+\]
+
+
+The Euler--Lagrange equations reproduce the PM-fluid EM equations in \S3.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{8. Coupling to the Gravitational Sector}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The EM fields share the same medium flow $\mathbf u$ as the gravitational sector.
+In regimes with non-negligible $\mathbf u$ (e.g., near compact objects or in
+high-density plasmas), the advection terms $\nabla\cdot(\psi\mathbf u)$ and
+$(\mathbf u\cdot\nabla)\mathbf w$ produce mixing between the EM and gravitational
+PM fields.  The unified dynamic equations are given in
+\texttt{v1-unified-formulations.tex}, \S10.
+
+Observational constraints on the coupling constants $K_E$ and $A_q$ are derived
+in \texttt{electromagnetic-coupling-constraints.tex} and
+\texttt{coupling-constants-reference.tex}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{9. Summary}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The PM electromagnetic sector arises naturally from additional scalar and vector
+excitations of the PM medium.  In the linear, no-flow limit, the effective
+fields $\mathbf E_{\mathrm{eff}}$ and $\mathbf B_{\mathrm{eff}}$ satisfy
+Maxwell-like equations, while the full PM-fluid equations provide a consistent
+nonlinear and advective generalization.  Key points:
+
+\begin{itemize}
+    \item EM and gravitational fields share the same medium and the same flow $\mathbf u$.
+    \item Static limits recover PM analogues of Coulomb and Amp\`ere's laws.
+    \item The linear, no-flow limit reproduces the Lorenz-gauge wave equations.
+    \item Effective $\mathbf E$ and $\mathbf B$ satisfy all four Maxwell-like equations.
+    \item The Lagrangian $\mathcal{L}_{\mathrm{EM}}$ is structurally identical to the
+          gravitational Lagrangian with $(\psi,\mathbf w) \to (\phi,\mathbf u)$.
+\end{itemize}
+
+\end{document}

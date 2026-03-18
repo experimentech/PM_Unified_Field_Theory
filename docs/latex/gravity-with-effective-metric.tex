@@ -1,0 +1,223 @@
+\documentclass{article}
+\usepackage{amsmath, amssymb}
+
+\begin{document}
+
+\section*{Pushing--Medium Gravity with Effective Metric (Static Formulation v1)}
+
+This document summarizes the gravitational sector of the Pushing--Medium (PM)
+model in the static limit, including the effective isotropic metric that
+emerges from the PM refractive index field. Only mass density and mass currents
+are included.
+
+The PM gravitational field is encoded in two static fields:
+
+
+
+\[
+\phi(\mathbf r) \equiv \ln n(\mathbf r),
+\qquad
+\mathbf u(\mathbf r) \equiv \text{gravitational flow field}.
+\]
+
+
+
+The scalar field $\phi$ determines the refractive index $n$, while the flow
+field $\mathbf u$ encodes moving-mass effects.
+
+\section*{1. Gravitational Index Field}
+
+The scalar field $\phi = \ln n$ satisfies a Poisson equation sourced by mass
+density:
+
+
+
+\[
+\nabla^2 \phi(\mathbf r)
+=
+-4\pi G_{\mathrm{eff}}\,\rho_M(\mathbf r).
+\]
+
+
+
+The gravitational refractive index is:
+
+
+
+\[
+n(\mathbf r) = \exp(\phi(\mathbf r)).
+\]
+
+
+
+\subsection*{1.1 Point Mass}
+
+For a point mass $M$ at the origin:
+
+
+
+\[
+\phi(r) = \frac{\mu_G M}{r},
+\qquad
+n(r) = 1 + \frac{\mu_G M}{r} + \mathcal{O}(r^{-2}).
+\]
+
+
+
+This reproduces the PM gravitational index used in bending calculations.
+
+\subsection*{1.2 Continuous Mass Distribution}
+
+For a general mass density $\rho_M(\mathbf r)$:
+
+
+
+\[
+\phi(\mathbf r)
+=
+\mu_G
+\int
+\frac{\rho_M(\mathbf r')}{|\mathbf r - \mathbf r'|}
+\,d^3r'.
+\]
+
+
+
+\section*{2. Gravitational Flow Field}
+
+The static flow field $\mathbf u(\mathbf r)$ is sourced by mass currents:
+
+
+
+\[
+\nabla^2 \mathbf u(\mathbf r)
+=
+- A_M\,\mathbf J_M(\mathbf r).
+\]
+
+
+
+This field encodes:
+
+\begin{itemize}
+    \item moving-mass lensing,
+    \item Fizeau-like dragging,
+    \item frame-dragging analogues.
+\end{itemize}
+
+\subsection*{2.1 Moving Point Mass}
+
+For a point mass $M$ moving with velocity $\mathbf v$:
+
+
+
+\[
+\mathbf u(\mathbf r)
+=
+A_M M
+\frac{\mathbf v}{|\mathbf r - \mathbf r_M|}.
+\]
+
+
+
+\section*{3. Effective Isotropic Metric}
+
+In the weak-field limit, the PM refractive index $n = e^\phi$ induces an
+effective isotropic metric of the form:
+
+
+
+\[
+ds^2
+=
+-(1 + 2\phi)\,c^2 dt^2
++
+(1 - 2\phi)\,(dx^2 + dy^2 + dz^2).
+\]
+
+
+
+This metric reproduces the standard post-Newtonian expansion of general
+relativity in isotropic coordinates.
+
+\subsection*{3.1 PPN Parameters}
+
+From the effective metric:
+
+
+
+\[
+g_{tt} = -(1 + 2\phi),
+\qquad
+g_{rr} = (1 - 2\phi),
+\]
+
+
+
+the PPN parameters are:
+
+
+
+\[
+\gamma = 1,
+\qquad
+\beta = 1.
+\]
+
+
+
+These match the general-relativistic values in the weak-field regime.
+
+\section*{4. Ray and Particle Propagation}
+
+In static gravitational fields, rays follow:
+
+
+
+\[
+\frac{d\mathbf r}{ds}
+= c\,\hat{\mathbf k}
++ k_{\mathrm{Fizeau}}\,\mathbf u(\mathbf r),
+\]
+
+
+
+
+
+\[
+\frac{d\hat{\mathbf k}}{ds}
+= \nabla_\perp \phi(\mathbf r)
++ \mathcal{F}\big(\hat{\mathbf k}, \mathbf u, \nabla \mathbf u\big).
+\]
+
+
+
+The bending angle in the weak/semistrong regime satisfies:
+
+
+
+\[
+\alpha(b) \propto \frac{1}{b},
+\]
+
+
+
+consistent with numerical tests and with the PM gravitational index field.
+
+\section*{5. Summary}
+
+The PM gravitational sector consists of:
+
+\begin{itemize}
+    \item a scalar index field sourced by mass density,
+    \item a flow field sourced by mass currents,
+    \item an effective isotropic metric with $\gamma = \beta = 1$,
+    \item weak/semistrong bending with $\alpha \propto 1/b$,
+    \item moving-mass and Fizeau-like effects.
+\end{itemize}
+
+This formulation matches all current numerical tests in the weak and
+semistrong regimes and provides the gravitational backbone of the PM model.
+
+\end{document}
+
