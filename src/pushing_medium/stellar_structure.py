@@ -390,3 +390,86 @@ def compute_mr_curve(
             pass   # keep as NaN
 
     return rho_c_arr, M_arr, R_arr
+
+
+# ---------------------------------------------------------------------------
+# Surface gravitational redshift
+# ---------------------------------------------------------------------------
+
+def pm_surface_redshift(M_star: float, R_star: float) -> float:
+    """PM surface gravitational redshift (exact in PM, all compactness).
+
+    Derivation
+    ----------
+    The PM optical metric has g_tt = −c²/n² = −c² e^{−2φ}.
+    For a static source at radius R_star and a receiver at infinity:
+
+        1 + z = ν_emit/ν_obs = sqrt(−g_tt(∞) / −g_tt(R))
+                             = sqrt(c² / c² e^{−2φ_R}) = e^{φ_R}
+
+    The relevant φ_R is the EXTERIOR field at the stellar surface:
+
+        φ_surface = μ_G M_star / R_star   (exact exterior Poisson solution)
+
+    This is different from the interior ODE value (which equals ln(ρ_nuc/ρ_nuc)=0
+    at the topmost cell, reflecting the EOS boundary condition).
+
+    Result:
+        z_PM = e^{μ_G M_star / R_star} − 1 = e^{2GM/(c²R)} − 1
+
+    PM vs GR comparison
+    --------------------
+    At leading order in x = 2GM/c²R:
+      z_PM ≈ x + x²/2 + ...          → x leading term
+      z_GR = 1/√(1−x) − 1 ≈ x/2 + ...  → x/2 leading term
+
+    PM predicts roughly TWICE the GR surface redshift for the same (M, R).
+    This is a genuine, observationally testable difference: NICER spectral
+    observations can constrain z_surface independently of mass.
+
+    Parameters
+    ----------
+    M_star : float
+        Total stellar mass [kg].
+    R_star : float
+        Stellar radius [m].
+
+    Returns
+    -------
+    float
+        Dimensionless surface gravitational redshift z = Δν/ν.
+    """
+    phi_surface = MU_G * M_star / R_star
+    return math.exp(phi_surface) - 1.0
+
+
+def compute_surface_redshift_track(
+    n_points: int = 60,
+    rho_min_factor: float = 1.01,
+    rho_max_factor: float = 1.0,
+    **solve_kwargs,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Compute PM surface redshift along the M–R track.
+
+    Returns
+    -------
+    rho_c : ndarray  [kg m⁻³]
+    M : ndarray  [M_☉]
+    R : ndarray  [km]
+    z_surf : ndarray  PM surface gravitational redshift z = e^{μ_G M/R} − 1
+    """
+    rho_c_arr, M_arr, R_arr = compute_mr_curve(
+        n_points=n_points,
+        rho_min_factor=rho_min_factor,
+        rho_max_factor=rho_max_factor,
+        **solve_kwargs,
+    )
+
+    z_arr = np.full(n_points, np.nan)
+    for i in range(n_points):
+        if np.isfinite(M_arr[i]) and np.isfinite(R_arr[i]):
+            M_si = M_arr[i] * M_SUN
+            R_si = R_arr[i] * 1e3   # km → m
+            z_arr[i] = pm_surface_redshift(M_si, R_si)
+
+    return rho_c_arr, M_arr, R_arr, z_arr

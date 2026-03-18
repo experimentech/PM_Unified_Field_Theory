@@ -61,3 +61,97 @@ def binary_quadrupole_power(M1, M2, a):
 def circular_orbit_energy(M, a):
     """Specific orbital energy (per unit mass) for circular orbit in Newtonian limit: E = - GM/(2a)."""
     return -G * M / (2 * a)
+
+
+def binary_period_derivative(M1: float, M2: float, P_b: float, e: float) -> float:
+    """Peters (1964) orbital period derivative for an eccentric binary (GR).
+
+    dP_b/dt = -(192π/5) (G/c³)^(5/3) (2π/P_b)^(5/3) M1 M2 / (M1+M2)^(1/3) f(e)
+
+    where f(e) = (1 + 73e²/24 + 37e⁴/96) / (1-e²)^(7/2).
+    """
+    import math
+    e2 = e * e
+    f_e = (1.0 + (73.0 / 24.0) * e2 + (37.0 / 96.0) * e2 * e2) / (1.0 - e2) ** 3.5
+    M_tot = M1 + M2
+    return (
+        -(192.0 * math.pi / 5.0)
+        * (G / c ** 3) ** (5.0 / 3.0)
+        * (2.0 * math.pi / P_b) ** (5.0 / 3.0)
+        * M1 * M2 / M_tot ** (1.0 / 3.0)
+        * f_e
+    )
+
+
+def gr_surface_redshift(M_star: float, R_star: float) -> float:
+    """GR (Schwarzschild) surface gravitational redshift.
+
+    z_GR = 1 / sqrt(1 − 2GM/c²R) − 1
+
+    Parameters
+    ----------
+    M_star : float   Total stellar mass [kg].
+    R_star : float   Stellar radius [m].
+
+    Returns
+    -------
+    float   Dimensionless surface redshift.
+    """
+    compactness = 2.0 * G * M_star / (c * c * R_star)
+    return 1.0 / (1.0 - compactness) ** 0.5 - 1.0
+
+
+# Leaver (1985) l=2, n=0 Schwarzschild QNM coefficients (dimensionless, × GM/c³)
+_QNM_OMEGA_R = 0.37367   # Re(ω) × GM/c³  — oscillation
+_QNM_OMEGA_I = 0.08896   # Im(ω) × GM/c³  — inverse decay (half-rate)
+
+
+def gr_qnm_frequency(M_bh: float) -> float:
+    """GR Schwarzschild QNM ring frequency for the fundamental (l=2, n=0) mode.
+
+    f_QNM = ω_R / (2π)   where  ω_R = 0.37367 × c³/(GM)
+
+    From Leaver (1985) exact continued-fraction solutions; tabulated in
+    Berti, Cardoso & Starinets (2009), Table I.
+
+    Parameters
+    ----------
+    M_bh : float   Black-hole mass [kg].
+
+    Returns
+    -------
+    float   Ring-down oscillation frequency [Hz].
+            Scales as 12.1 kHz × (M_sun / M_bh).
+    """
+    import math
+    return _QNM_OMEGA_R * c ** 3 / (2.0 * math.pi * G * M_bh)
+
+
+def gr_qnm_damping_time(M_bh: float) -> float:
+    """GR Schwarzschild QNM e-folding damping time for the fundamental (l=2, n=0) mode.
+
+    τ_QNM = 1 / (2 ω_I)   where  ω_I = 0.08896 × c³/(GM)
+
+    Parameters
+    ----------
+    M_bh : float   Black-hole mass [kg].
+
+    Returns
+    -------
+    float   Damping e-folding time [s].  Scales as 27.8 μs × (M_bh / M_sun).
+    """
+    return G * M_bh / (2.0 * _QNM_OMEGA_I * c ** 3)
+
+
+def gr_photon_sphere_radius(M_bh: float) -> float:
+    """GR Schwarzschild photon-sphere radius: r_ps = 3 GM/c².
+
+    Parameters
+    ----------
+    M_bh : float   Black-hole mass [kg].
+
+    Returns
+    -------
+    float   Photon-sphere radius [m].
+    """
+    return 3.0 * G * M_bh / (c * c)

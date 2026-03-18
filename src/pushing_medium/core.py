@@ -548,8 +548,124 @@ def pm_gravitational_redshift_from_potential(delta_phi: float) -> float:
 
 
 def pm_perihelion_precession(a: float, e: float, M: float) -> float:
-    """Per orbit perihelion advance (radians): 6πGM/(c^2 a (1-e^2))."""
+    """Per orbit perihelion advance (radians): 6πGM/(c^2 a (1-e^2)).
+
+    PM derivation note
+    ------------------
+    The PM *force law* a = (c²/2)∇φ reduces to EXACTLY Newtonian gravity:
+    a = −GM/r² r̂.  A pure Newtonian orbit is a closed Keplerian ellipse —
+    **no precession from the force law alone**.
+
+    The 6πGM/c²a(1-e²) precession arises from the 1PN metric correction
+    when observable coordinates (measured via light in the optical metric)
+    are used.  Since PM has PPN parameters β=γ=1 (same as GR), it gives
+    the same 1PN precession as GR.  Higher PN corrections would differ,
+    but are far below solar-system measurement precision.
+    """
     return 6 * math.pi * G * M / (c * c * a * (1 - e * e))
+
+
+def pm_precession_arcsec_per_century(M: float, a: float, e: float,
+                                     T_orb_s: float) -> float:
+    """Convert perihelion advance to observable arcseconds per century.
+
+    Parameters
+    ----------
+    M       : float  Central (or total) mass [kg].
+    a       : float  Semi-major axis [m].
+    e       : float  Eccentricity.
+    T_orb_s : float  Orbital period [s].
+
+    Returns
+    -------
+    float  Precession rate [arcseconds per century].
+    """
+    delta_omega = pm_perihelion_precession(a, e, M)
+    S_PER_CENTURY = 100.0 * 365.25 * 86400.0
+    orbits_per_century = S_PER_CENTURY / T_orb_s
+    return delta_omega * orbits_per_century * (180.0 / math.pi * 3600.0)
+
+
+def pm_integrate_orbit(M: float, a: float, e: float,
+                       n_orbits: int = 10) -> dict:
+    """Numerically integrate a 1PN orbit and measure perihelion precession.
+
+    Uses the 1PN radial equation of motion derived from the PM/GR effective
+    potential V_eff = −GM/r + L²/(2r²) − GML²/(c²r³):
+
+        r̈ = h²/r³ − GM/r² − 3GM h²/(c² r⁴)
+        φ̇ = h / r²
+
+    where h = √(GMa(1−e²)) is the (conserved) specific angular momentum.
+
+    The 1PN correction term −3GMh²/(c²r⁴) is the same for both PM and GR
+    because both have PPN parameters β=γ=1.
+
+    Parameters
+    ----------
+    M        : float   Central mass [kg].
+    a        : float   Semi-major axis [m].
+    e        : float   Eccentricity (0 ≤ e < 1).
+    n_orbits : int     Number of orbits to integrate (default 10).
+
+    Returns
+    -------
+    dict with keys:
+      precession_per_orbit_rad  : float  Numerically measured precession [rad].
+      precession_analytic_rad   : float  Analytic 6πGM/c²a(1−e²) [rad].
+      agreement_frac            : float  |numerical − analytic| / analytic.
+      n_periastron             : int    Periapsis passages detected.
+    """
+    import numpy as np
+    from scipy.integrate import solve_ivp
+
+    h2 = G * M * a * (1.0 - e * e)          # h² = GMa(1−e²)
+    h  = math.sqrt(h2)
+    T_kep = 2.0 * math.pi * math.sqrt(a**3 / (G * M))   # Keplerian period [s]
+    r0 = a * (1.0 - e)                       # periapsis distance
+
+    def derivs(t, y):
+        r, rdot, phi = y
+        rddot = (h2 / r**3
+                 - G * M / r**2
+                 - 3.0 * G * M * h2 / (c**2 * r**4))   # 1PN correction
+        return [rdot, rddot, h / r**2]
+
+    def peri_event(t, y):
+        return y[1]   # rdot = 0 at periapsis
+    peri_event.terminal  = False
+    peri_event.direction = 1    # rdot: − → 0 → + at periapsis
+
+    sol = solve_ivp(
+        derivs,
+        [0.0, n_orbits * T_kep * 1.1],
+        [r0, 0.0, 0.0],
+        method='DOP853',
+        events=peri_event,
+        rtol=1e-11,
+        atol=1e-11 * r0,
+        max_step=T_kep / 500,
+    )
+
+    phi_peri = sol.y_events[0][:, 2]   # φ at each periapsis passage
+    if len(phi_peri) < 2:
+        raise RuntimeError(
+            f"pm_integrate_orbit: only {len(phi_peri)} periapsis passage(s); "
+            f"increase n_orbits (current={n_orbits})"
+        )
+
+    # Linear fit φ[i] = (i+1)(2π + Δω)  → slope = 2π + Δω
+    orb_nums = np.arange(1, len(phi_peri) + 1, dtype=float)
+    slope = float(np.polyfit(orb_nums, phi_peri, 1)[0])
+    precession_numerical = slope - 2.0 * math.pi
+    precession_analytic  = pm_perihelion_precession(a, e, M)
+
+    return {
+        'precession_per_orbit_rad': precession_numerical,
+        'precession_analytic_rad':  precession_analytic,
+        'agreement_frac': abs(precession_numerical - precession_analytic) / precession_analytic,
+        'n_periastron': len(phi_peri),
+    }
 
 
 def pm_einstein_radius_point_mass(M: float, D_l: float, D_s: float, D_ls: float) -> float:
@@ -567,9 +683,165 @@ def pm_binary_quadrupole_power(M1: float, M2: float, a: float) -> float:
     return (32.0 / 5.0) * (G ** 4) * ((M1 * M2) ** 2) * (M1 + M2) / (c ** 5 * a ** 5)
 
 
+def pm_peters_decay_enhancement(e: float) -> float:
+    """Peters (1964) orbital-average enhancement factor for eccentric binaries.
+
+    f(e) = (1 + 73e²/24 + 37e⁴/96) / (1 − e²)^(7/2)
+
+    For a circular orbit e=0 → f=1.  For the Hulse-Taylor pulsar (e≈0.617) → f≈11.87,
+    greatly accelerating the inspiral relative to a circular orbit at the same semi-major axis.
+    """
+    e2 = e * e
+    numerator = 1.0 + (73.0 / 24.0) * e2 + (37.0 / 96.0) * e2 * e2
+    denominator = (1.0 - e2) ** 3.5
+    return numerator / denominator
+
+
+def pm_binary_period_derivative(M1: float, M2: float, P_b: float, e: float) -> float:
+    """Peters (1964) orbital period derivative for an eccentric binary.
+
+    Derivation
+    ----------
+    Energy balance dE/dt = -<P_GW> with Keplerian E = -G M1 M2 / (2a) and
+    Kepler P_b = 2π a^(3/2) / sqrt(G(M1+M2)) gives:
+
+        dP_b/dt = -(192π/5) (G/c³)^(5/3) (2π/P_b)^(5/3) M1 M2 / (M1+M2)^(1/3) f(e)
+
+    This is the same expression in both GR and PM because PM reproduces the
+    quadrupole gravitational-wave power exactly (pm_binary_quadrupole_power == GR).
+    The Hulse-Taylor system (PSR B1913+16) agrees with this prediction to 0.2%
+    after Galactic acceleration correction, providing one of the tightest tests of
+    gravitational-wave energy loss.
+
+    Parameters
+    ----------
+    M1, M2 : float
+        Component masses [kg].
+    P_b : float
+        Orbital period [s].
+    e : float
+        Orbital eccentricity (0 ≤ e < 1).
+
+    Returns
+    -------
+    float
+        dP_b/dt  (dimensionless, typically ~ −10⁻¹²).
+    """
+    f_e = pm_peters_decay_enhancement(e)
+    M_tot = M1 + M2
+    G_over_c3 = G / (c ** 3)
+    two_pi_over_Pb = 2.0 * math.pi / P_b
+    return (
+        -(192.0 * math.pi / 5.0)
+        * G_over_c3 ** (5.0 / 3.0)
+        * two_pi_over_Pb ** (5.0 / 3.0)
+        * M1 * M2 / M_tot ** (1.0 / 3.0)
+        * f_e
+    )
+
+
 def pm_circular_orbit_energy(M: float, a: float) -> float:
     """Specific orbital energy (per unit mass), Newtonian limit: −GM/(2a)."""
     return -G * M / (2 * a)
+
+
+# ---------------------------------------------------------------------------
+# GW ringdown / QNMs / echoes
+# ---------------------------------------------------------------------------
+
+def pm_photon_sphere_radius(M: float) -> float:
+    """PM exterior photon-sphere radius (circular light orbit in optical metric).
+
+    In the PM optical metric, circular photon orbits satisfy
+    d/dr[n(r) · r] = 0.  With n(r) = exp(μ_G M/r), this gives
+        r_ps = μ_G M = 2GM/c²  (the Schwarzschild radius).
+
+    This is HALF the GR photon sphere (3GM/c²).  For any realistic PM
+    compact object the stellar radius R_star >> r_ps, so the photon sphere
+    is inside the star → no exterior trapped photon orbits → no QNMs.
+
+    Parameters
+    ----------
+    M : float   Total mass [kg].
+
+    Returns
+    -------
+    float   r_ps [m].
+    """
+    return 2.0 * G * M / (c * c)   # = μ_G M = 2GM/c²
+
+
+def pm_surface_echo_delay(R_star: float) -> float:
+    """Geometric echo delay for GWs reflecting off a PM compact-object surface.
+
+    GWs propagate at exactly c in PM (pm_gw_phase_speed = c), so the
+    round-trip travel time from the photon sphere to the stellar surface
+    and back is:
+
+        τ_echo ≈ 2 R_star / c
+
+    (leading order; a small logarithmic correction from the medium gradient
+    is negligible for R_star >> r_ps).
+
+    Parameters
+    ----------
+    R_star : float   Stellar radius [m].
+
+    Returns
+    -------
+    float   Echo delay [s].
+    """
+    return 2.0 * R_star / c
+
+
+# PM EOS sound speed: P = c²(ρ - ρ_nuc)/2  →  c_s² = dP/dρ = c²/2
+_C_S_PM = c / math.sqrt(2.0)   # PM sound speed
+
+
+def pm_surface_mode_frequency(R_star: float) -> float:
+    """Fundamental PM structural oscillation (breathing mode) frequency.
+
+    The PM EOS P = c²(ρ − ρ_nuc)/2 gives a sound speed c_s = c/√2.
+    The fundamental half-wavelength standing wave across the star has:
+
+        f_surf = c_s / (2 R_star) = c / (2√2 R_star)
+
+    This is the lowest-frequency surface mode; it determines the dominant
+    oscillation feature in a PM remnant's signal (rather than a GR QNM).
+
+    Parameters
+    ----------
+    R_star : float   Stellar radius [m].
+
+    Returns
+    -------
+    float   Fundamental mode frequency [Hz].
+    """
+    return _C_S_PM / (2.0 * R_star)
+
+
+def pm_surface_mode_damping_time(R_star: float, Q_factor: float = 10.0) -> float:
+    """Estimated e-folding damping time for PM surface oscillation modes.
+
+    A surface mode at frequency f with quality factor Q damps as
+    τ_damp = Q / (π f) = 2√2 Q R_star / (π c).
+
+    PM compact objects have no ergoregion or horizon to absorb mode energy,
+    so modes radiate by GW emission only — typically Q ~ 10–100.
+    GR BH QNMs have Q ≡ ω_R / (2 ω_I) = 0.37367 / (2×0.08896) ≈ 2.10
+    (critically damped), reflecting rapid energy loss into the horizon.
+
+    Parameters
+    ----------
+    R_star   : float   Stellar radius [m].
+    Q_factor : float   Quality factor (default 10; GR BH QNM has Q ≈ 2.1).
+
+    Returns
+    -------
+    float   Damping e-folding time [s].
+    """
+    f_mode = pm_surface_mode_frequency(R_star)
+    return Q_factor / (math.pi * f_mode)
 
 
 def lense_thirring_precession(J: float, r: float) -> float:

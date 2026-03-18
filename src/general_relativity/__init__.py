@@ -9,6 +9,11 @@ from .classical import (
     gw_phase_speed,
     binary_quadrupole_power,
     circular_orbit_energy,
+    binary_period_derivative,
+    gr_surface_redshift,
+    gr_qnm_frequency,
+    gr_qnm_damping_time,
+    gr_photon_sphere_radius,
 )
 
 __all__ = [
@@ -22,4 +27,9 @@ __all__ = [
     'gw_phase_speed',
     'binary_quadrupole_power',
     'circular_orbit_energy',
+    'binary_period_derivative',
+    'gr_surface_redshift',
+    'gr_qnm_frequency',
+    'gr_qnm_damping_time',
+    'gr_photon_sphere_radius',
 ]

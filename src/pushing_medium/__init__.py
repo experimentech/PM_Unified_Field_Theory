@@ -36,6 +36,15 @@ from .core import (
     # Legacy GR comparison functions
     pm_deflection_angle_point_mass,
     lense_thirring_precession,
+    # GW ringdown / echoes
+    pm_photon_sphere_radius,
+    pm_surface_echo_delay,
+    pm_surface_mode_frequency,
+    pm_surface_mode_damping_time,
+    # Perihelion precession
+    pm_perihelion_precession,
+    pm_precession_arcsec_per_century,
+    pm_integrate_orbit,
 )
 
 __all__ = [
@@ -61,4 +70,11 @@ __all__ = [
     'lense_thirring_precession',
     'massive_accel_medium',
     'newtonian_accel_sum',
+    'pm_photon_sphere_radius',
+    'pm_surface_echo_delay',
+    'pm_surface_mode_frequency',
+    'pm_surface_mode_damping_time',
+    'pm_perihelion_precession',
+    'pm_precession_arcsec_per_century',
+    'pm_integrate_orbit',
 ]
