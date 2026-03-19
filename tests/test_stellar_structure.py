@@ -124,7 +124,9 @@ class TestSolvePMStar:
     def test_solar_mass_range(self, star_mid):
         """PM compact star mass should be in a physically plausible range.
 
-        PM uses flat space — there is no GR compactness bound or event horizon.
+        PM has a flat Minkowski background — the medium field φ creates a curved
+        effective optical metric, but there is no background spacetime curvature,
+        hence no GR compactness bound or event horizon.
         A PM object with GM/(c²R) ~ 0.5 is a compact horizonless object, not
         an unphysical configuration.  The PM critical-density bound ρ_c ≤ ρ_crit
         is the only hard stability limit.
@@ -166,10 +168,12 @@ class TestPhysicsConsistency:
     def test_pm_gravity_exact(self):
         """Verify the PM structure equations are exact within PM.
 
-        PM uses flat space.  The force law a = +(c²/2)∇φ combined with
-        the PM Poisson equation ∇²φ = −(8πG/c²)ρ via Gauss's theorem gives
+        PM has a flat Minkowski background.  The force law a = +(c²/2)∇φ combined
+        with the PM Poisson equation ∇²φ = −(8πG/c²)ρ via Gauss's theorem gives
         dφ/dr = −μ_G m(r)/r² and therefore a = −Gm/r² exactly at all
-        compactnesses.  There is no GR compactness limit in PM.
+        compactnesses.  There is no GR compactness limit in PM because there is
+        no background curvature — the medium creates an effective metric, not a
+        curved spacetime.
         """
         star = solve_pm_star(RHO_MID)
         # φ integrated from PM Poisson should match ln(ρ/ρ_nuc) from EOS
@@ -248,7 +252,7 @@ class TestMRCurve:
     def test_max_mass_below_20_solar(self, mr_curve):
         """PM maximum mass sanity check (< 20 M_☉).
 
-        PM uses flat space with no GR compactness bound.  The PM critical
+        PM has a flat Minkowski background with no GR compactness bound.  The PM critical
         density ρ_crit = e·ρ_nuc sets the hard upper limit on central density.
         The maximum M_star from sweeping 0 to ρ_crit should be a finite,
         physically reasonable value.

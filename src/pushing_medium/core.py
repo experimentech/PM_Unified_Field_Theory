@@ -1056,11 +1056,18 @@ def pm_photon_sphere_radius(M: float) -> float:
 
     In the PM optical metric, circular photon orbits satisfy
     d/dr[n(r) · r] = 0.  With n(r) = exp(μ_G M/r), this gives
-        r_ps = μ_G M = 2GM/c²  (the Schwarzschild radius).
+        r_ps = μ_G M = 2GM/c²  (= the GR Schwarzschild radius, NOT at 3GM/c²).
 
-    This is HALF the GR photon sphere (3GM/c²).  For any realistic PM
-    compact object the stellar radius R_star >> r_ps, so the photon sphere
-    is inside the star → no exterior trapped photon orbits → no QNMs.
+    PM photon sphere is 2/3 the GR photon sphere (3GM/c²).
+
+    Location relative to the stellar surface:
+      • Low-mass models (M ≲ 8 M⊙, C = GM/(c²R) ≲ 0.5):
+            R_star > r_ps  →  photon sphere inside star, no exterior orbits.
+      • High-mass models near M_max (M ≳ 8 M⊙, C ≳ 0.5):
+            R_star < r_ps  →  photon sphere exterior to star.
+            PM stars can exceed C = 0.5 because there is no Buchdahl limit
+            (flat Minkowski background, no background curvature) or event-horizon formation.  Maximum-mass PM stars
+            reach C ≈ 0.74, with r_ps ≈ 1.5 × R_star.
 
     Parameters
     ----------

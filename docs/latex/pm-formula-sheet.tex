@@ -20,9 +20,12 @@
 %====================================================================
 
 \begin{enumerate}\setlength{\itemsep}{2pt}
-  \item \textbf{Flat spacetime.}
-        Space is a compressible physical medium on a fixed Euclidean background.
-        No GR curvature, no Einstein equations, no horizons, no TOV.
+  \item \textbf{Flat Minkowski background; curved effective metric.}
+        The background geometry is fixed, flat Euclidean/Minkowski.
+        No background GR curvature, no Einstein equations, no horizons, no TOV.
+        The medium field $\phi = \ln n$ creates a \emph{curved effective optical
+        metric} $ds^2 = -(c^2/n^2)\,dt^2 + d\mathbf{r}^2$ for wave propagation —
+        this is curvature of the medium, not of the background geometry.
 
   \item \textbf{Scalar compression field.}
         Gravity arises from the scalar field $\phi$ with refractive index
@@ -595,8 +598,9 @@ cosmological structure ($\phi_{\rm crit}$ couples to $\Omega_E$).
 \section{Compact Star Structure (exact within PM)}
 %====================================================================
 
-PM uses flat space; no GR corrections at any compactness.
-Gauss's theorem on $\nabla^2\phi = -\mu_G\cdot 4\pi\rho$ gives the
+PM uses a flat Minkowski background; the medium field $\phi$ creates a curved
+effective optical metric but there are no background-curvature GR corrections.
+Gauss's theorem on $\nabla^2\phi = -\mu_G\cdot 4\pi\rho$ (on the flat background) gives the
 structure ODE system exactly:
 
 \textbf{ODE system} (interior, $r>0$):
@@ -848,6 +852,67 @@ Implementation: \texttt{classical.gr\_shadow\_radius},
 \texttt{scripts/eht\_shadow\_comparison.py}
 
 %====================================================================
+\section{Photon-Sphere Location Across the M--R Curve}
+%====================================================================
+
+\noindent The PM photon sphere sits at $r_{\rm ps} = 2GM/c^2$ (the Schwarzschild radius,
+2/3 of GR's $3GM/c^2$).  Whether $r_{\rm ps}$ lies inside or outside the stellar
+surface depends on the compactness $C = GM/(c^2 R)$:
+
+\begin{center}
+\begin{tabular}{@{}lccl@{}}
+\toprule
+Regime & Compactness & $r_{\rm ps}$ vs $R_\star$ & Consequence \\
+\midrule
+$C < 0.5$ (low mass) & $C \lesssim 0.49$ & inside star & no exterior photon ring \\
+$C > 0.5$ (high mass near $M_{\max}$) & $C \lesssim 0.74$ & outside star & exterior photon ring exists \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Numerical results from the PM M--R curve:}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Mass & $R_\star$ & $C$ & $r_{\rm ps}$ & $r_{\rm ps}$ location \\
+\midrule
+$1.4\,M_\odot$ (typical NS) & $\approx 14$\,km & 0.148 & $\approx 4.1$\,km & inside star \\
+$3\,M_\odot$ & $\approx 18$\,km & 0.24 & $\approx 8.9$\,km & inside star \\
+$\sim 8\,M_\odot$ (transition) & $\approx 24$\,km & 0.50 & $\approx 24$\,km & at surface \\
+$13.4\,M_\odot$ (max mass) & $\approx 26.6$\,km & 0.74 & $\approx 39.5$\,km & outside ($1.49\times R_\star$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Why can PM exceed $C = 0.5$?}
+GR imposes the Buchdahl limit ($C < 4/9 \approx 0.444$ for uniform-density stars) and
+the horizon condition ($C = 0.5$ marks the Schwarzschild radius).
+PM uses flat-space Newtonian structure — there is no Buchdahl limit and no
+event-horizon formation regardless of $C$.  High-mass PM stars are simply
+ultracompact, horizonless, optically opaque objects.
+
+\noindent\textbf{Key findings:}
+\begin{itemize}
+  \item All PM stars satisfy $C < 1.0$ (no horizon-scale compactness).
+  \item The Buchdahl limit $C < 4/9$ is \emph{exceeded} by PM near $M_{\max}$.
+  \item Low-mass NS-like models ($M \lesssim 8\,M_\odot$) have the photon sphere
+        safely interior — consistent with the original claim in the QNM section.
+  \item High-mass near-$M_{\max}$ models have an \emph{exterior} photon ring —
+        a PM-specific structural prediction.
+\end{itemize}
+
+\noindent\textbf{Status:} structural prediction; not directly constrained by
+current observations.  Future light-ring sensitive observations
+(GW ringdown, EHT-like instruments pointing at PM compact objects) could
+probe this.
+
+Implementation: \texttt{core.pm\_photon\_sphere\_radius};
+\texttt{pushing\_medium.stellar\_structure.compute\_mr\_curve};
+\texttt{tests/test\_photon\_sphere\_guarantee.py} (18 tests).
+
+%====================================================================
 \section{GW Inspiral / Chirp Waveform: PM vs GR}
 %====================================================================
 
@@ -915,6 +980,15 @@ GW190521 & 85.0 & 66.0 & 65.1 & \textbf{No — mass gap} \\
 \hline
 \end{tabular}
 \end{center}
+
+\noindent\textbf{Quantified gap (ODE result):} $M_\mathrm{max}^\mathrm{baseline}
+\approx 13.4\,M_\odot$; nearest GWTC heavy object is GW190814 M1 $= 22.2\,M_\odot$.
+Gap $= 8.8\,M_\odot$ (factor 1.66).  4 of the 6 events surveyed have both
+components above PM $M_\mathrm{max}$; only GW170817 (BNS) is fully accessible.
+
+Implementation: \texttt{tests/test\_mass\_gap.py} (22 tests, 4 classes:
+\texttt{TestBaselineMMax}, \texttt{TestMassGapGWTC}, \texttt{TestBNSAccessible},
+\texttt{TestMassGapCharacterisation}).
 
 \noindent\textbf{GW170817 tidal deformability (computed):}
 Computed via the Clairaut–Radau equation for the Newtonian Love number $k_2$

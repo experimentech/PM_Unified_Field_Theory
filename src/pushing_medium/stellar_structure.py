@@ -2,11 +2,19 @@
 
 Conceptual foundation
 ---------------------
-PM uses **flat space**.  The optical metric n(r) = e^φ describes wave
-propagation in a variable-density medium — it is NOT spacetime curvature.
-There is no Einstein equation, no event horizon, no Schwarzschild radius,
-and no GR compactness bound GM/(c²R) < 1/2.  These are GR concepts that
-do not apply here.
+PM uses a **flat Minkowski background** — but the medium field n(r) = e^φ
+creates a **curved effective optical metric** for all wave propagation and
+dynamics.  These are distinct levels:
+
+  • Background geometry:   flat (Euclidean/Minkowski).  No Einstein equations,
+                           no Riemann curvature of spacetime, no horizons.
+  • Effective optical metric: ds² = −(c²/n²)dt² + dr²  — geometrically curved.
+                           Null geodesics bend, time dilation occurs in this metric.
+
+The phrase "flat space" alone is imprecise.  The correct statement is:
+"flat background, but curved effective geometry from the medium density field."
+There is no GR compactness bound GM/(c²R) < 1/2 and no event horizon because
+these are properties of background curvature, which PM does not have.
 
 PM force law for massive particles
 -----------------------------------
@@ -21,7 +29,7 @@ Why the PM structure equations are EXACT — not a Newtonian approximation
 Step 1 — PM Poisson equation:
     ∇²φ = −(8πG/c²) ρ(φ),   ρ(φ) = ρ_nuc exp(φ)
 
-Step 2 — Apply Gauss's theorem in flat space (spherical symmetry):
+Step 2 — Apply Gauss's theorem on the flat Minkowski background (spherical symmetry):
     ∮ ∇φ · dA = ∫ ∇²φ dV  ⟹  4πr² (dφ/dr) = −(8πG/c²) m(r)
 
     dφ/dr = −(2G/c²) m(r)/r²  =  −μ_G m(r)/r²       [exact]
@@ -31,10 +39,11 @@ Step 3 — Substitute into the force law:
 
 The μ_G = 2G/c² and c²/2 factors cancel algebraically.  The resulting
 acceleration is exactly Newtonian at all compactnesses.  This is not a
-weak-field limit — it is a consequence of flat-space Gauss + PM Poisson.
+    weak-field limit — it is a consequence of Gauss's theorem on the flat
+    Minkowski background + PM Poisson equation.
 
 Absent corrections (GR artifacts that do NOT appear in PM):
-  • metric factor 1/(1 − 2Gm/c²r):          absent — flat space
+  • metric factor 1/(1 − 2Gm/c²r):          absent — no background curvature
   • pressure-as-active-mass +4πr³P/c²:      absent — source = ρ only
   • pressure-as-inertial-mass +(P/c²):       absent
 
@@ -192,7 +201,7 @@ class StarSolution:
         Pressure  P(r)  [Pa].
     phi : ndarray
         PM scalar field φ(r) integrated directly from the PM Poisson equation,
-        dφ/dr = −μ_G m(r)/r² (exact from Gauss's theorem in flat space).
+        dφ/dr = −μ_G m(r)/r² (exact from Gauss's theorem on flat Minkowski background).
         Consistent with φ = ln(ρ/ρ_nuc) at every point by construction.
         [dimensionless]
     """
@@ -258,7 +267,7 @@ def solve_pm_star(
     phi_central = math.log(rho_central / RHO_NUC)  # φ_c = ln(ρ_c/ρ_nuc)
 
     # ODE right-hand side: y = [m, P, φ]
-    # dφ/dr = −μ_G m/r²  comes from PM Poisson + Gauss (exact in flat space)
+    # dφ/dr = −μ_G m/r²  comes from PM Poisson + Gauss on flat background (exact)
     def rhs(r, y):
         m, P, phi = y
         rho = pm_eos_density(P)
