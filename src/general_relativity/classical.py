@@ -155,3 +155,76 @@ def gr_photon_sphere_radius(M_bh: float) -> float:
     float   Photon-sphere radius [m].
     """
     return 3.0 * G * M_bh / (c * c)
+
+
+def gr_shadow_radius(M_bh: float) -> float:
+    """GR Schwarzschild black-hole shadow radius (photon-capture impact parameter).
+
+    The photon sphere at r_ps = 3GM/c² produces a circular shadow with
+    critical impact parameter b_shadow = 3√3 GM/c² ≈ 2.598 R_s.
+    This is what the EHT images for M87* and Sgr A*.
+
+    Parameters
+    ----------
+    M_bh : float   Black-hole mass [kg].
+
+    Returns
+    -------
+    float   Shadow impact parameter b_shadow [m].  Angular diameter θ = 2 b_shadow / D.
+    """
+    return 3.0 * math.sqrt(3.0) * G * M_bh / (c * c)
+
+
+def gr_compact_star_shadow_radius(M: float, R_star: float) -> float:
+    """GR shadow (minimum impact parameter) for a compact star of radius R_star.
+
+    In the exterior Schwarzschild metric a grazing ray has impact parameter
+    b = R_star / sqrt(1 − R_s/R_star),  R_s = 2GM/c².
+    For R_star > r_ps = 3GM/c² this is the true shadow; for R_star < r_ps the
+    photon sphere takes over and the shadow should be computed via gr_shadow_radius.
+
+    Parameters
+    ----------
+    M      : float   Stellar mass [kg].
+    R_star : float   Stellar radius [m].  Must satisfy R_star > 2GM/c².
+
+    Returns
+    -------
+    float   Shadow impact parameter b_shadow [m].
+    """
+    R_s = 2.0 * G * M / (c * c)
+    return R_star / math.sqrt(1.0 - R_s / R_star)
+
+
+def gr_chirp_mass(M1: float, M2: float) -> float:
+    """Chirp mass  M_c = (M₁ M₂)^(3/5) / (M₁+M₂)^(1/5).
+
+    Identical to PM at 0PN.  The observable combination that LIGO measures
+    directly from df/dt.  Differences between PM and GR appear only at
+    1.5PN+ in the waveform phasing.
+    """
+    return (M1 * M2) ** 0.6 / (M1 + M2) ** 0.2
+
+
+def gr_time_to_coalescence(f_gw: float, M_c: float) -> float:
+    """Remaining merger time: t_c = (5/256)(c³/G M_c)^(5/3)(πf)^(-8/3).
+
+    Identical to PM at 0PN.
+    """
+    return (
+        (5.0 / 256.0)
+        * (c ** 3 / (G * M_c)) ** (5.0 / 3.0)
+        * (math.pi * f_gw) ** (-8.0 / 3.0)
+    )
+
+
+def gr_gw_strain_amplitude(M_c: float, D: float, f_gw: float) -> float:
+    """0PN GW strain: h_c = (4/D)(G M_c/c²)(π G M_c f/c³)^(2/3).
+
+    Identical to PM at 0PN.
+    """
+    return (
+        (4.0 / D)
+        * (G * M_c / c ** 2)
+        * (math.pi * G * M_c * f_gw / c ** 3) ** (2.0 / 3.0)
+    )

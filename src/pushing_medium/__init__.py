@@ -41,6 +41,14 @@ from .core import (
     pm_surface_echo_delay,
     pm_surface_mode_frequency,
     pm_surface_mode_damping_time,
+    # Shadow
+    pm_shadow_radius,
+    # GW inspiral / chirp
+    pm_chirp_mass,
+    pm_gw_frequency_deriv,
+    pm_time_to_coalescence,
+    pm_gw_strain_amplitude,
+    pm_gw_chirp_waveform,
     # Perihelion precession
     pm_perihelion_precession,
     pm_precession_arcsec_per_century,
@@ -74,6 +82,12 @@ __all__ = [
     'pm_surface_echo_delay',
     'pm_surface_mode_frequency',
     'pm_surface_mode_damping_time',
+    'pm_shadow_radius',
+    'pm_chirp_mass',
+    'pm_gw_frequency_deriv',
+    'pm_time_to_coalescence',
+    'pm_gw_strain_amplitude',
+    'pm_gw_chirp_waveform',
     'pm_perihelion_precession',
     'pm_precession_arcsec_per_century',
     'pm_integrate_orbit',
@@ -87,6 +101,12 @@ from .cosmology import (
     pm_drag_growing_power,
     pm_growth_factor_rate,
     pm_drag_fsigma8,
+    # Two-phase model
+    pm_twophase_hubble,
+    pm_effective_beta,
+    pm_energy_phase_fraction,
+    pm_twophase_growth_factor_rate,
+    pm_twophase_fsigma8,
     BETA_CALIB as PM_BETA_CALIB,
     OM0_DEFAULT as PM_OM0_DEFAULT,
 )

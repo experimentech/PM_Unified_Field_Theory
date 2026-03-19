@@ -25,6 +25,11 @@ from .classical import (
     gr_qnm_frequency,
     gr_qnm_damping_time,
     gr_photon_sphere_radius,
+    gr_shadow_radius,
+    gr_compact_star_shadow_radius,
+    gr_chirp_mass,
+    gr_time_to_coalescence,
+    gr_gw_strain_amplitude,
 )
 
 __all__ = [
@@ -43,6 +48,11 @@ __all__ = [
     'gr_qnm_frequency',
     'gr_qnm_damping_time',
     'gr_photon_sphere_radius',
+    'gr_shadow_radius',
+    'gr_compact_star_shadow_radius',
+    'gr_chirp_mass',
+    'gr_time_to_coalescence',
+    'gr_gw_strain_amplitude',
     'lcdm_hubble',
     'lcdm_luminosity_distance',
     'lcdm_om_z',

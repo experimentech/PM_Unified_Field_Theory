@@ -387,6 +387,210 @@ Properties: $P(\rho_{\mathrm{nuc}})=0$; sound speed $c_s = c/\sqrt{2}$.
 
 Implementation: \texttt{src/pushing\_medium/critical\_state.py}
 
+%--------------------------------------------------------------------
+\subsection*{Diagnostic: Three-Way Disconnection of $U(\phi)$}
+%--------------------------------------------------------------------
+
+The deformation energy $U(\phi)$ is currently used \emph{only} as a
+stability condition.  Three structural gaps exist.
+
+\textbf{Gap~1 — $U(\phi)$ is absent from the Lagrangian.}
+The PM Lagrangian density (see §PM Lagrangian) contains gradient and
+kinetic terms $-\tfrac{1}{2}|\nabla\phi|^2 + \tfrac{(\partial_t\phi)^2}{2c_\phi^2}$
+but no potential term $-V(\phi)$.  Consequently the static equation of
+motion for $\phi$ is the linear Poisson equation
+\[
+  \nabla^2\phi = -\tfrac{8\pi G}{c^2}\rho_M,
+\]
+with \emph{no self-coupling from $U$}.  The stability cap $\phi<1$ is
+therefore an externally imposed condition, not a dynamical consequence
+of the Lagrangian.  If $U$ were included as $-V(\phi)=-U(\phi)/c_\phi^2$,
+the field equation would become
+\[
+  \nabla^2\phi \;-\; \frac{U'(\phi)}{c_\phi^2}
+  = -\tfrac{8\pi G}{c^2}\rho_M
+  \qquad\bigl[U'(\phi)=\varepsilon_0(2\phi-\phi^2)\bigr],
+\]
+a nonlinear Poisson equation that
+would self-regulate compression and make $\phi_{\rm crit}=1$ an emergent
+feature rather than a postulate.
+
+\textbf{Gap~2 — $U(\phi)$ and the EOS are thermodynamically inconsistent.}
+If $U(\phi)$ were the fluid's internal energy density, the thermodynamic
+pressure would follow from $P_{\rm thermo}=\rho^2\partial(U/\rho)/\partial\rho$.
+Evaluating with $\rho=\rho_{\rm nuc}e^{\phi}$:
+\[
+  P_{\rm thermo}
+  = \varepsilon_0\!\left(2\phi - 2\phi^2 + \frac{\phi^3}{3}\right).
+\]
+At small $\phi$ this gives $P_{\rm thermo}\approx 2\varepsilon_0\phi$, whereas
+the stated EOS gives $P_{\rm EOS}=\tfrac{c^2}{2}(\rho-\rho_{\rm nuc})
+\approx\tfrac{\varepsilon_0}{2}\phi$.
+The ratio $P_{\rm thermo}/P_{\rm EOS}\approx 4$ at lowest order.
+They are measuring fundamentally different things and are never
+reconciled in the current framework.  $U(\phi)$ is thus \emph{not}
+the thermodynamic free energy of the PM fluid — its physical
+interpretation is unspecified.
+
+\textbf{Gap~3 — Field gradient energy $\tfrac{1}{2}|\nabla\phi|^2$
+does not gravitate.}
+The Hamiltonian (see §Hamiltonian) contains $\tfrac{1}{2}|\nabla\phi|^2$
+as positive-definite field energy, yet the Poisson equation sources
+$\phi$ from $\rho_M$ alone.  In the strong-field interior:
+\[
+  |\nabla\phi|^2 \sim \left(\frac{\mu_G m(r)}{r^2}\right)^2.
+\]
+At the PM stability cap this omitted self-energy density is
+$\lesssim 1\%$ of $\rho_{\rm crit}c^2$, so it is negligible for
+stellar structure — but it is a formal inconsistency that would
+become important if $U(\phi)$ is modified to allow higher compactness.
+
+\textbf{Root cause.}  All three gaps trace to the same origin:
+$U(\phi)$ was introduced as a phenomenological stability condition
+(analogous to a Landau order parameter) without being derived from
+the PM Lagrangian.  Because it feeds into neither the Poisson
+equation nor the hydrostatic equilibrium, the compact-star sector
+rests on a stability criterion that is decoupled from the dynamics.
+This is the most likely site of the strong-field aberration.
+
+\textbf{Minimal repair strategy.}
+A self-consistent extension requires choosing \emph{one} of:
+\begin{enumerate}
+  \item[(a)] Add $-U(\phi)/c_\phi^2$ to the Lagrangian; re-derive the EOS
+        from the modified equation of motion; accept that
+        $P_{\rm EOS}$ changes.
+  \item[(b)] Keep the EOS and the Lagrangian as-is; replace $U(\phi)$ with
+        a different stability argument whose critical point $\phi_c$
+        is a free parameter fit to compact-object data (effectively
+        relaxing the hard cap).
+  \item[(c)] Interpret $U(\phi)$ as an \emph{additional} elastic pressure
+        of the medium, add it to the hydrostatic equilibrium
+        ($P_{\rm total}=P_{\rm EOS}+U'(\phi)\times$(geometric factor)),
+        and require thermodynamic self-consistency.
+\end{enumerate}
+
+\textbf{Numerical probe results (gap\_probe\_comparison.py).}
+Running the PM compact-star ODE under each repair option yields:
+
+\begin{itemize}
+  \item \textbf{Gap~2 — additional finding:}
+    $P_{\rm thermo}(\phi)$ is \emph{non-monotonic}.  Its maximum occurs at
+    \[
+      \frac{dP_{\rm thermo}}{d\phi} = \varepsilon_0(2-4\phi+\phi^2) = 0
+      \;\Longrightarrow\;
+      \phi_{\rm max} = 2-\sqrt{2} \approx 0.586 < \phi_{\rm crit}=1.
+    \]
+    By $\phi_{\rm crit}=1$ the thermodynamic pressure has \emph{decreased}
+    to $P_{\rm thermo}(1)=\tfrac{1}{3}\varepsilon_0 < 0.80\,P_{\rm thermo}(\phi_{\rm max})$.
+    Hence $U(\phi)$ cannot serve as a thermodynamic free energy anywhere
+    in the range $[0.586, 1]$ — the derived ``EOS'' would have negative
+    compressibility.
+
+  \item \textbf{Gap~1 — Poisson correction magnitude (corrected formula):}
+    The correct Gauss-theorem result for the $U'(\phi)$ self-coupling is
+    \[
+      \delta\!\left(\frac{d\phi}{dr}\right)
+      = \frac{\mu_G}{r^2}\int_0^r \frac{U'(\phi(r'))}{c^2}\,r'^2\,dr'
+      \approx \mu_G\,\rho_{\rm nuc}(2\phi-\phi^2)\,\frac{r}{3}.
+    \]
+    (The na\"ive formula $(r/3)U'(\phi)/c^2$ omits $\mu_G=2G/c^2$ and has
+    unit $\mathrm{kg\,m^{-2}}$ instead of $\mathrm{m^{-1}}$, inflating the
+    estimate by $\sim 10^{23}$.)
+    The correctly normalised ratio at $\phi=\phi_{\rm crit}$ with interior
+    density $\bar\rho\approx\rho_{\rm crit}$ is
+    \[
+      \frac{\delta(d\phi/dr)}{(d\phi/dr)_{\rm std}}
+      \approx \frac{\rho_{\rm nuc}}{4\pi\,\rho_{\rm crit}}
+      = \frac{1}{4\pi e} \approx 2.9\%.
+    \]
+    \emph{The Gap~1 Poisson correction is a percent-level effect in the
+    stellar interior — not negligible at precision level, but far smaller
+    than the Gap~3 elastic pressure ($\sim 78\%$ of $P_{\rm EOS}$).}
+
+  \item \textbf{Option~(b) — negative result:}
+    Sweeping $\phi_{\rm crit}$ from 1 to 5 with the baseline linear EOS
+    ($c_s = c/\sqrt{2}$) does \emph{not} raise $M_{\rm max}$ above 30\,M$_\odot$
+    for any value in that range.  The mass ceiling is determined by EOS
+    stiffness, not by the stability cap.  \emph{Option~(b) alone cannot
+    close the BH mass gap.}
+
+  \item \textbf{Option~(c) — positive result:}
+    Setting $P_{\rm total}=P_{\rm EOS}+U(\phi)$ at unchanged $\phi_{\rm crit}=1$
+    raises $M_{\rm max}$ from ${\approx}14\,M_\odot$ (baseline) to
+    ${\approx}31\,M_\odot$ — comparable to the GW150914 lower component
+    ($30.7^{+5.2}_{-3.0}\,M_\odot$).  Mechanism: $U(\phi_{\rm crit})=
+    \tfrac{2}{3}\varepsilon_0 \approx 78\%\times P_{\rm EOS}(\rho_{\rm crit})$
+    substantially stiffens the effective EOS.
+\end{itemize}
+
+\textbf{Gap~4 — $\rho_{\rm nuc}$ as the critical radius variable (from test\_rho\_nuc\_constraint.py).}
+After Option~(c) fixes $M_{\rm max}$, the residual problem is the radius:
+$R_{1.4}\approx 14.0$\,km (ODE) vs.\ $\leq 13.3$\,km (GW170817, 90\% CI).
+Further probing reveals the root cause:
+
+The PM stellar surface condition is $P=0 \Leftrightarrow \rho=\rho_{\rm nuc}$.
+A $1.4\,M_\odot$ star has mean density $\langle\rho\rangle \approx 0.11\,\rho_{\rm nuc}$,
+so the star is nearly a \emph{uniform sphere at density $\rho_{\rm nuc}$}:
+\[
+  \boxed{R_{1.4} \approx \left(\frac{3\,M_{1.4}}{4\pi\,\rho_{\rm nuc}}\right)^{1/3}
+        = 14.24\;\text{km}}     \qquad (\text{ODE: }14.0\pm 0.1\;\text{km})
+\]
+For this reason, $R_{1.4}$ is insensitive to both $\alpha$ (the U$(\phi)$
+coefficient) and $\gamma$ (the EOS sound-speed factor $c_s^2=\gamma c^2/2$):
+both modify the EOS at densities well above $\rho_{\rm nuc}$, whereas the
+star's bulk is near $\rho_{\rm nuc}$.  Numerical confirmation:
+$R_{1.4}$ varies $\leq 4\%$ over $\alpha\in[0,2]$ and $\leq 8\%$ over $\gamma\in[0.3,2]$.
+
+The \emph{only} parameter that directly controls $R_{1.4}$ is $\rho_{\rm nuc}$:
+\[
+  R_{1.4}\propto \rho_{\rm nuc}^{-1/3},
+  \qquad
+  \frac{\partial \ln R_{1.4}}{\partial \ln\rho_{\rm nuc}} = -\tfrac{1}{3}
+  \;\;\text{(confirmed to 0.2\%)}
+\]
+
+\textbf{Two-parameter repair and joint feasibility window.}
+Defining $f=\rho_{\rm nuc}/\rho_{\rm nuc,0}$, the two observational constraints:
+\begin{align*}
+  M_{\rm max}&\geq 28\,M_\odot \quad\text{(requires $\alpha\sim 1$, i.e.\ Option~c)}\\
+  R_{1.4}&\leq 13.3\;\text{km}\quad\text{(requires $f\geq 1.18$)}
+\end{align*}
+are \emph{decoupled}: $\alpha$ controls $M_{\rm max}$ at high $\phi$,
+$f$ controls $R$ via the surface condition.  Both are simultaneously satisfiable:
+\begin{center}
+\begin{tabular}{lllll}
+\hline
+$f$ & $\rho_{\rm nuc}$ & $M_{\rm max}$ & $R_{1.4}$ & Status\\
+\hline
+1.00 & $2.30\times 10^{17}$ & $30.8\,M_\odot$ & 14.0 km & $R$ too large\\
+1.15 & $2.64\times 10^{17}$ & $28.7\,M_\odot$ & 13.3 km & marginal\\
+1.18 & $2.71\times 10^{17}$ & $28.4\,M_\odot$ & 13.2 km & \textbf{BOTH OK}\\
+1.20 & $2.76\times 10^{17}$ & $28.1\,M_\odot$ & 13.1 km & \textbf{BOTH OK}\\
+1.22 & $2.81\times 10^{17}$ & $27.9\,M_\odot$ & 13.1 km & $M_{\rm max}$ low\\
+\hline
+\end{tabular}
+\end{center}
+(Here $\alpha=1$ fixed; increasing $\alpha$ to $\approx 1.15$ at $f=1.18$ can
+simultaneously raise $M_{\rm max}$ back above $30\,M_\odot$.)
+The joint feasibility window is narrow ($\approx 3$\% in $\rho_{\rm nuc}$)
+but real.  A shift of $f=1.18$ is physically reasonable: $\rho_{\rm nuc}=2.71\times10^{17}$
+is within the range of neutron-rich nuclear matter calculations, which typically predict
+saturation densities 10–30\% above the symmetric-matter value of $2.3\times10^{17}\,\mathrm{kg/m^3}$.
+
+\textbf{Summary of findings.}
+\begin{enumerate}
+  \item $M_{\rm max}$: controlled by $U(\phi)$ at high $\phi$ (Option~c).  Fixed.
+  \item $R_{1.4}$: controlled by $\rho_{\rm nuc}$ (the surface density anchor).
+        Requires a $\sim 18\%$ upward revision of $\rho_{\rm nuc}$.
+  \item The two corrections are decoupled and jointly feasible.
+  \item $U(\phi)$ cannot serve as a thermodynamic free energy above $\phi=0.586$.
+\end{enumerate}
+
+Option~(a) changes the most and preserves formal consistency.
+Options~(b) and~(c) are more conservative.  Any repair must preserve
+the weak-field limit ($U\to 0$ as $\phi\to 0$) and the two-phase
+cosmological structure ($\phi_{\rm crit}$ couples to $\Omega_E$).
+
 %====================================================================
 \section{Compact Star Structure (exact within PM)}
 %====================================================================
@@ -462,9 +666,38 @@ EXO\,0748$-$676 (Cottam 2002): $z_{\rm obs}\approx 0.35$,
 consistent with PM at NICER masses but insufficient to distinguish
 the theories without an independent $(M,R)$ measurement.
 
+\textbf{Status: structural prediction, not a gap.}
+The factor-of-2 in $\mu_G = 2G/c^2$ is the \emph{same} coefficient that produces
+the correct $4GM/c^2 b$ light deflection and the $2GM/c^3\ln(\cdot)$ Shapiro delay.
+These cannot be adjusted without destroying PM's agreement with solar-system tests.
+The larger surface redshift is therefore a genuine, irreducible prediction of PM's
+optical-metric prescription — no choice of EOS parameters ($f$, $\alpha$, $\gamma$,
+$\rho_{\rm nuc}$) can lower $z_{\rm PM}/z_{\rm GR}$ below $\approx 1.7$
+at neutron-star compactness.  Numerical confirmation: $z_{\rm PM}/z_{\rm GR}
+= 1.78\pm 0.02$ over all $(f,\alpha)$ variants tested.
+
+\textbf{Observational discriminant.}
+A spectroscopic $z_{\rm surface}$ measurement that is \emph{independent} of $(M,R)$
+would sharply distinguish the theories.  If any well-characterised neutron star
+(e.g.\ from NICER timing + hotspot modelling) yields $z \lesssim 0.25$,
+PM's optical-metric formula is falsified.  If $z \gtrsim 0.35$ is confirmed,
+it favours PM over GR.
+
+\textbf{Open question.}
+The formula $1+z = e^{\phi_{\rm ext}}$ is derived from the \emph{static}
+ratio of $g_{tt}$ at emission and reception in the optical metric.  In a
+physical dispersive medium, however, the photon frequency also evolves
+as it propagates through a spatially varying refractive index
+(analogous to adiabatic wavelength stretching in fibre optics).
+Whether the medium wave-equation derivation reproduces the static $g_{tt}$
+ratio exactly, or introduces a correction factor, is not yet settled.
+If the wave-equation result differs, the $\approx 2\times$ discrepancy
+could be reduced without touching $\mu_G$.
+
 Implementation: \texttt{stellar\_structure.pm\_surface\_redshift},
 \texttt{classical.gr\_surface\_redshift},
-\texttt{scripts/surface\_redshift\_track.py}
+\texttt{scripts/surface\_redshift\_track.py},
+\texttt{tests/test\_z\_surface\_variants.py}
 
 %====================================================================
 \section{GW Ringdown: PM vs GR}
@@ -531,6 +764,205 @@ to the stability cap:
 Impl.: \texttt{core.pm\_surface\_echo\_delay},
 \texttt{classical.gr\_qnm\_frequency},
 \texttt{scripts/gw\_ringdown\_comparison.py}
+%====================================================================
+\section{Black-Hole Shadow / EHT: PM vs GR}
+%====================================================================
+
+\textbf{GR Schwarzschild BH shadow} (photon-sphere capture impact parameter):
+\[
+  b_{\mathrm{GR}}^{\mathrm{BH}} = 3\sqrt{3}\,\frac{GM}{c^2}
+  \approx 2.598\,R_s
+\]
+arising from the photon sphere at $r_{\mathrm{ps}}=3GM/c^2$.
+
+\textbf{GR compact star shadow} (surface-grazing Schwarzschild ray):
+\[
+  b_{\mathrm{GR}}^{\star}(R_\star) = \frac{R_\star}{\sqrt{1 - R_s/R_\star}}
+\]
+equals $b_{\mathrm{GR}}^{\mathrm{BH}}$ when $R_\star = r_{\mathrm{ps}} = 3GM/c^2$.
+
+\textbf{PM compact star shadow.}
+In the PM exterior $n(r)=\exp(\mu_G M/r)$, Bouguer's theorem gives
+$b=n(r)\,r\,\sin\theta=\mathrm{const}$.  The critical impact parameter for a
+ray grazing the stellar surface is:
+\[
+  \boxed{b_{\mathrm{PM}}^{\star}(R_\star) = e^{2GM/(c^2 R_\star)}\,R_\star}
+\]
+\textbf{PM has no photon sphere} for $R_\star \ge R_s$, proven analytically:
+$F'(r)=\tfrac{d}{dr}[n(r)\,r]>0$ for all $r\ge R_s$.
+
+\textbf{Key comparison} at maximum compactness ($R_\star \to R_s$):
+\[
+  b_{\mathrm{PM}}^{\min} = e\,R_s \approx 2.718\,R_s
+  \quad > \quad
+  b_{\mathrm{GR}}^{\mathrm{BH}} \approx 2.598\,R_s
+  \qquad \Rightarrow \quad
+  \frac{b_{\mathrm{PM}}^{\min}}{b_{\mathrm{GR}}^{\mathrm{BH}}}
+  = \frac{2e}{3\sqrt{3}} \approx 1.046
+\]
+\emph{PM always predicts shadows \(\ge 4.6\%\) larger than a GR BH of the
+same mass.}  For typical PM neutron-star compactness ($k=R_\star/R_s\approx3$)
+the excess is $\approx\!60\%$.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+ & $b/R_s$ & GR BH? & $\theta$ prediction \\
+\midrule
+GR BH   & $3\sqrt{3}/2 \approx 2.598$ & yes & $\theta_{\mathrm{GR}}$ \\
+PM max-compact ($k=1$) & $e\approx2.718$ & no & $+4.6\%$ over GR BH \\
+PM typical NS ($k=3$) & $e^{1/3}\times3\approx4.187$ & no & $+61\%$ over GR BH \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{EHT observations and PM double falsification:}
+\begin{center}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Source & $M\,[M_\odot]$ & $D$ & $\theta_{\mathrm{obs}}$ [$\mu$as]
+       & $\theta_{\mathrm{GR}}$ & $M/M_{\max}^{\mathrm{PM}}$ \\
+\midrule
+M87*   & $6.5\times10^9$ & 16.8\,Mpc & $42\pm3$  & 39.7 & $\sim4.6\times10^8$ \\
+Sgr\,A* & $4.15\times10^6$ & 8.178\,kpc & $51.8\pm2.3$ & 52.1 & $\sim3.0\times10^5$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{enumerate}
+  \item \textbf{Mass-gap falsification:} EHT source masses
+        ($10^6$--$10^9\,M_\odot$) exceed the PM maximum compact-object mass
+        ($\approx\!14\,M_\odot$) by factors of $10^5$--$10^8$.
+        PM cannot form these objects.
+  \item \textbf{Shadow-shape falsification:} If PM compact objects
+        \emph{could} exist at these masses, even the most compact PM case
+        would predict a shadow $4.6\%$ larger than GR.  For any physically
+        realistic compactness the excess is 10--160\%.  EHT observations are
+        consistent with GR to $\lesssim5\%$.
+\end{enumerate}
+
+Implementation: \texttt{classical.gr\_shadow\_radius},
+\texttt{core.pm\_shadow\_radius},
+\texttt{tests/test\_eht\_shadow.py} (23 tests),
+\texttt{scripts/eht\_shadow\_comparison.py}
+
+%====================================================================
+\section{GW Inspiral / Chirp Waveform: PM vs GR}
+%====================================================================
+
+\subsection*{0PN Identity Theorem}
+
+At leading (quadrupole) order, PM and GR produce \emph{identical}
+inspiralling waveforms.
+The two ingredients are:
+\begin{enumerate}
+  \item Quadrupole radiation power $P_\mathrm{GW}
+        = \dfrac{32}{5}\,\dfrac{G^4 M_1^2 M_2^2(M_1{+}M_2)}{c^5\,a^5}$
+        (same formula; Hulse–Taylor validates to $<0.2\%$),
+  \item Newtonian orbital energy $E = -\dfrac{GM}{2a}$ (same).
+\end{enumerate}
+Because $\dot{f} \propto M_c^{5/3} f^{11/3}$ depends only on these, the
+\emph{chirp mass} measured by LIGO is indistinguishable between PM and GR
+at this order.
+
+\subsection*{Key Formulas (0PN, circular orbit)}
+
+\noindent\textbf{Chirp mass (directly measured from $df/dt$):}
+\[
+  \boxed{M_c = \frac{(M_1 M_2)^{3/5}}{(M_1+M_2)^{1/5}}}
+\]
+
+\begin{align}
+  \frac{df}{dt} &= \frac{96}{5}\,\pi^{8/3}
+      \left(\frac{G M_c}{c^3}\right)^{5/3} f^{11/3}
+      & \text{(frequency sweep)} \\[6pt]
+  t_\mathrm{coal}(f) &= \frac{5}{256}
+      \left(\frac{c^3}{G M_c}\right)^{5/3}
+      (\pi f)^{-8/3}
+      & \text{(time to merger)} \\[6pt]
+  h_c &= \frac{4}{D}\,\frac{G M_c}{c^2}
+      \left(\frac{\pi G M_c f}{c^3}\right)^{2/3}
+      & \text{(peak strain, face-on)}
+\end{align}
+
+\noindent The \textbf{analytic 0PN chirp} ($\tau = t_\mathrm{coal}-t$):
+\begin{align}
+  f(\tau) &= \frac{5^{3/8}}{8\pi}
+      \left(\frac{c^3}{G M_c}\right)^{5/8} \tau^{-3/8} \\[4pt]
+  \Phi(\tau) &= \Phi_\mathrm{ref} - 2\!\left(\frac{\tau}{\tau_c}\right)^{5/8},
+      \quad \tau_c = \frac{5\,G M_c}{c^3}
+\end{align}
+
+\subsection*{GWTC-3 Mass Gap: the Dominant PM Constraint}
+
+Differences between PM and GR arise only at 1.5PN+ (tail terms, near-zone
+corrections).  The primary falsification is \textbf{object formation}: PM sets a
+compact-object mass ceiling $M_\mathrm{max} \approx 13$--$14\,M_\odot$, yet the
+majority of LIGO events have components far above this.
+
+\begin{center}
+\begin{tabular}{lcccc}
+\hline
+Event & $M_1/M_\odot$ & $M_2/M_\odot$ & $M_c/M_\odot$ & PM accessible? \\
+\hline
+GW150914 & 35.6 & 30.6 & 28.7 & \textbf{No — mass gap} \\
+GW151226 & 13.7 &  7.7 &  8.9 & Marginal / No \\
+GW170814 & 30.5 & 25.3 & 24.2 & \textbf{No — mass gap} \\
+GW170817 &  1.46 & 1.27 &  1.19 & Yes (BNS) \\
+GW190814 & 22.2 &  2.6 &  6.0 & \textbf{No — mass gap} \\
+GW190521 & 85.0 & 66.0 & 65.1 & \textbf{No — mass gap} \\
+\hline
+\end{tabular}
+\end{center}
+
+\noindent\textbf{GW170817 tidal deformability (computed):}
+Computed via the Clairaut–Radau equation for the Newtonian Love number $k_2$
+(Poisson \& Will \emph{Gravity} eq.~14.34):
+\[
+  \frac{dy}{dr} = \frac{-y^2 - 5y + 6\nu(1+y)}{r}, \quad
+  \nu(r) = \frac{\rho(r)}{\bar\rho(r)}, \quad y(0)=2
+\]
+\[
+  k_2 = \frac{y_R - 2}{2(2y_R+3)}, \qquad
+  \Lambda = \frac{2}{3}\,\frac{k_2}{C^5}, \quad C = \frac{GM}{c^2 R}
+\]
+
+\begin{center}
+\begin{tabular}{lrrrrr}
+\hline
+Config & $R$ [km] & $C$ & $y_R$ & $k_2$ & $\Lambda$ \\
+\hline
+Baseline $f{=}1.00, \alpha{=}0$ & 13.94 & 0.1479 & 2.798 & 0.0464 & 437 \\
+Option-c $f{=}1.00, \alpha{=}1$ & 13.94 & 0.1479 & 2.798 & 0.0464 & 437 \\
+JointFeas $f{=}1.18, \alpha{=}1$ & 13.18 & 0.1567 & 2.786 & 0.0459 & 324 \\
+Tighter $f{=}1.20, \alpha{=}1$ & 13.10 & 0.1574 & 2.785 & 0.0458 & 316 \\
+\hline
+\multicolumn{5}{l}{GW170817: $\tilde\Lambda < 800$ (90\% CI), $< 580$ (50\% CI)} & \\
+\multicolumn{5}{l}{GR reference: SLy $\approx 250$, DD2 $\approx 660$} & \\
+\hline
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Key finding:} PM tidal deformability is \emph{within} GW170817 bounds
+for all configurations. The joint feasibility configurations ($f=1.18$--$1.20$) give
+$\Lambda\approx315$--$325$, comparable to the APR4 GR EOS ($\Lambda\approx320$) and
+well below both the 90\% and 50\% CI upper bounds.  The earlier estimate
+$\Lambda_\mathrm{PM}\approx3.7\,\Lambda_\mathrm{GR}$ was for the wrong $f=1$ baseline
+and used a $R^5$ scaling that does not account for the Love number $k_2$ reduction in
+a near-uniform-density PM star.  The nearly uniform PM density profile
+($\nu(r)\approx 1$ throughout) gives $y_R\approx2.8$, $k_2\approx0.046$, which
+partially cancels the larger radius effect vs.\ GR EOS with $\Lambda\approx300$--$660$.
+
+Implementation: \texttt{tests/test\_tidal\_deformability.py} (14 tests).
+
+Implementation: \texttt{core.pm\_chirp\_mass}, \texttt{pm\_gw\_frequency\_deriv},
+\texttt{pm\_time\_to\_coalescence}, \texttt{pm\_gw\_strain\_amplitude},
+\texttt{pm\_gw\_chirp\_waveform}; \texttt{classical.gr\_chirp\_mass},
+\texttt{gr\_time\_to\_coalescence}, \texttt{gr\_gw\_strain\_amplitude};
+\texttt{tests/test\_gw\_inspiral.py} (36 tests),
+\texttt{scripts/gw\_inspiral\_comparison.py}
+
 %====================================================================
 \section{Perihelion Precession: PM vs GR}
 %====================================================================
@@ -634,7 +1066,7 @@ $H_{\rm PM}$ background with no friction term from the drag force):
   \approx 0.687\,H_0
 \]
 The growth rate observable $f_{\rm static}(z) = \Gamma / H_{\rm PM}(z)$
-\emph{increases with redshift} (opposite to ΛCDM), grossly over-predicting
+\emph{increases with redshift} (opposite to $\Lambda$CDM), grossly over-predicting
 cluster abundances.
 
 \textbf{Scenario 2 — PM-Drag} (index decay provides Hubble-like friction):
@@ -648,7 +1080,7 @@ power-law growing mode $D\propto a^p$ satisfies
   \quad\Longrightarrow\quad
   p = \tfrac{1}{2}\!\left[(\beta-2)+\sqrt{(2-\beta)^2+6\Omega_{\rm eff}}\right].
 \]
-For $\beta=\tfrac{3}{2}$ (ΛCDM matter-domination), $p=1$ exactly.
+For $\beta=\tfrac{3}{2}$ ($\Lambda$CDM matter-domination), $p=1$ exactly.
 
 \textbf{Falsification — runaway growth at $\Omega_{\rm eff}=1$:}
 For $\beta=0.8$, the gravity term $\propto a^{-3.4}$ grows much faster than
@@ -702,6 +1134,102 @@ Implementation:
 \texttt{tests/test\_cosmology\_growth.py} (35 tests).
 
 %====================================================================
+\section{PM Two-Phase Cosmology: $\beta=0.8$ as Dark Energy in Disguise}
+
+\subsection*{The Phase Transition Connection}
+
+PM has a natural phase transition at $\varphi_{\rm crit}=1$ (compact objects)
+where dense matter transitions to a uniform ``energy phase'' whose density
+does \emph{not} dilute with expansion.  Cosmologically, this provides a
+dark-energy analogue with two components:
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Phase & Density scaling & Behaviour \\
+\midrule
+Matter phase & $\rho_m \propto a^{-3}$ & Clusters; drives structure growth \\
+Energy phase & $\rho_E \propto a^{-3(1+w_E)}$ & No clustering; $w_E\approx -1$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The two-phase Friedmann equation is
+\[
+  H^2(z) = H_0^2\!\left[\Omega_m(1+z)^3
+            + \Omega_E(1+z)^{3(1+w_E)}\right], \quad \Omega_E = 1-\Omega_m.
+\]
+For $w_E=-1$ (PM prediction: ground-state medium has constant density)
+this is \textbf{mathematically identical to $\Lambda$CDM}.
+
+\subsection*{The Origin of $\beta=0.8$}
+
+Define the instantaneous power-law index
+\[
+  \beta_{\rm eff}(z) = \frac{d\ln H}{d\ln(1+z)}
+  = \frac{3}{2}\,\frac{\Omega_m(1+z)^3
+    + (1+w_E)\,\Omega_E(1+z)^{3(1+w_E)}}{E^2(z)}.
+\]
+
+Key limits (Planck 2018, $w_E=-1$):
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Limit & $\beta_{\rm eff}$ & Interpretation \\
+\midrule
+$z\to\infty$ & $3/2$ & Pure matter domination \\
+$z=1$        & $1.18$ & Transition epoch \\
+$z=0$        & $(3/2)\,\Omega_m\approx 0.47$ & Energy-phase domination \\
+\midrule
+$\langle\beta_{\rm eff}\rangle_{D_L}$ over $z=0.1\text{--}1.5$
+             & $\approx 1.0$ & Instantaneous mean \\
+Best-fit constant $\beta$ to $D_L$
+             & $\approx 0.80$ & \textbf{This is the PM calibration}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Conclusion:} $\beta=0.8$ is NOT a PM-specific parameter.  It is the
+best-fit single power-law (constant $\beta$) to $D_L^{\Lambda{\rm CDM}}$ over
+$z=0.1$--$1.5$.  The fit lands at $\beta\approx 0.8$ rather than $1.0$ because
+errors partially cancel between regions where $\beta_{\rm eff}<0.8$ (low $z$)
+and $\beta_{\rm eff}>0.8$ (high $z$).  Either way, the calibration was performed
+against $\Lambda$CDM data — the energy phase was implicitly assumed all along.
+
+\subsection*{Implications}
+
+\begin{enumerate}
+  \item \textbf{PM cosmology requires dark energy.}  Without an energy-phase
+        component ($\Omega_E=0$, single $\beta$), PM-Drag with $\Omega_{\rm eff}=1$
+        has no valid matter-dominated era (ODE failure; falsified).
+  \item \textbf{The two-phase model ($w_E=-1$) is $\Lambda$CDM.}  All
+        observables — luminosity distance, growth factor, $f\sigma_8$ — are
+        numerically identical.  This removes the previous free parameter
+        $\Omega_{\rm eff}$ and replaces it with a physically derived
+        $\Omega_E = 1 - \Omega_m = 0.685$.
+  \item \textbf{Compact objects and cosmology share one phase transition.}
+        The same $\varphi_{\rm crit}=1$ that caps neutron-star masses at
+        $\approx 14\,M_\odot$ drives cosmic acceleration.
+  \item \textbf{The cosmological constant problem in PM language.}
+        The energy-phase density at compact-object scales
+        ($\rho_E\sim e\,\rho_{\rm nuc}\approx6\times10^{17}\,\text{kg/m}^3$)
+        is $\sim10^{44}\times$ larger than the observed cosmological value
+        ($\rho_\Lambda\approx6.5\times10^{-27}\,\text{kg/m}^3$).
+        PM names the problem but does not solve it.
+  \item \textbf{Distinguishable prediction.}  A slow matter$\to$energy phase
+        conversion at rate $\alpha$ gives $w_E>-1$ (quintessence-like), differing
+        from the pure cosmological constant.  Near-future surveys (DESI, Euclid)
+        can measure $w_E$ to $\pm0.05$; PM predicts $w_E$ very close to $-1$.
+\end{enumerate}
+
+Implementation:
+\texttt{src/pushing\_medium/cosmology.py} (\texttt{pm\_twophase\_hubble},
+\texttt{pm\_effective\_beta}, \texttt{pm\_energy\_phase\_fraction},
+\texttt{pm\_twophase\_growth\_factor\_rate}, \texttt{pm\_twophase\_fsigma8}),
+\texttt{scripts/pm\_twophase\_cosmology.py},
+\texttt{tests/test\_cosmology\_growth.py} (47 tests total).
+
+%====================================================================
 
 \begin{tabular}{@{}lll@{}}
 \toprule
@@ -743,8 +1271,10 @@ Compact star structure & \texttt{pm-stellar-structure.tex} \\
 Stellar structure impl.\ & \texttt{stellar\_structure.py} \\
 Surface redshift track & \texttt{scripts/surface\_redshift\_track.py} \\
 GW ringdown / QNM echoes & \texttt{scripts/gw\_ringdown\_comparison.py} \\
+EHT shadow comparison & \texttt{scripts/eht\_shadow\_comparison.py} \\
 Perihelion precession & \texttt{scripts/perihelion\_precession\_comparison.py} \\
 Cosmology ($f\sigma_8$ / $D_L$) & \texttt{scripts/fsigma8\_comparison.py} \\
+PM two-phase cosmology & \texttt{scripts/pm\_twophase\_cosmology.py} \\
 Calibration derivation & \texttt{calibration-constants-derivation.tex} \\
 Coupling constants & \texttt{coupling-constants-reference.tex} \\
 Cross-force analysis & \texttt{cross-force-hierarchy-honest.tex} \\

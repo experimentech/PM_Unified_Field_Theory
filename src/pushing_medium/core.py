@@ -746,6 +746,185 @@ def pm_circular_orbit_energy(M: float, a: float) -> float:
 
 
 # ---------------------------------------------------------------------------
+# GW inspiral: chirp mass, frequency evolution, waveform
+# ---------------------------------------------------------------------------
+# At 0PN (leading post-Newtonian order) PM and GR give IDENTICAL inspiral
+# waveforms because:
+#   (1) Quadrupole radiation power  P_GW = (32/5) G⁴(M₁M₂)²(M₁+M₂)/(c⁵a⁵)
+#       is the same in PM and GR (Hulse-Taylor confirmed to 0.2%).
+#   (2) Orbital energy  E = -GM_tot/(2a)  is the same (Newtonian regime).
+# => The chirp mass M_c and all 0PN observables are indistinguishable.
+#
+# Differences appear at 1.5PN (GW tail terms) and higher, where PM's
+# modified near-zone metric produces corrections.  Those are unmeasured.
+#
+# The dominant LIGO constraint on PM is therefore the MASS GAP:
+#   GW150914 progenitors  29+36 M⊙  >>  PM M_max ≈ 13–14 M⊙
+#   GW190814 primary      23.2  M⊙  >>  PM M_max
+#   GW170817 BNS          1.46+1.27 M⊙  — within PM range.
+#                         Computed Lambda_PM ≈ 316–437 (via Clairaut-Radau
+#                         ODE; see tests/test_tidal_deformability.py) —
+#                         within GW170817 constraint (Lambda_tilde < 800 at 90%CI,
+#                         < 580 at 50%CI). Joint feasibility configs give
+#                         Lambda ≈ 316–324, comparable to APR4 GR EOS.
+# ---------------------------------------------------------------------------
+
+def pm_chirp_mass(M1: float, M2: float) -> float:
+    """Chirp mass  M_c = (M₁ M₂)^(3/5) / (M₁+M₂)^(1/5).
+
+    The combination of masses directly measured by LIGO from the frequency
+    sweep df/dt ∝ M_c^(5/3) f^(11/3).  Identical formula in PM and GR.
+
+    Parameters
+    ----------
+    M1, M2 : float   Component masses [kg].
+
+    Returns
+    -------
+    float   Chirp mass [kg].
+    """
+    return (M1 * M2) ** 0.6 / (M1 + M2) ** 0.2
+
+
+def pm_gw_frequency_deriv(f_gw: float, M_c: float) -> float:
+    """Leading-order (0PN) GW frequency time derivative.
+
+    df/dt = (96/5) π^(8/3) (G M_c/c³)^(5/3) f^(11/3)
+
+    Identical expression in GR and PM (shared quadrupole power formula).
+
+    Parameters
+    ----------
+    f_gw : float   Instantaneous GW frequency [Hz].
+    M_c  : float   Chirp mass [kg].
+
+    Returns
+    -------
+    float  df/dt [Hz/s].  Always positive (frequency sweeps upward).
+    """
+    return (
+        (96.0 / 5.0)
+        * math.pi ** (8.0 / 3.0)
+        * (G * M_c / c ** 3) ** (5.0 / 3.0)
+        * f_gw ** (11.0 / 3.0)
+    )
+
+
+def pm_time_to_coalescence(f_gw: float, M_c: float) -> float:
+    """Remaining time to merger as a function of instantaneous GW frequency.
+
+    Integrating df/dt = A f^(11/3) gives:
+        t_c(f) = (5/256) (c³/G M_c)^(5/3) (π f)^(-8/3)
+
+    Identical expression in GR and PM.  For GW170817 at f=23 Hz (LIGO entry)
+    this gives t_c ≈ 100 s; at f=2048 Hz (merger) it drops to ≈ 0.
+
+    Parameters
+    ----------
+    f_gw : float   Instantaneous GW frequency [Hz].
+    M_c  : float   Chirp mass [kg].
+
+    Returns
+    -------
+    float  t_c [s].
+    """
+    return (
+        (5.0 / 256.0)
+        * (c ** 3 / (G * M_c)) ** (5.0 / 3.0)
+        * (math.pi * f_gw) ** (-8.0 / 3.0)
+    )
+
+
+def pm_gw_strain_amplitude(M_c: float, D: float, f_gw: float) -> float:
+    """Leading-order (0PN) GW characteristic strain for a face-on circular binary.
+
+    h_c = (4/D) × (G M_c/c²) × (π G M_c f/c³)^(2/3)
+
+    Identical in PM and GR at this order.  Scales as h ∼ M_c^(5/3) f^(2/3) / D.
+
+    Parameters
+    ----------
+    M_c  : float   Chirp mass [kg].
+    D    : float   Luminosity distance [m].
+    f_gw : float   GW frequency [Hz].
+
+    Returns
+    -------
+    float  Dimensionless strain (peak, face-on, + polarisation).
+    """
+    return (
+        (4.0 / D)
+        * (G * M_c / c ** 2)
+        * (math.pi * G * M_c * f_gw / c ** 3) ** (2.0 / 3.0)
+    )
+
+
+def pm_gw_chirp_waveform(
+    M1: float,
+    M2: float,
+    D: float,
+    tau_start: float,
+    N: int = 4096,
+    iota: float = 0.0,
+    f_stop: float = 1000.0,
+):
+    """0PN leading-order time-domain GW waveform for a quasi-circular binary.
+
+    Uses the analytic chirp solution:
+        f(τ)   = (5^(3/8) / 8π) × (c³/G M_c)^(5/8) × τ^(-3/8)
+        Φ(τ)   = Φ_ref − 2 (τ / τ_c)^(5/8),  τ_c = 5 G M_c / c³
+        h₊(t)  = −(1+cos²ι)/2 × h_c(t) × cos(Φ(t))
+        h×(t) = −cosι × h_c(t) × sin(Φ(t))
+
+    where τ = t_coal − t (time remaining to merger).
+
+    At leading order PM and GR give IDENTICAL waveforms (see module comment).
+    Differences at 1.5PN+ are not included here.
+
+    Parameters
+    ----------
+    M1, M2    : float   Component masses [kg].
+    D         : float   Luminosity distance [m].
+    tau_start : float   Seconds before coalescence at start of the segment.
+    N         : int     Number of sample points.
+    iota      : float   Inclination [rad]; 0 = face-on.
+    f_stop    : float   GW frequency at which to stop [Hz]; default 1000 Hz
+                        (0PN approximation degrades near actual merger).
+
+    Returns
+    -------
+    t, f, h_plus, h_cross : numpy arrays of length N.
+        t = 0 at the start of the segment (tau_start before merger).
+    """
+    import numpy as np
+    M_c = pm_chirp_mass(M1, M2)
+    tau_c_scale = 5.0 * G * M_c / c ** 3   # characteristic chirp timescale [s]
+
+    tau_stop = max(pm_time_to_coalescence(f_stop, M_c), tau_start * 1e-6)
+    tau_arr = np.linspace(tau_start, tau_stop, N)
+    t_arr = tau_start - tau_arr   # forward time; 0 at segment start
+
+    # Analytic 0PN frequency
+    f_arr = (
+        (5.0 ** (3.0 / 8.0) / (8.0 * math.pi))
+        * (c ** 3 / (G * M_c)) ** (5.0 / 8.0)
+        * tau_arr ** (-3.0 / 8.0)
+    )
+
+    # Orbital phase (increases toward coalescence; set Φ_ref = 0)
+    phi_arr = -2.0 * (tau_arr / tau_c_scale) ** (5.0 / 8.0)
+
+    # Strain envelope
+    h0 = pm_gw_strain_amplitude(M_c, D, f_arr)
+
+    cos_i = math.cos(iota)
+    h_plus = -(1.0 + cos_i ** 2) / 2.0 * h0 * np.cos(phi_arr)
+    h_cross = -cos_i * h0 * np.sin(phi_arr)
+
+    return t_arr, f_arr, h_plus, h_cross
+
+
+# ---------------------------------------------------------------------------
 # GW ringdown / QNMs / echoes
 # ---------------------------------------------------------------------------
 
@@ -842,6 +1021,41 @@ def pm_surface_mode_damping_time(R_star: float, Q_factor: float = 10.0) -> float
     """
     f_mode = pm_surface_mode_frequency(R_star)
     return Q_factor / (math.pi * f_mode)
+
+
+def pm_shadow_radius(M: float, R_star: float) -> float:
+    """PM shadow radius: minimum impact parameter for surface-grazing light rays.
+
+    In the PM exterior metric n(r) = exp(μ_G M / r), μ_G = 2G/c².  Bouguer's
+    theorem gives the invariant b = n(r)·r·sinθ along a ray.  The critical ray
+    just grazes the stellar surface at r = R_star:
+
+        b_shadow = n(R_star) × R_star = exp(2GM / c² R_star) × R_star
+
+    Key comparisons:
+    - PM minimum (R_star → R_s = 2GM/c²): b_min = e × R_s ≈ 2.718 R_s
+    - GR BH photon-sphere shadow:           b_GR  = 3√3/2 × R_s ≈ 2.598 R_s
+    - Ratio at maximum compactness: b_min / b_GR = 2e/(3√3) ≈ 1.046
+
+    PM always predicts a shadow at least 4.6 % larger than an equal-mass GR BH.
+    For typical PM neutron-star compactness (R_star ≈ 3–5 R_s) the shadow is
+    10–60 % larger.
+
+    Note: EHT sources M87* (6.5×10⁹ M☉) and Sgr A* (4.15×10⁶ M☉) have masses
+    orders of magnitude above the PM maximum compact-object mass (~14 M☉), so PM
+    cannot form these objects at all — a prior mass-gap falsification.
+
+    Parameters
+    ----------
+    M      : float   Compact-object mass [kg].
+    R_star : float   Stellar radius [m].  Must satisfy R_star >= 2GM/c².
+
+    Returns
+    -------
+    float   Shadow impact parameter b_shadow [m].
+    """
+    mu_G = 2.0 * G / (c * c)   # = 1.4861e-27 m/kg
+    return math.exp(mu_G * M / R_star) * R_star
 
 
 def lense_thirring_precession(J: float, r: float) -> float:
