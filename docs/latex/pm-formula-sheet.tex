@@ -964,6 +964,67 @@ Implementation: \texttt{core.pm\_chirp\_mass}, \texttt{pm\_gw\_frequency\_deriv}
 \texttt{scripts/gw\_inspiral\_comparison.py}
 
 %====================================================================
+\subsection*{GW Polarisation: Scalar Breathing Mode}
+%====================================================================
+
+\noindent\textbf{Question:} Does the PM scalar field $n(\mathbf{r},t)$ produce a
+breathing-mode (scalar, $l{=}0$) GW polarisation during binary inspiral, in
+violation of the LIGO~O3 bound?
+
+\noindent\textbf{Conservation-law proof (no leading-order breathing radiation):}
+\begin{enumerate}
+  \item \textbf{Monopole:} total mass $M_{\rm tot} = \text{const}
+    \;\Rightarrow\;$ no monopole scalar radiation.
+  \item \textbf{Dipole:} centre-of-mass fixed for an isolated binary
+    $\;\Rightarrow\;$ no dipole scalar radiation.
+  \item \textbf{Scalar quadrupole:} for a \emph{circular} orbit the scalar
+    trace of the mass quadrupole
+    \[
+      I_{\rm trace} = \sum_i m_i \, |\mathbf{r}_i|^2 = \mu a^2 = \text{const}
+    \]
+    is \emph{constant} (unlike the STF tensor $\tilde I_{ij}$ which oscillates
+    at $2\omega$). Hence $\ddot{I}_{\rm trace} = 0$ exactly, and there is
+    \textbf{zero leading-order scalar quadrupole radiation}.
+\end{enumerate}
+
+\noindent\textbf{First non-zero breathing contribution} (from orbital decay):
+\[
+  \ddot{I}_{\rm trace} = -\frac{4\mu\beta^2}{a^6}, \qquad
+  \beta = \frac{64}{5}\frac{G^3 M_1 M_2 M_{\rm tot}}{c^5}
+  \quad\text{(Peters coefficient)}
+\]
+Ratio of breathing strain to tensor $h_+$:
+\[
+  \frac{|h_b|}{|h_+|} \;\approx\; \frac{\beta^2}{\omega^2 a^8}
+  \;\sim\; \left(\frac{v}{c}\right)^{10} \times (\text{mass factor})
+\]
+
+\noindent\textbf{Numerical result} (GW170817 parameters, $f_{\rm GW} = 100$~Hz):
+
+\begin{center}
+\begin{tabular}{lcc}
+\hline
+Quantity & PM prediction & Bound \\
+\hline
+$|h_b|/|h_+|$ & $\approx 10^{-7}$ & (unobservable) \\
+$\alpha_{\rm NT} = P_{\rm scalar}/P_{\rm total}$ & $\approx 10^{-14}$ & $< 0.07$ (LIGO O3, 90\%~CI) \\
+Margin above O3 limit & $\sim 10^{13}$ & --- \\
+\hline
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Key finding:} PM predicts effectively zero breathing-mode GW radiation
+for quasi-circular binary inspiral.  The non-tensor power fraction
+$\alpha_{\rm NT} \approx 10^{-14}$ is 13 orders of magnitude below the
+LIGO~O3 upper limit of~0.07 (Abbott~et~al.\ 2021, PRD~103, 122002).
+
+\textbf{PM passes the GW polarisation test.}
+
+Implementation: \texttt{core.pm\_scalar\_quadrupole\_trace},
+\texttt{pm\_breathing\_strain\_ratio}, \texttt{pm\_nontensor\_power\_fraction};
+\texttt{tests/test\_gw\_polarisation.py} (20 tests).
+
+%====================================================================
 \section{Perihelion Precession: PM vs GR}
 %====================================================================
 

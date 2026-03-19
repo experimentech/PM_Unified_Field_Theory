@@ -925,6 +925,129 @@ def pm_gw_chirp_waveform(
 
 
 # ---------------------------------------------------------------------------
+# GW polarisation: scalar breathing mode
+# ---------------------------------------------------------------------------
+# PM mediates gravity via a massless scalar field n(r, t).  In principle
+# this could produce a breathing (l=0, scalar) GW polarisation in addition
+# to the standard tensor h₊, h× modes.  The question is whether the scalar
+# field radiates during binary inspiral.
+#
+# Conservation-law argument:
+#   Monopole scalar source Q = ∫ρ dV = M_tot = const  → no monopole radiation
+#   Dipole scalar source  d = ∫ρ r dV = M_tot R_cm = const (isolated system)
+#                                                           → no dipole radiation
+#   Scalar quadrupole  I_trace = Σᵢ mᵢ rᵢ²
+#
+# For a CIRCULAR orbit with masses m₁, m₂ at separation a:
+#   I_trace = μ a²  (constant!)  → d²I_trace/dt² = 0 exactly.
+#   The tensor STF quadrupole Ïᵢⱼ oscillates at 2ω → tensor GW radiation.
+#
+# The first non-zero breathing contribution arises from orbital decay ȧ ≠ 0:
+#   d²I_trace/dt² = −4μ β²/a⁶
+#   β = (64/5) G³ M₁ M₂ M_tot / c⁵  (Peters decay coefficient)
+#
+# Ratio: |h_b|/|h₊| ≈ β²/(ω² a⁸) ~ (v/c)^10 × (mass factor)
+# For GW170817 at 100 Hz: ratio ≈ 10⁻⁷, power fraction α_NT ≈ 10⁻¹⁴
+#
+# LIGO O3 bound (Abbott+ 2021 PRD 103 122002): α_NT < 0.07 (90% CI)
+# PM passes by 13 orders of magnitude.
+# ---------------------------------------------------------------------------
+
+def pm_scalar_quadrupole_trace(M1: float, M2: float, a: float) -> float:
+    """Scalar trace of the mass quadrupole moment: I_trace = μ a².
+
+    For two point masses m₁, m₂ at separation a in circular orbit:
+        I_trace = Σᵢ mᵢ |rᵢ|² = μ a²
+    where μ = M₁M₂/(M₁+M₂) is the reduced mass.
+
+    This quantity is CONSTANT for a circular orbit (does not oscillate).
+    Therefore the leading-order scalar (breathing-mode) GW radiation is
+    identically zero for circular-orbit binaries.  Contrast with the
+    STF quadrupole tensor Iᵢⱼ, which oscillates at twice the orbital
+    frequency and drives the tensor h₊, h× radiation.
+
+    Parameters
+    ----------
+    M1, M2 : float   Component masses [kg].
+    a      : float   Orbital separation [m].
+
+    Returns
+    -------
+    float   I_trace = μ a²  [kg m²].
+    """
+    mu = M1 * M2 / (M1 + M2)
+    return mu * a * a
+
+
+def pm_breathing_strain_ratio(M1: float, M2: float, f_gw: float) -> float:
+    """Ratio |h_b| / |h₊| of PM scalar breathing mode to tensor plus-mode.
+
+    For a circular orbit I_trace = μa² = constant, so the leading-order
+    breathing (scalar) GW amplitude is exactly zero.  The first non-zero
+    breathing term comes from adiabatic orbital decay:
+
+        d²I_trace/dt² = −4μ β²/a⁶
+        β = (64/5) G³ M₁ M₂ M_tot / c⁵  (Peters decay coefficient)
+
+    The tensor quadrupole envelope: |Ïᵢⱼ|_max ≈ 4μ ω² a² for circular orbit.
+
+    Ratio:
+        |h_b| / |h₊| ≈ |d²I_trace/dt²| / (4μ ω² a²) = β² / (ω² a⁸)
+
+    This scales as (v/c)^10 and is completely negligible for LIGO sources.
+
+    Parameters
+    ----------
+    M1, M2 : float   Component masses [kg].
+    f_gw   : float   GW frequency [Hz]  (= 2 × orbital frequency).
+
+    Returns
+    -------
+    float   Dimensionless ratio |h_b| / |h₊|.  Always << 1.
+    """
+    f_orb = f_gw / 2.0
+    omega = 2.0 * math.pi * f_orb
+    M_tot = M1 + M2
+
+    # Orbital separation from Kepler's third law: ω² = G M_tot / a³
+    a = (G * M_tot / omega ** 2) ** (1.0 / 3.0)
+
+    # Peters decay coefficient [m⁴ s⁻¹]
+    beta = (64.0 / 5.0) * G ** 3 * M1 * M2 * M_tot / c ** 5
+
+    # |d²I_trace/dt²| = 4μβ²/a⁶  (scalar quadrupole from orbital decay)
+    I_trace_ddot = 4.0 * (M1 * M2 / M_tot) * beta ** 2 / a ** 6
+
+    # Tensor quadrupole envelope [kg m² s⁻²]
+    I_tensor_env = 4.0 * (M1 * M2 / M_tot) * omega ** 2 * a ** 2
+
+    return I_trace_ddot / I_tensor_env
+
+
+def pm_nontensor_power_fraction(M1: float, M2: float, f_gw: float) -> float:
+    """Fraction of GW power emitted in the PM scalar breathing mode.
+
+    α_NT = P_scalar / P_total ≈ (|h_b| / |h₊|)²
+
+    For PM, the breathing mode strain is suppressed by (v/c)^10 relative
+    to the tensor modes (see pm_breathing_strain_ratio for derivation).
+
+    LIGO O3 upper limit: α_NT < 0.07 (90% CI, Abbott+ 2021 PRD 103 122002).
+
+    Parameters
+    ----------
+    M1, M2 : float   Component masses [kg].
+    f_gw   : float   GW frequency [Hz].
+
+    Returns
+    -------
+    float   α_NT (dimensionless, << 0.07).
+    """
+    ratio = pm_breathing_strain_ratio(M1, M2, f_gw)
+    return ratio ** 2
+
+
+# ---------------------------------------------------------------------------
 # GW ringdown / QNMs / echoes
 # ---------------------------------------------------------------------------
 

@@ -49,6 +49,10 @@ from .core import (
     pm_time_to_coalescence,
     pm_gw_strain_amplitude,
     pm_gw_chirp_waveform,
+    # GW polarisation / breathing mode
+    pm_scalar_quadrupole_trace,
+    pm_breathing_strain_ratio,
+    pm_nontensor_power_fraction,
     # Perihelion precession
     pm_perihelion_precession,
     pm_precession_arcsec_per_century,
@@ -88,6 +92,9 @@ __all__ = [
     'pm_time_to_coalescence',
     'pm_gw_strain_amplitude',
     'pm_gw_chirp_waveform',
+    'pm_scalar_quadrupole_trace',
+    'pm_breathing_strain_ratio',
+    'pm_nontensor_power_fraction',
     'pm_perihelion_precession',
     'pm_precession_arcsec_per_century',
     'pm_integrate_orbit',
