@@ -1,5 +1,8 @@
 \documentclass[10pt,twocolumn]{article}
 \usepackage{amsmath, amssymb, booktabs, geometry, titlesec, parskip}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{tcolorbox}
 \geometry{a4paper, margin=1.5cm, columnsep=1.2em}
 \titleformat{\section}{\normalfont\bfseries\small}{}{0em}{}[\vspace{-0.4em}\rule{\columnwidth}{0.4pt}]
 \titlespacing{\section}{0pt}{0.8em}{0.3em}
@@ -16,16 +19,128 @@
 }]
 
 %====================================================================
+\section{Physical Picture}
+%====================================================================
+
+\textbf{The medium.}
+Pushing Medium (PM) proposes that all of space is filled by a physical
+elastic medium, much as a gas fills a vessel.  In its undisturbed state the
+medium is uniform, with a reference density $\rho_{\mathrm{nuc}}$.  A mass
+\emph{compresses} the surrounding medium, raising the local density above
+$\rho_{\mathrm{nuc}}$.  That compression is described by a single scalar
+field $\phi(\mathbf{r},t)$.
+
+\textbf{The compression field $\phi$ and refractive index $n$.}
+The local compression state is encoded as:
+\[
+  n(\mathbf{r}) = e^{\phi(\mathbf{r})}, \qquad \phi = \ln n \geq 0
+\]
+where $n$ is the refractive index of the medium at that point, and $\phi = 0$
+($n=1$) is uncompressed free space.  Near a mass $M$:
+\[
+  \phi(r) = \frac{2GM}{c^2 r}
+\]
+so $\phi$ and $n$ are both largest close to the mass and fall off at infinity.
+\textbf{$\phi$ is the PM analog of GR spacetime curvature}: where GR says
+``spacetime curves near a mass'', PM says ``the medium becomes more compressed
+(denser) near a mass''.
+
+\textbf{Gravity from compression gradients.}
+A gradient $\nabla\phi \neq 0$ means the medium is more compressed in one
+direction.  This acts like a pressure gradient: it pushes everything toward
+the region of higher density.  For a massive (slow) particle:
+\[
+  \mathbf{a} = \tfrac{c^2}{2}\,\nabla\phi
+  \quad \Longrightarrow \quad
+  \mathbf{a} = -\frac{GM}{r^2}\hat{\mathbf{r}} \quad \text{(Newtonian gravity)}
+\]
+
+\textbf{Lensing: why light bends twice as much as a thrown ball.}
+Light is refracted by the medium.  A denser region ($n > 1$) slows light
+locally, causing wavefronts to tip toward it — exactly Fermat's principle.
+Light couples to \emph{both} the time-stretching and space-compression of
+the effective metric (both $g_{tt}$ and $g_{rr}$), giving a deflection
+\[
+  \alpha_{\mathrm{light}} = \frac{4GM}{c^2 b}
+\]
+A massive slow particle is governed only by the time component ($g_{tt}$,
+i.e.\ kinetic-energy vs.\ potential-energy balance), giving acceleration
+$c^2/2$ per unit $\nabla\phi$ instead of $c^2$.  The ratio is exactly
+$\mathbf{2:1}$ — the origin of the factor $\tfrac{1}{2}$ in the force law.
+
+\textbf{The flow field $\mathbf{u}$ and frame drag.}
+A moving or rotating mass also \emph{drags} the medium, inducing a vector
+flow field $\mathbf{u}(\mathbf{r},t)$ in addition to the scalar compression
+$\phi$.  This flow Fizeau-drags light paths — a ray travelling with
+$\mathbf{u}$ is swept along, one travelling against it is retarded — and
+modifies the orbital motion of massive bodies.  This is the PM mechanism
+corresponding to frame-dragging in GR.
+
+\textbf{What matter is.}
+Matter is not a separate substance inserted into the medium.  It is a
+\emph{stable, localised configuration} of the medium itself — a region where
+the medium is held in a distinct compressed state by internal pressure
+balance.  The boundary of a material body is where its internal compressed
+state meets the ambient uncompressed medium ($\phi \to 0$).  This is why the
+source term $\rho$ in the Poisson equation is not an independent input: it is
+\emph{the medium's own compressed state} acting as its own source.  The
+density law $\rho = \rho_{\mathrm{nuc}}\,e^{\phi}$ expresses exactly this
+self-sourcing — the more compressed the medium, the more it sources further
+compression in the surrounding region.
+
+\textbf{What energy is: two phases of the medium.}
+The medium has two distinct regimes:
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Matter phase} ($0 \leq \phi < 1$): localised, structured,
+        clumping configurations.  The deformation energy $U(\phi)$ stored in
+        this configuration is what we call rest-mass energy.  Changing the
+        configuration (e.g.\ nuclear decay, fusion) changes the stored energy
+        — the excess is released as radiation.  This is the PM account of
+        $E = mc^2$: matter and energy are different organisational states of
+        the same medium.
+  \item \textbf{Energy phase} ($\phi \to 1$, stability limit): the medium
+        can no longer sustain a localised matter-phase structure.  At $\phi=1$
+        the restoring force vanishes ($U''(1) = 0$) and the medium transitions
+        to a uniform, non-clumping state.  This is the only strong-field limit
+        in PM — not a singularity, but a phase transition.
+\end{itemize}
+The stability cap $\phi < 1$ is therefore not an arbitrary cut-off: it is
+where the matter phase becomes mechanically unstable.
+
+\textbf{At a glance.}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}ll@{}}
+\hline
+\textbf{GR / standard concept} & \textbf{PM equivalent} \\
+\hline
+Spacetime curvature & Compression field $\phi = \ln n$ \\
+Geodesic equation & $\mathbf{a} = \tfrac{c^2}{2}\nabla\phi$ (matter) \\
+Null geodesic & Fermat path in $n$ field (light) \\
+Frame dragging & Flow field $\mathbf{u}$ \\
+Einstein eqs & Poisson eq.\ $\nabla^2\phi = -\tfrac{8\pi G}{c^2}\rho$ \\
+Matter (point mass) & Localised $\phi$-configuration of the medium \\
+Rest-mass energy & Deformation energy $U(\phi)$ stored in that config. \\
+$E=mc^2$ & Medium reconfiguring between organisational states \\
+Singularity / horizon & Phase transition at $\phi = 1$ ($n = e$) \\
+\hline
+\end{tabular}
+\end{center}
+
+%====================================================================
 \section{Core Assumptions}
 %====================================================================
 
 \begin{enumerate}\setlength{\itemsep}{2pt}
-  \item \textbf{Flat Minkowski background; curved effective metric.}
-        The background geometry is fixed, flat Euclidean/Minkowski.
-        No background GR curvature, no Einstein equations, no horizons, no TOV.
-        The medium field $\phi = \ln n$ creates a \emph{curved effective optical
-        metric} $ds^2 = -(c^2/n^2)\,dt^2 + d\mathbf{r}^2$ for wave propagation —
-        this is curvature of the medium, not of the background geometry.
+  \item \textbf{Fixed Euclidean space with absolute time; curved effective propagation metric.}
+        The background is ordinary three-dimensional Euclidean space plus a
+        universal time coordinate.  There is no spacetime manifold, no metric
+        tensor on the background, no Einstein field equations, no curvature of
+        the background, no horizons, no TOV.
+        The medium field $\phi = \ln n$ gives rise to a \emph{curved effective
+        optical metric} $ds^2 = -(c^2/n^2)\,dt^2 + d\mathbf{r}^2$ that governs
+        wave propagation and ray paths — this is curvature of the medium, not a
+        property of space or time themselves.
 
   \item \textbf{Scalar compression field.}
         Gravity arises from the scalar field $\phi$ with refractive index
@@ -146,15 +261,15 @@ For a moving point mass with velocity $\mathbf v$:
 %====================================================================
 
 \textbf{Gravitational sector:}
-\[
-  \mathcal{L} =
+\begin{align*}
+  \mathcal{L} &=
   \frac{(\partial_t\phi)^2}{2c_\phi^2}
   - \frac{|\nabla\phi|^2}{2}
   + \frac{|\partial_t\mathbf u|^2}{2c_u^2}
-  - \frac{|\nabla\mathbf u|^2}{2}
-  + \phi\,\nabla\cdot(\phi\mathbf u)
+  - \frac{|\nabla\mathbf u|^2}{2} \\
+  &\quad+ \phi\,\nabla\cdot(\phi\mathbf u)
   + \phi\,S_\phi + \mathbf u\cdot\mathbf S_u
-\]
+\end{align*}
 
 \textbf{Electromagnetic sector:}
 \[
@@ -388,7 +503,7 @@ Properties: $P(\rho_{\mathrm{nuc}})=0$; sound speed $c_s = c/\sqrt{2}$.
   P_{\mathrm{crit}} \approx 1.87\times10^{34}\;\mathrm{Pa}
 \]
 
-Implementation: \texttt{src/pushing\_medium/critical\_state.py}
+Implementation: \path{src/pushing_medium/critical_state.py}
 
 %--------------------------------------------------------------------
 \subsection*{Diagnostic: Three-Way Disconnection of $U(\phi)$}
@@ -478,11 +593,12 @@ Running the PM compact-star ODE under each repair option yields:
 \begin{itemize}
   \item \textbf{Gap~2 — additional finding:}
     $P_{\rm thermo}(\phi)$ is \emph{non-monotonic}.  Its maximum occurs at
-    \[
-      \frac{dP_{\rm thermo}}{d\phi} = \varepsilon_0(2-4\phi+\phi^2) = 0
-      \;\Longrightarrow\;
-      \phi_{\rm max} = 2-\sqrt{2} \approx 0.586 < \phi_{\rm crit}=1.
-    \]
+    \begin{align*}
+      \frac{dP_{\rm thermo}}{d\phi}
+      &= \varepsilon_0(2-4\phi+\phi^2) = 0 \\
+      &\;\Longrightarrow\;
+      \phi_{\rm max} = 2{-}\sqrt{2} \approx 0.586.
+    \end{align*}
     By $\phi_{\rm crit}=1$ the thermodynamic pressure has \emph{decreased}
     to $P_{\rm thermo}(1)=\tfrac{1}{3}\varepsilon_0 < 0.80\,P_{\rm thermo}(\phi_{\rm max})$.
     Hence $U(\phi)$ cannot serve as a thermodynamic free energy anywhere
@@ -491,11 +607,12 @@ Running the PM compact-star ODE under each repair option yields:
 
   \item \textbf{Gap~1 — Poisson correction magnitude (corrected formula):}
     The correct Gauss-theorem result for the $U'(\phi)$ self-coupling is
-    \[
-      \delta\!\left(\frac{d\phi}{dr}\right)
-      = \frac{\mu_G}{r^2}\int_0^r \frac{U'(\phi(r'))}{c^2}\,r'^2\,dr'
-      \approx \mu_G\,\rho_{\rm nuc}(2\phi-\phi^2)\,\frac{r}{3}.
-    \]
+    \begin{align*}
+      \delta\!\left(\tfrac{d\phi}{dr}\right)
+      &= \tfrac{\mu_G}{r^2}\!\int_0^r\!\tfrac{U'(\phi)\,r'^2}{c^2}\,dr'
+      \\
+      &\approx \mu_G\,\rho_{\rm nuc}(2\phi-\phi^2)\,\tfrac{r}{3}.
+    \end{align*}
     (The na\"ive formula $(r/3)U'(\phi)/c^2$ omits $\mu_G=2G/c^2$ and has
     unit $\mathrm{kg\,m^{-2}}$ instead of $\mathrm{m^{-1}}$, inflating the
     estimate by $\sim 10^{23}$.)
@@ -536,8 +653,9 @@ A $1.4\,M_\odot$ star has mean density $\langle\rho\rangle \approx 0.11\,\rho_{\
 so the star is nearly a \emph{uniform sphere at density $\rho_{\rm nuc}$}:
 \[
   \boxed{R_{1.4} \approx \left(\frac{3\,M_{1.4}}{4\pi\,\rho_{\rm nuc}}\right)^{1/3}
-        = 14.24\;\text{km}}     \qquad (\text{ODE: }14.0\pm 0.1\;\text{km})
+        = 14.24\;\text{km}}
 \]
+\noindent (ODE result: $14.0\pm 0.1$\,km.)
 For this reason, $R_{1.4}$ is insensitive to both $\alpha$ (the U$(\phi)$
 coefficient) and $\gamma$ (the EOS sound-speed factor $c_s^2=\gamma c^2/2$):
 both modify the EOS at densities well above $\rho_{\rm nuc}$, whereas the
@@ -561,17 +679,19 @@ Defining $f=\rho_{\rm nuc}/\rho_{\rm nuc,0}$, the two observational constraints:
 are \emph{decoupled}: $\alpha$ controls $M_{\rm max}$ at high $\phi$,
 $f$ controls $R$ via the surface condition.  Both are simultaneously satisfiable:
 \begin{center}
-\begin{tabular}{lllll}
-\hline
-$f$ & $\rho_{\rm nuc}$ & $M_{\rm max}$ & $R_{1.4}$ & Status\\
-\hline
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lllll@{}}
+\toprule
+$f$ & $\rho_{\rm nuc}$ [kg\,m$^{-3}$] & $M_{\rm max}$ & $R_{1.4}$ & Status\\
+\midrule
 1.00 & $2.30\times 10^{17}$ & $30.8\,M_\odot$ & 14.0 km & $R$ too large\\
 1.15 & $2.64\times 10^{17}$ & $28.7\,M_\odot$ & 13.3 km & marginal\\
 1.18 & $2.71\times 10^{17}$ & $28.4\,M_\odot$ & 13.2 km & \textbf{BOTH OK}\\
 1.20 & $2.76\times 10^{17}$ & $28.1\,M_\odot$ & 13.1 km & \textbf{BOTH OK}\\
 1.22 & $2.81\times 10^{17}$ & $27.9\,M_\odot$ & 13.1 km & $M_{\rm max}$ low\\
-\hline
-\end{tabular}
+\bottomrule
+\end{tabular}%
+}
 \end{center}
 (Here $\alpha=1$ fixed; increasing $\alpha$ to $\approx 1.15$ at $f=1.18$ can
 simultaneously raise $M_{\rm max}$ back above $30\,M_\odot$.)
@@ -598,9 +718,10 @@ cosmological structure ($\phi_{\rm crit}$ couples to $\Omega_E$).
 \section{Compact Star Structure (exact within PM)}
 %====================================================================
 
-PM uses a flat Minkowski background; the medium field $\phi$ creates a curved
-effective optical metric but there are no background-curvature GR corrections.
-Gauss's theorem on $\nabla^2\phi = -\mu_G\cdot 4\pi\rho$ (on the flat background) gives the
+PM uses a fixed Euclidean background with absolute time; the medium field $\phi$
+creates a curved effective optical metric, but there are no background-curvature
+corrections.
+Gauss's theorem on $\nabla^2\phi = -\mu_G\cdot 4\pi\rho$ (on the Euclidean background) gives the
 structure ODE system exactly:
 
 \textbf{ODE system} (interior, $r>0$):
@@ -657,6 +778,7 @@ with X-ray spectroscopy of neutron stars.
 
 \textbf{NICER spot-checks} (central values):
 \begin{center}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}lccccc@{}}
 \toprule
 Source & $M$\;[M$_\odot$] & $R$\;[km] & $z_{\rm PM}$ & $z_{\rm GR}$ & ratio \\
@@ -664,7 +786,8 @@ Source & $M$\;[M$_\odot$] & $R$\;[km] & $z_{\rm PM}$ & $z_{\rm GR}$ & ratio \\
 J0030+0451 & 1.34 & 12.71 & 0.365 & 0.205 & 1.78 \\
 J0740+6620 & 2.08 & 12.39 & 0.642 & 0.408 & 1.57 \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{center}
 EXO\,0748$-$676 (Cottam 2002): $z_{\rm obs}\approx 0.35$,
 consistent with PM at NICER masses but insufficient to distinguish
@@ -698,10 +821,10 @@ ratio exactly, or introduces a correction factor, is not yet settled.
 If the wave-equation result differs, the $\approx 2\times$ discrepancy
 could be reduced without touching $\mu_G$.
 
-Implementation: \texttt{stellar\_structure.pm\_surface\_redshift},
-\texttt{classical.gr\_surface\_redshift},
-\texttt{scripts/surface\_redshift\_track.py},
-\texttt{tests/test\_z\_surface\_variants.py}
+Implementation: \path{stellar_structure.pm_surface_redshift},
+\path{classical.gr_surface_redshift},
+\path{scripts/surface_redshift_track.py},
+\path{tests/test_z_surface_variants.py}
 
 %====================================================================
 \section{GW Ringdown: PM vs GR}
@@ -715,8 +838,8 @@ Implementation: \texttt{stellar\_structure.pm\_surface\_redshift},
 \[
   \tau_{\mathrm{QNM}} = \frac{GM}{2\times0.08896\,c^3}
   \approx 27.7\,\mu\mathrm{s}\times\frac{M}{M_\odot},
-  \qquad
-  Q_{\mathrm{GR}} = \frac{\omega_R}{2\omega_I} \approx 2.10
+  \quad
+  Q_{\mathrm{GR}} \approx 2.10
 \]
 (critically damped: energy absorbed by the horizon.)
 
@@ -735,10 +858,9 @@ no exterior trapped photon orbits and no horizon QNMs.
   \approx\frac{9.6\,\mathrm{kHz}}{R_{\star}/\mathrm{11\,km}}
 \]
 \[
-  \tau_{\mathrm{surf}} = \frac{Q}{\pi f_{\mathrm{surf}}},
-  \quad Q_{\mathrm{PM}} \gg Q_{\mathrm{GR}}\approx 2.1
-  \;\text{(no horizon energy sink)}
+  \tau_{\mathrm{surf}} = \frac{Q}{\pi f_{\mathrm{surf}}}
 \]
+($Q_{\mathrm{PM}} \gg Q_{\mathrm{GR}}\approx 2.1$; no horizon energy sink.)
 
 \textbf{PM surface echo delay:}
 \[
@@ -798,9 +920,9 @@ $F'(r)=\tfrac{d}{dr}[n(r)\,r]>0$ for all $r\ge R_s$.
 \textbf{Key comparison} at maximum compactness ($R_\star \to R_s$):
 \[
   b_{\mathrm{PM}}^{\min} = e\,R_s \approx 2.718\,R_s
-  \quad > \quad
-  b_{\mathrm{GR}}^{\mathrm{BH}} \approx 2.598\,R_s
-  \qquad \Rightarrow \quad
+  \;>\; b_{\mathrm{GR}}^{\mathrm{BH}} \approx 2.598\,R_s
+\]
+\[
   \frac{b_{\mathrm{PM}}^{\min}}{b_{\mathrm{GR}}^{\mathrm{BH}}}
   = \frac{2e}{3\sqrt{3}} \approx 1.046
 \]
@@ -810,28 +932,32 @@ the excess is $\approx\!60\%$.
 
 \begin{center}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{@{}lcccc@{}}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lccc@{}}
 \toprule
- & $b/R_s$ & GR BH? & $\theta$ prediction \\
+ & $b/R_s$ & GR BH? & Shadow prediction \\
 \midrule
 GR BH   & $3\sqrt{3}/2 \approx 2.598$ & yes & $\theta_{\mathrm{GR}}$ \\
 PM max-compact ($k=1$) & $e\approx2.718$ & no & $+4.6\%$ over GR BH \\
 PM typical NS ($k=3$) & $e^{1/3}\times3\approx4.187$ & no & $+61\%$ over GR BH \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{center}
 
 \textbf{EHT observations and PM double falsification:}
 \begin{center}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}lccccc@{}}
 \toprule
-Source & $M\,[M_\odot]$ & $D$ & $\theta_{\mathrm{obs}}$ [$\mu$as]
-       & $\theta_{\mathrm{GR}}$ & $M/M_{\max}^{\mathrm{PM}}$ \\
+Source & $M\,[M_\odot]$ & $D$ & $\theta_{\rm obs}$ [$\mu$as]
+       & $\theta_{\rm GR}$ & $M/M_{\rm max}^{\rm PM}$ \\
 \midrule
 M87*   & $6.5\times10^9$ & 16.8\,Mpc & $42\pm3$  & 39.7 & $\sim4.6\times10^8$ \\
 Sgr\,A* & $4.15\times10^6$ & 8.178\,kpc & $51.8\pm2.3$ & 52.1 & $\sim3.0\times10^5$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{center}
 
 \begin{enumerate}
@@ -860,20 +986,23 @@ Implementation: \texttt{classical.gr\_shadow\_radius},
 surface depends on the compactness $C = GM/(c^2 R)$:
 
 \begin{center}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}lccl@{}}
 \toprule
 Regime & Compactness & $r_{\rm ps}$ vs $R_\star$ & Consequence \\
 \midrule
-$C < 0.5$ (low mass) & $C \lesssim 0.49$ & inside star & no exterior photon ring \\
-$C > 0.5$ (high mass near $M_{\max}$) & $C \lesssim 0.74$ & outside star & exterior photon ring exists \\
+$C < 0.5$ (low mass) & $C \lesssim 0.49$ & inside & no photon ring \\
+$C > 0.5$ (near $M_{\max}$) & $C \lesssim 0.74$ & outside & photon ring exists \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{center}
 
 \textbf{Numerical results from the PM M--R curve:}
 
 \begin{center}
 \renewcommand{\arraystretch}{1.2}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}lcccc@{}}
 \toprule
 Mass & $R_\star$ & $C$ & $r_{\rm ps}$ & $r_{\rm ps}$ location \\
@@ -881,9 +1010,10 @@ Mass & $R_\star$ & $C$ & $r_{\rm ps}$ & $r_{\rm ps}$ location \\
 $1.4\,M_\odot$ (typical NS) & $\approx 14$\,km & 0.148 & $\approx 4.1$\,km & inside star \\
 $3\,M_\odot$ & $\approx 18$\,km & 0.24 & $\approx 8.9$\,km & inside star \\
 $\sim 8\,M_\odot$ (transition) & $\approx 24$\,km & 0.50 & $\approx 24$\,km & at surface \\
-$13.4\,M_\odot$ (max mass) & $\approx 26.6$\,km & 0.74 & $\approx 39.5$\,km & outside ($1.49\times R_\star$) \\
+$13.4\,M_\odot$ (max) & $\approx 26.6$\,km & 0.74 & $\approx 39.5$\,km & outside ($1.49\times R_\star$) \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{center}
 
 \noindent\textbf{Why can PM exceed $C = 0.5$?}
@@ -967,18 +1097,20 @@ compact-object mass ceiling $M_\mathrm{max} \approx 13$--$14\,M_\odot$, yet the
 majority of LIGO events have components far above this.
 
 \begin{center}
-\begin{tabular}{lcccc}
-\hline
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lcccc@{}}
+\toprule
 Event & $M_1/M_\odot$ & $M_2/M_\odot$ & $M_c/M_\odot$ & PM accessible? \\
-\hline
-GW150914 & 35.6 & 30.6 & 28.7 & \textbf{No — mass gap} \\
-GW151226 & 13.7 &  7.7 &  8.9 & Marginal / No \\
-GW170814 & 30.5 & 25.3 & 24.2 & \textbf{No — mass gap} \\
+\midrule
+GW150914 & 35.6 & 30.6 & 28.7 & \textbf{No --- gap} \\
+GW151226 & 13.7 &  7.7 &  8.9 & Marginal/No \\
+GW170814 & 30.5 & 25.3 & 24.2 & \textbf{No --- gap} \\
 GW170817 &  1.46 & 1.27 &  1.19 & Yes (BNS) \\
-GW190814 & 22.2 &  2.6 &  6.0 & \textbf{No — mass gap} \\
-GW190521 & 85.0 & 66.0 & 65.1 & \textbf{No — mass gap} \\
-\hline
-\end{tabular}
+GW190814 & 22.2 &  2.6 &  6.0 & \textbf{No --- gap} \\
+GW190521 & 85.0 & 66.0 & 65.1 & \textbf{No --- gap} \\
+\bottomrule
+\end{tabular}%
+}
 \end{center}
 
 \noindent\textbf{Quantified gap (ODE result):} $M_\mathrm{max}^\mathrm{baseline}
@@ -989,6 +1121,103 @@ components above PM $M_\mathrm{max}$; only GW170817 (BNS) is fully accessible.
 Implementation: \texttt{tests/test\_mass\_gap.py} (22 tests, 4 classes:
 \texttt{TestBaselineMMax}, \texttt{TestMassGapGWTC}, \texttt{TestBNSAccessible},
 \texttt{TestMassGapCharacterisation}).
+
+%--------------------------------------------------------------------
+\subsection*{Option-A: Corrected Poisson Equation --- Numerical Experiment}
+%--------------------------------------------------------------------
+
+\noindent\textbf{Motivation.}  The Gap-1 diagnostic (Deformation Energy section)
+identifies that $U(\varphi)$ is absent from the PM Lagrangian.  Promoting it into
+the field equation adds a self-coupling source term.  We parameterise the
+correction by $\alpha$:
+\[
+  \nabla^2\varphi \;=\; -\frac{8\pi G}{c^2}\bigl[\rho \;-\; \alpha\,\rho_U\bigr],
+  \qquad
+  \rho_U \;=\; \rho_{\rm nuc}(2\varphi - \varphi^2)
+\]
+Via Gauss's theorem inside a star of effective mass $m_U(r)=4\pi\int_0^r\rho_U
+r'^2\,dr'$:
+\[
+  \frac{d\varphi}{dr} = -\frac{\mu_G\bigl(m(r)-\alpha\,m_U(r)\bigr)}{r^2}
+\]
+Two physically motivated directions:
+\begin{itemize}
+  \item $\alpha = +1$ (\textbf{Gap-1}, formula-sheet direction): $U'$ reduces the
+    gravitating source, weakening gravity at high compression.
+  \item $\alpha = -1$ (\textbf{Gap-3}): $U'$ adds to gravity, field energy
+    itself gravitates.
+\end{itemize}
+
+\noindent\textbf{Numerical results} (50 central densities, each scenario):
+
+\begin{center}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Scenario & $M_{\rm max}$ [$M_\odot$] & $R_{1.4}$ [km] & $C_{\rm max}$
+  & $z_s^{\rm max}$ & $r_{\rm ps}/R_{\rm max}$ \\
+\midrule
+Baseline ($\alpha=0$) & 13.40 & 13.92 & 0.743 &  3.42 & 1.486 \\
+Gap-1    ($\alpha=+1$) & 30.28 & 13.94 & 1.280 & 11.94 & 2.560 \\
+Gap-3    ($\alpha=-1$) &  7.94 & 13.89 & 0.524 &  1.85 & 1.048 \\
+\midrule
+\multicolumn{6}{l}{GW170817 bound: $R_{1.4} \leq 13.3$\,km} \\
+\bottomrule
+\end{tabular}%
+}
+\end{center}
+
+\noindent\textbf{$\varphi(r)$ profile at $\rho_c = 1.4\,\rho_{\rm nuc}$:}
+
+\begin{center}
+\begin{tabular}{cccc}
+\hline
+$r/R$ & $\varphi_\mathrm{base}$ & $\varphi_{\rm Gap1}$ & $\varphi_{\rm Gap3}$ \\
+\hline
+0.0 & 0.336 & 0.336 & 0.336 \\
+0.5 & 0.246 & 0.254 & 0.241 \\
+1.0 & 0.000 & 0.000 & 0.000 \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{tcolorbox}[colback=blue!5,colframe=blue!60,title=Option-A: Key Findings]
+\begin{enumerate}
+  \item \textbf{$M_\mathrm{max}$ is highly sensitive to the correction.}
+    Gap-1 doubles $M_\mathrm{max}$: $13.4 \to 30.3\,M_\odot$.
+    This crosses the GW190814 primary ($22.2\,M_\odot$) and is comparable to
+    GW150914 components ($30$--$36\,M_\odot$). The GWTC mass gap is
+    dramatically narrowed.
+  \item \textbf{$R_{1.4}$ is insensitive to the correction.}
+    All three scenarios give $R_{1.4} \approx 13.9$ km, all still exceeding the
+    GW170817 bound of 13.3 km by $\sim 0.6$ km.  The radius problem is
+    \emph{not} fixed by the Poisson correction.
+  \item \textbf{The two problems are decoupled.}
+    The Poisson correction activates primarily at high compression (near
+    $M_\mathrm{max}$ where $\rho \gg \rho_{\rm nuc}$).  At 1.4\,$M_\odot$,
+    $\varphi_c \approx 0.34$ and the $\varphi^2$ correction term is subdominant,
+    so $R_{1.4}$ is unaffected.  The radius problem requires a \emph{separate}
+    EOS adjustment (Option-C: $\rho_{\rm nuc}$ rescaling).
+  \item \textbf{Gap-1 at $M_\mathrm{max}$ produces extreme compact objects.}
+    $C = 1.28$, $z_s = 11.94$ --- photon sphere at $2.56\,R$, outside the star.
+    No GR horizon exists (flat PM background), but such objects would have
+    extreme surface redshifts unlike any observed neutron star.
+  \item \textbf{EM cross-check is unaffected.}
+    At low mass (1.4\,$M_\odot$), $\varphi(r)$ changes by $< 10\%$ at
+    $r/R = 0.7$.  EHT shadow, photon-sphere, and surface-redshift predictions
+    for ordinary-density stars are effectively unchanged.
+\end{enumerate}
+\end{tcolorbox}
+
+\noindent\textbf{Combined Option-A + Option-C strategy:}
+Since the two problems decouple, both could be fixed simultaneously:
+Gap-1 correction addresses $M_\mathrm{max}$; EOS rescaling (Option-C) addresses
+$R_{1.4}$.  These are independent degrees of freedom.
+
+Implementation: \path{src/pushing_medium/stellar_structure.py}
+(\path{solve_pm_star_option_a}, \path{compute_mr_curve_option_a}),
+\path{scripts/option_a_corrected_poisson.py},
+\path{tests/test_option_a_corrected_poisson.py} (21 tests, 4 classes).
 
 \noindent\textbf{GW170817 tidal deformability (computed):}
 Computed via the Clairaut–Radau equation for the Newtonian Love number $k_2$
@@ -1003,19 +1232,21 @@ Computed via the Clairaut–Radau equation for the Newtonian Love number $k_2$
 \]
 
 \begin{center}
-\begin{tabular}{lrrrrr}
-\hline
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
 Config & $R$ [km] & $C$ & $y_R$ & $k_2$ & $\Lambda$ \\
-\hline
-Baseline $f{=}1.00, \alpha{=}0$ & 13.94 & 0.1479 & 2.798 & 0.0464 & 437 \\
-Option-c $f{=}1.00, \alpha{=}1$ & 13.94 & 0.1479 & 2.798 & 0.0464 & 437 \\
-JointFeas $f{=}1.18, \alpha{=}1$ & 13.18 & 0.1567 & 2.786 & 0.0459 & 324 \\
-Tighter $f{=}1.20, \alpha{=}1$ & 13.10 & 0.1574 & 2.785 & 0.0458 & 316 \\
-\hline
-\multicolumn{5}{l}{GW170817: $\tilde\Lambda < 800$ (90\% CI), $< 580$ (50\% CI)} & \\
-\multicolumn{5}{l}{GR reference: SLy $\approx 250$, DD2 $\approx 660$} & \\
-\hline
-\end{tabular}
+\midrule
+Baseline $f{=}1.00,\,\alpha{=}0$ & 13.94 & 0.1479 & 2.798 & 0.0464 & 437 \\
+Option-c $f{=}1.00,\,\alpha{=}1$ & 13.94 & 0.1479 & 2.798 & 0.0464 & 437 \\
+JointFeas $f{=}1.18,\,\alpha{=}1$ & 13.18 & 0.1567 & 2.786 & 0.0459 & 324 \\
+Tighter $f{=}1.20,\,\alpha{=}1$ & 13.10 & 0.1574 & 2.785 & 0.0458 & 316 \\
+\midrule
+\multicolumn{6}{l}{GW170817: $\tilde\Lambda < 800$ (90\% CI), $< 580$ (50\% CI)} \\
+\multicolumn{6}{l}{GR reference: SLy $\approx 250$, DD2 $\approx 660$} \\
+\bottomrule
+\end{tabular}%
+}
 \end{center}
 
 \noindent\textbf{Key finding:} PM tidal deformability is \emph{within} GW170817 bounds
@@ -1065,7 +1296,6 @@ violation of the LIGO~O3 bound?
 \[
   \ddot{I}_{\rm trace} = -\frac{4\mu\beta^2}{a^6}, \qquad
   \beta = \frac{64}{5}\frac{G^3 M_1 M_2 M_{\rm tot}}{c^5}
-  \quad\text{(Peters coefficient)}
 \]
 Ratio of breathing strain to tensor $h_+$:
 \[
@@ -1076,15 +1306,17 @@ Ratio of breathing strain to tensor $h_+$:
 \noindent\textbf{Numerical result} (GW170817 parameters, $f_{\rm GW} = 100$~Hz):
 
 \begin{center}
-\begin{tabular}{lcc}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lcc@{}}
 \hline
 Quantity & PM prediction & Bound \\
 \hline
 $|h_b|/|h_+|$ & $\approx 10^{-7}$ & (unobservable) \\
-$\alpha_{\rm NT} = P_{\rm scalar}/P_{\rm total}$ & $\approx 10^{-14}$ & $< 0.07$ (LIGO O3, 90\%~CI) \\
-Margin above O3 limit & $\sim 10^{13}$ & --- \\
+$\alpha_{\rm NT}\!=\!P_s/P_{\rm tot}$ & $\approx 10^{-14}$ & $<0.07$ (O3) \\
+Margin above O3 & $\sim 10^{13}$ & --- \\
 \hline
-\end{tabular}
+\end{tabular}%
+}
 \end{center}
 
 \noindent\textbf{Key finding:} PM predicts effectively zero breathing-mode GW radiation
@@ -1103,33 +1335,34 @@ Implementation: \texttt{core.pm\_scalar\_quadrupole\_trace},
 %====================================================================
 
 \textbf{PM force law is exactly Newtonian:}
-\[
-  \mathbf{a} = \tfrac{c^2}{2}\nabla\phi = -\frac{GM}{r^2}\hat{r}
-  \quad \Longrightarrow \quad \Delta\omega_{\mathrm{force}} = 0
-  \quad\text{(closed Keplerian ellipse)}
-\]
+\begin{align*}
+  \mathbf{a} &= \tfrac{c^2}{2}\nabla\phi = -\frac{GM}{r^2}\hat{r} \\
+  &\Longrightarrow\ \Delta\omega_{\mathrm{force}} = 0
+  \;\text{(closed Keplerian ellipse)}
+\end{align*}
 
 \textbf{1PN metric correction} (optical metric $g_{tt}=-c^2/n^2$, $g_{rr}=1-2\phi$;
 PM PPN parameters $\beta=\gamma=1$, identical to GR):
 \[
   \boxed{ \Delta\omega = \frac{6\pi GM}{c^2\,a\,(1-e^2)} }
-  \quad \text{[rad per orbit]}
 \]
-This is the same formula as GR.  The precession is a \emph{metric / coordinate}
+\noindent (rad per orbit; same formula as GR at 1PN.)  The precession is a \emph{metric / coordinate}
 effect, not a direct consequence of the PM force law.
 
 \textbf{Solar-system verification} (1PN formula vs.\ observed GR residuals):
 \begin{center}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-Body & $a$ [AU] & $e$ & PM 1PN [$''$/cy] & Observed [$''$/cy] \\
+Body & $a$ [AU] & $e$ & PM 1PN [$''$/cy] & Obs.\ [$''$/cy] \\
 \midrule
 Mercury & 0.3871 & 0.2056 & 42.99 & 42.98 \\
 Venus   & 0.7233 & 0.0068 &  8.63 &  8.62 \\
 Earth   & 1.0000 & 0.0167 &  3.84 &  3.84 \\
 Mars    & 1.5237 & 0.0934 &  1.35 &  1.35 \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{center}
 Agreement $<0.04\%$ for all planets.
 
@@ -1137,9 +1370,8 @@ Agreement $<0.04\%$ for all planets.
 $e=0.617$):
 \[
   \dot\omega_{\mathrm{PM}}^{\mathrm{1PN}} = 4.228\,\mathrm{deg/yr}
-  \quad\text{vs.\ observed } 4.22663\pm0.00002\,\mathrm{deg/yr}
-  \quad (+0.04\%)
 \]
+Observed: $4.22663\pm0.00002\,\mathrm{deg/yr}$ (+0.04\%).
 
 \textbf{Key distinction:}
 GR precession is a real closure failure of the purely flat geodesic.
@@ -1190,31 +1422,28 @@ at high redshift.
 
 \subsection*{PM Structure-Growth Scenarios}
 
-\textbf{Scenario 1 — PM-Static} (density perturbation in
+\textbf{Scenario 1 --- PM-Static} (density perturbation in
 $H_{\rm PM}$ background with no friction term from the drag force):
-\[
-  \ddot\delta = 4\pi G\rho_m\,\delta
-  \quad\Longrightarrow\quad
-  \delta(t)\propto e^{\Gamma t},
-  \quad
-  \Gamma = \sqrt{\tfrac{3}{2}}\,H_0\sqrt{\Omega_m}
+\begin{align*}
+  \ddot\delta &= 4\pi G\rho_m\,\delta
+  \;\Longrightarrow\; \delta(t)\propto e^{\Gamma t}, \\
+  \Gamma &= \sqrt{\tfrac{3}{2}}\,H_0\sqrt{\Omega_m}
   \approx 0.687\,H_0
-\]
+\end{align*}
 The growth rate observable $f_{\rm static}(z) = \Gamma / H_{\rm PM}(z)$
 \emph{increases with redshift} (opposite to $\Lambda$CDM), grossly over-predicting
 cluster abundances.
 
-\textbf{Scenario 2 — PM-Drag} (index decay provides Hubble-like friction):
-\[
-  D'' + \frac{3-\beta}{a}\,D' - \frac{3\Omega_{\rm eff}}{2\,a^{5-2\beta}}\,D = 0,
-\]
+\textbf{Scenario 2 --- PM-Drag} (index decay provides Hubble-like friction):
+\begin{align*}
+  D'' &+ \frac{3-\beta}{a}\,D' - \frac{3\Omega_{\rm eff}}{2\,a^{5-2\beta}}\,D = 0
+\end{align*}
 where primes denote $d/da$ and $E(a)=a^{-\beta}$.  The characteristic
 power-law growing mode $D\propto a^p$ satisfies
-\[
-  p^2 + (2-\beta)\,p - \tfrac{3}{2}\Omega_{\rm eff} = 0
-  \quad\Longrightarrow\quad
-  p = \tfrac{1}{2}\!\left[(\beta-2)+\sqrt{(2-\beta)^2+6\Omega_{\rm eff}}\right].
-\]
+\begin{align*}
+  p^2 + (2-\beta)\,p - \tfrac{3}{2}\Omega_{\rm eff} &= 0 \\
+  p &= \tfrac{1}{2}\!\left[(\beta-2)+\sqrt{(2-\beta)^2+6\Omega_{\rm eff}}\right].
+\end{align*}
 For $\beta=\tfrac{3}{2}$ ($\Lambda$CDM matter-domination), $p=1$ exactly.
 
 \textbf{Falsification — runaway growth at $\Omega_{\rm eff}=1$:}
@@ -1229,20 +1458,22 @@ predicts catastrophic exponential over-growth — \emph{excluded}.
 The growth rate observable is $f\sigma_8(z)=f(z)\,\sigma_{8,0}\,D(z)/D(0)$.
 
 \begin{center}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}lrr@{}}
 \toprule
-Model & $\chi^2$ ($N=14$) & $\chi^2/N$ \\
+Model & $\chi^2$ ($N{=}14$) & $\chi^2/N$ \\
 \midrule
-$\Lambda$CDM (Planck: $\Omega_m=0.315$, $\sigma_8=0.811$)
+$\Lambda$CDM ($\Omega_m{=}0.315$, $\sigma_8{=}0.811$)
   & 12.45 & 0.889 \\
-PM-Static $\beta=0.8$
+PM-Static $\beta{=}0.8$
   & 23.02 & 1.644 \\
-PM-Drag $\beta=0.8$, $\Omega_{\rm eff}=0.315$
+PM-Drag $\beta{=}0.8$, $\Omega_{\rm eff}{=}0.315$
   & 10.44 & 0.746 \\
-PM-Drag $\beta=0.8$, $\Omega_{\rm eff}=1.0$
-  & \multicolumn{2}{c}{ODE fails (runaway growth)} \\
+PM-Drag $\beta{=}0.8$, $\Omega_{\rm eff}{=}1.0$
+  & \multicolumn{2}{c}{ODE fails (runaway)} \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{center}
 
 Data: 14 published RSD $f\sigma_8$ measurements, $z=0.02$--$1.40$
@@ -1279,35 +1510,39 @@ does \emph{not} dilute with expansion.  Cosmologically, this provides a
 dark-energy analogue with two components:
 
 \begin{center}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}lll@{}}
 \toprule
 Phase & Density scaling & Behaviour \\
 \midrule
-Matter phase & $\rho_m \propto a^{-3}$ & Clusters; drives structure growth \\
+Matter phase & $\rho_m \propto a^{-3}$ & Clusters; growth \\
 Energy phase & $\rho_E \propto a^{-3(1+w_E)}$ & No clustering; $w_E\approx -1$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{center}
 
 The two-phase Friedmann equation is
 \[
   H^2(z) = H_0^2\!\left[\Omega_m(1+z)^3
-            + \Omega_E(1+z)^{3(1+w_E)}\right], \quad \Omega_E = 1-\Omega_m.
+            + \Omega_E(1+z)^{3(1+w_E)}\right]
 \]
+with $\Omega_E = 1-\Omega_m$.
 For $w_E=-1$ (PM prediction: ground-state medium has constant density)
 this is \textbf{mathematically identical to $\Lambda$CDM}.
 
 \subsection*{The Origin of $\beta=0.8$}
 
 Define the instantaneous power-law index
-\[
-  \beta_{\rm eff}(z) = \frac{d\ln H}{d\ln(1+z)}
-  = \frac{3}{2}\,\frac{\Omega_m(1+z)^3
+\begin{align*}
+  \beta_{\rm eff}(z) &= \frac{d\ln H}{d\ln(1+z)} \\
+  &= \frac{3}{2}\,\frac{\Omega_m(1+z)^3
     + (1+w_E)\,\Omega_E(1+z)^{3(1+w_E)}}{E^2(z)}.
-\]
+\end{align*}
 
 Key limits (Planck 2018, $w_E=-1$):
 \begin{center}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}lll@{}}
 \toprule
 Limit & $\beta_{\rm eff}$ & Interpretation \\
@@ -1316,12 +1551,13 @@ $z\to\infty$ & $3/2$ & Pure matter domination \\
 $z=1$        & $1.18$ & Transition epoch \\
 $z=0$        & $(3/2)\,\Omega_m\approx 0.47$ & Energy-phase domination \\
 \midrule
-$\langle\beta_{\rm eff}\rangle_{D_L}$ over $z=0.1\text{--}1.5$
+$\langle\beta\rangle_{D_L}$, $z{=}0.1$--$1.5$
              & $\approx 1.0$ & Instantaneous mean \\
-Best-fit constant $\beta$ to $D_L$
-             & $\approx 0.80$ & \textbf{This is the PM calibration}\\
+Best-fit const.\ $\beta$ to $D_L$
+             & $\approx 0.80$ & \textbf{PM calibration}\\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{center}
 
 \textbf{Conclusion:} $\beta=0.8$ is NOT a PM-specific parameter.  It is the
@@ -1358,39 +1594,44 @@ against $\Lambda$CDM data — the energy phase was implicitly assumed all along.
 \end{enumerate}
 
 Implementation:
-\texttt{src/pushing\_medium/cosmology.py} (\texttt{pm\_twophase\_hubble},
-\texttt{pm\_effective\_beta}, \texttt{pm\_energy\_phase\_fraction},
-\texttt{pm\_twophase\_growth\_factor\_rate}, \texttt{pm\_twophase\_fsigma8}),
-\texttt{scripts/pm\_twophase\_cosmology.py},
-\texttt{tests/test\_cosmology\_growth.py} (47 tests total).
+\path{src/pushing_medium/cosmology.py} (\path{pm_twophase_hubble},
+\path{pm_effective_beta}, \path{pm_energy_phase_fraction},
+\path{pm_twophase_growth_factor_rate}, \path{pm_twophase_fsigma8}),
+\path{scripts/pm_twophase_cosmology.py},
+\path{tests/test_cosmology_growth.py} (47 tests total).
 
 %====================================================================
 
+\begin{center}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}lll@{}}
 \toprule
 Symbol & Value & Physical meaning \\
 \midrule
-$c$ & $2.99792458\times10^8$ m/s & Speed of light \\
-$G$ & $6.67430\times10^{-11}$ m$^3$ kg$^{-1}$ s$^{-2}$ & Newton's constant \\
-$\mu_G$ & $1.4861356\times10^{-27}$ m$^2$ kg$^{-1}$ & Grav.\ index coefficient \\
-& $= 2G/c^2$ (theory) & \\
+$c$ & $2.998\times10^8$ m/s & Speed of light \\
+$G$ & $6.674\times10^{-11}$ m$^3$\,kg$^{-1}$\,s$^{-2}$ & Newton's constant \\
+$\mu_G$ & $1.486\times10^{-27}$ m$^2$\,kg$^{-1}$ & Grav.\ index coeff.\ ($=2G/c^2$) \\
 $k_{\mathrm{TT}}$ & $1.0$ (exact) & GW power normalisation \\
 $k_{\mathrm{Fizeau}}$ & $1.0$ (exact) & Moving-lens drag \\
-$A_M$ & $G/c^2 \approx 7.43\times10^{-28}$ m$^3$ kg$^{-1}$ s$^{-1}$ & Mass-current coupling \\
-$A_q$ & $< 3\times10^{-10}$ m$^3$ C$^{-1}$ s$^{-1}$ & Charge-current coupling \\
+$A_M$ & $G/c^2 \approx 7.43\times10^{-28}$ m$^3$\,kg$^{-1}$\,s$^{-1}$ & Mass-current coupling \\
+$A_q$ & $< 3\times10^{-10}$ m$^3$\,C$^{-1}$\,s$^{-1}$ & Charge-current coupling \\
 $\kappa_B$ & $\approx 0$ (ruled out) & Magnetic potential coupling \\
-$\rho_{\mathrm{nuc}}$ & $2.3\times10^{17}$ kg m$^{-3}$ & Nuclear saturation density \\
+$\rho_{\mathrm{nuc}}$ & $2.3\times10^{17}$ kg\,m$^{-3}$ & Nuclear saturation density \\
 \midrule
 \multicolumn{3}{@{}l@{}}{\textit{Unconstrained:}
-  $\mu_E$, $K_E$, $B_q$, $K_{\mathrm{plasma}}$, $\alpha_{\mathrm{plasma}}$,
-  $c_\phi$, $c_u$ (assumed $\approx c$)} \\
+  $\mu_E$, $K_E$, $B_q$, $K_{\rm plasma}$, $\alpha_{\rm plasma}$,
+  $c_\phi$, $c_u$ ($\approx c$)} \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
+\end{center}
 
 %====================================================================
 \section{Document Map}
 %====================================================================
 
+\begin{center}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}ll@{}}
 \toprule
 Topic & Canonical source \\
@@ -1399,22 +1640,24 @@ All field equations & \texttt{v2-gravity.tex} \\
 Unified + EM sources & \texttt{v1-unified-formulations.tex} \\
 Lagrangian derivation & \texttt{hamiltonian-formulation-v1.tex} \\
 Hamiltonian + stability & \texttt{hamiltonian-formulation-v1.tex} \\
-Stress-energy tensor & \texttt{stress--energy-tensorv1.1.tex} \\
+Stress-energy tensor & \texttt{stress-energy-tensorv1.1.tex} \\
 EM field equations & \texttt{em-field-equations-v1.tex} \\
-Critical state impl.\ & \texttt{critical\_state.py} \\
+Critical state & \texttt{critical\_state.py} \\
 Compact star structure & \texttt{pm-stellar-structure.tex} \\
-Stellar structure impl.\ & \texttt{stellar\_structure.py} \\
-Surface redshift track & \texttt{scripts/surface\_redshift\_track.py} \\
-GW ringdown / QNM echoes & \texttt{scripts/gw\_ringdown\_comparison.py} \\
-EHT shadow comparison & \texttt{scripts/eht\_shadow\_comparison.py} \\
-Perihelion precession & \texttt{scripts/perihelion\_precession\_comparison.py} \\
-Cosmology ($f\sigma_8$ / $D_L$) & \texttt{scripts/fsigma8\_comparison.py} \\
-PM two-phase cosmology & \texttt{scripts/pm\_twophase\_cosmology.py} \\
+Stellar structure impl. & \texttt{stellar\_structure.py} \\
+Surface redshift & \texttt{surface\_redshift\_track.py} \\
+GW ringdown & \texttt{gw\_ringdown\_comparison.py} \\
+EHT shadow & \texttt{eht\_shadow\_comparison.py} \\
+Perihelion precession & \texttt{perihelion\_precession\_comparison.py} \\
+Cosmology ($f\sigma_8$) & \texttt{fsigma8\_comparison.py} \\
+PM two-phase cosmology & \texttt{pm\_twophase\_cosmology.py} \\
 Calibration derivation & \texttt{calibration-constants-derivation.tex} \\
 Coupling constants & \texttt{coupling-constants-reference.tex} \\
 Cross-force analysis & \texttt{cross-force-hierarchy-honest.tex} \\
 GR comparison table & \texttt{pm-gr-cross-force-comparison.tex} \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
+\end{center}
 
 \end{document}

@@ -402,6 +402,217 @@ def compute_mr_curve(
 
 
 # ---------------------------------------------------------------------------
+# Option-A: corrected Poisson equation with U'(φ) self-coupling
+# ---------------------------------------------------------------------------
+
+def solve_pm_star_option_a(
+    rho_central: float,
+    alpha: float = 1.0,
+    r_max: float = 5.0e4,
+    n_eval: int = 5000,
+    rtol: float = 1e-9,
+    atol: float = 1e-6,
+) -> StarSolution:
+    """PM compact-star structure with Option-A corrected Poisson self-coupling.
+
+    Physical motivation
+    -------------------
+    The standard PM Poisson equation (Gap 1 of the formula-sheet diagnostic) is:
+
+        ∇²φ = −(8πG/c²) ρ          [baseline]
+
+    If the deformation energy U(φ) is promoted into the Lagrangian as a
+    potential term −V(φ) = −U(φ)/c_φ², the static field equation picks up
+    a U'(φ) self-coupling.  Written in terms of an effective "self-coupling
+    density"  ρ_U = ρ_nuc (2φ − φ²) = U'(φ)/c², this becomes:
+
+        ∇²φ = −(8πG/c²) [ρ  −  α · ρ_U]             [corrected, Gap-1 direction]
+
+    where α controls the coupling strength:
+      •  α = 0   → exact baseline (identical to solve_pm_star)
+      •  α = +1  → full Gap-1 correction as written in the formula sheet;
+                   U' acts as a *repulsive* self-coupling that reduces the
+                   effective gravitating source.  Expect LARGER R and HIGHER
+                   M_max compared to baseline.
+      •  α = −1  → Gap-3 style: U-field energy ADDS to the gravitating source
+                   (as in GR where all energy gravitates).  Expect SMALLER R
+                   and reduced M_max.
+
+    Dimensional derivation
+    ----------------------
+    U'(φ)/c² = ρ_nuc c²(2φ−φ²)/c² = ρ_nuc(2φ−φ²) [kg m⁻³]
+
+    Applying Gauss's theorem to the corrected ∇²φ source in spherical symmetry:
+
+        4πr² (dφ/dr) = −(8πG/c²) m(r) + α (8πG/c²) · 4π ∫₀ʳ ρ_nuc(2φ−φ²) r'² dr'
+                     = −(8πG/c²) [m(r) − α m_U(r)]
+
+    where  m_U(r) = 4π ∫₀ʳ ρ_nuc(2φ−φ²) r'² dr'  has the same dimensions as m [kg].
+    Hence:
+
+        dφ/dr = −μ_G (m − α m_U) / r²
+
+    The PM force law  a = (c²/2)∇φ  then consistently gives:
+
+        dP/dr = ρ (c²/2) (dφ/dr) = −G m ρ / r²  +  α G m_U ρ / r²
+
+    ODE system (4 variables: m, P, φ, m_U)
+    ----------------------------------------
+        dm/dr   = 4π r² ρ(P)
+        dP/dr   = −G m ρ / r²  +  α G m_U ρ / r²
+        dφ/dr   = −μ_G (m − α m_U) / r²
+        dm_U/dr = 4π r² ρ_nuc (2φ − φ²)
+
+    Parameters
+    ----------
+    rho_central : float
+        Central density [kg m⁻³].  Must satisfy 0 < ρ_c ≤ ρ_crit.
+    alpha : float
+        Self-coupling strength.  0 = baseline; +1 = Gap-1 (formula sheet);
+        −1 = Gap-3 style (field energy gravitates).  Default +1.
+    r_max, n_eval, rtol, atol :
+        ODE integration parameters (same meaning as solve_pm_star).
+
+    Returns
+    -------
+    StarSolution
+        Same structure as solve_pm_star.  The phi array reflects the corrected
+        field profile.
+    """
+    if rho_central > RHO_CRIT * (1.0 + 1e-6):
+        raise ValueError(
+            f"rho_central = {rho_central:.3e} kg/m³ exceeds PM critical density "
+            f"ρ_crit = {RHO_CRIT:.3e} kg/m³."
+        )
+
+    P_central   = pm_eos_pressure(rho_central)
+    phi_central = math.log(rho_central / RHO_NUC)
+
+    def u_prime_normalised(phi: float) -> float:
+        """U'(φ)/c² / ρ_nuc = (2φ − φ²)  [dimensionless; multiply by ρ_nuc → kg/m³]."""
+        phi_c = max(phi, 0.0)   # avoid negative values outside the star
+        return 2.0 * phi_c - phi_c * phi_c
+
+    def rhs(r, y):
+        m, P, phi, m_U = y
+        rho = pm_eos_density(P)
+        up_norm = u_prime_normalised(phi)   # dimensionless ∈ [0, 1] for φ ∈ [0, 1]
+
+        if r < 1.0:
+            # Near-centre: m ≈ (4π/3)r³ρ_c and m_U ≈ (4π/3)r³ρ_nuc·up
+            # dφ/dr → 0 and dP/dr → 0 by symmetry
+            dm_dr   = 4.0 * math.pi * r * r * rho
+            dm_U_dr = 4.0 * math.pi * r * r * RHO_NUC * up_norm
+            return [dm_dr, 0.0, 0.0, dm_U_dr]
+
+        dm_dr    = 4.0 * math.pi * r * r * rho
+        dm_U_dr  = 4.0 * math.pi * r * r * RHO_NUC * up_norm
+        m_eff    = m - alpha * m_U
+        dphi_dr  = -MU_G * m_eff / (r * r)
+        dP_dr    = rho * (c * c / 2.0) * dphi_dr
+        return [dm_dr, dP_dr, dphi_dr, dm_U_dr]
+
+    def surface_event(r, y):
+        return y[1]   # P = 0
+
+    surface_event.terminal  = True
+    surface_event.direction = -1
+
+    r_start    = 1.0
+    m_start    = (4.0 / 3.0) * math.pi * r_start**3 * rho_central
+    P_start    = P_central
+    phi_start  = phi_central
+    m_U_start  = (4.0 / 3.0) * math.pi * r_start**3 * RHO_NUC * u_prime_normalised(phi_central)
+
+    r_eval = np.linspace(r_start, r_max, n_eval)
+
+    sol = solve_ivp(
+        rhs,
+        [r_start, r_max],
+        [m_start, P_start, phi_start, m_U_start],
+        method='DOP853',
+        t_eval=r_eval,
+        events=surface_event,
+        rtol=rtol,
+        atol=atol,
+        dense_output=False,
+    )
+
+    r_arr   = sol.t
+    m_arr   = sol.y[0]
+    P_arr   = np.maximum(sol.y[1], 0.0)
+    phi_arr = sol.y[2]
+    rho_arr = pm_eos_density(P_arr)
+
+    surface_mask = P_arr > 0
+    if surface_mask.any():
+        i_surf  = np.where(surface_mask)[0][-1]
+        R_star  = r_arr[i_surf]
+        M_star  = m_arr[i_surf]
+        converged = True
+    else:
+        R_star  = r_max
+        M_star  = m_arr[-1]
+        converged = False
+
+    return StarSolution(
+        M_star=M_star, R_star=R_star,
+        rho_central=rho_central, phi_central=phi_central,
+        converged=converged,
+        r=r_arr, m=m_arr, rho=rho_arr, P=P_arr, phi=phi_arr,
+    )
+
+
+def compute_mr_curve_option_a(
+    alpha: float = 1.0,
+    n_points: int = 60,
+    rho_min_factor: float = 1.01,
+    rho_max_factor: float = 1.0,
+    **solve_kwargs,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """M–R curve with the Option-A corrected Poisson self-coupling.
+
+    Parameters
+    ----------
+    alpha : float
+        Self-coupling strength passed to solve_pm_star_option_a.
+        0 = baseline; +1 = Gap-1 correction; −1 = Gap-3 style.
+    n_points : int
+        Number of central-density models.
+    rho_min_factor : float
+        Lower central density as a multiple of ρ_nuc.
+    rho_max_factor : float
+        Upper central density as a fraction of ρ_crit.
+    **solve_kwargs
+        Passed to solve_pm_star_option_a.
+
+    Returns
+    -------
+    rho_c : ndarray  [kg m⁻³]
+    M : ndarray      [M_☉]
+    R : ndarray      [km]
+    """
+    rho_c_arr = np.linspace(
+        rho_min_factor * RHO_NUC,
+        rho_max_factor * RHO_CRIT,
+        n_points,
+    )
+    M_arr = np.full(n_points, np.nan)
+    R_arr = np.full(n_points, np.nan)
+
+    for i, rho_c in enumerate(rho_c_arr):
+        try:
+            star = solve_pm_star_option_a(rho_c, alpha=alpha, **solve_kwargs)
+            if star.converged:
+                M_arr[i] = star.M_star / M_SUN
+                R_arr[i] = star.R_star / 1e3   # m → km
+        except (ValueError, Exception):
+            pass
+
+    return rho_c_arr, M_arr, R_arr
+
+
+# ---------------------------------------------------------------------------
 # Surface gravitational redshift
 # ---------------------------------------------------------------------------
 

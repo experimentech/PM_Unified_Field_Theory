@@ -1,0 +1,19 @@
+What is it?: An alternate Unified Field Theory.
+
+Why did you do it?: It's complicated. Short version is it was a distraction. I noticed it had some other interesting practical uses outside of strictly being a physics model.
+
+Gravity doesn't work that way: That's not a question. It might? But really this was about exploring an alternate way of representing gravity.
+
+Space doesn't work that way: Again, not a question.
+
+Why should I waste my time looking at this?: That's up to you. I'm not forcing you.
+
+What does it even do if gravity and space are wrong?: Good question! Difficult question too! Essentially allows working with gravity in a vector form as a fluid, which has direct analogs with other forces.
+
+So does it even work?: Weak force works. Strong field works except for a very well defined, very sharp and narrow "crack" through strong force. It has a patch but I'm not happy with that. EM seems to play nice, but hasn't been fully explored. It doesn't really need any changes anyway. the focus was to change the weak force from being the odd one out to being something that fit with everything else.
+
+Have you even tested it?: As best I can. At present it's subjected to a battery of over 300 tests. Every step was taken with a goal of falsification, not proof. See the Github respository for the tests.
+
+Why would anybody want to use this?: I don't know! That's up to whoever. The vectorisation of gravity does allow for the skipping of a lot of computation involved in scalar calculation.
+
+This allows things that are forbidden or impossible in GR!: I know. But everything that falls into that category that I've found is too difficult to test and / or is so small it falls within measurement error. 

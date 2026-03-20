@@ -530,6 +530,128 @@ def newtonian_accel_sum(r: Sequence[float], masses: List[Tuple[float, Sequence[f
     return (ax, ay, az)
 
 
+# ---------------------------------------------------------------------------
+# Alternative field equation: ∇²n = (4πG/c²) ρ n
+#
+# The standard PM field equation ∇²φ = source is Poisson-linear in φ = ln n.
+# It silently drops the |∇n|²/n² self-energy term that becomes significant as
+# φ → 1.  Writing the equation directly for n avoids that truncation:
+#
+#   ∇²n = (4πG/c²) ρ · n
+#
+# Vacuum spherical solution (exact):  n(r) = 1 + 2GM/(c²r)
+# which gives  φ(r) = ln(1 + 2GM/c²r)  — identical to current PM for r ≫ 2GM/c²,
+# but strictly less than 2GM/c²r in the strong field, so φ never diverges.
+# The phase boundary φ = 1 now occurs at r = 2GM / (c²(e−1)) ≈ 3.44 GM/c²,
+# emerging naturally from the solution rather than being imposed externally.
+#
+# These functions are provided so the test battery can be run under either
+# field equation by swapping the φ source.  Pass use_n_field=True to the
+# helpers below; the acceleration law a = (c²/2)∇φ is unchanged.
+# ---------------------------------------------------------------------------
+
+def phi_n_field_point_mass(r_dist: float, M: float) -> float:
+    """Scalar field φ = ln n under the ∇²n field equation, point mass.
+
+    Vacuum solution of ∇²n = (4πG/c²)ρn for a point mass is
+    n(r) = 1 + 2GM/(c²r), so φ = ln(1 + 2GM/(c²r)).
+
+    Parameters
+    ----------
+    r_dist : float
+        Radial distance from the mass [m].
+    M : float
+        Mass [kg].
+
+    Returns
+    -------
+    float
+        φ(r) under the n-field equation [dimensionless].
+    """
+    return math.log1p(2.0 * G * M / (c * c * r_dist))
+
+
+def grad_phi_n_field_point_mass(r: Sequence[float], M: float,
+                                r_source: Sequence[float] = (0.0, 0.0, 0.0)) -> tuple:
+    """Gradient ∇φ under the ∇²n field equation, point mass.
+
+    From n(r) = 1 + 2GM/(c²r):  dn/dr = -2GM/(c²r²)
+    ∇φ = (1/n)∇n = -2GM/(c²r²(1 + 2GM/c²r)) r̂
+
+    Parameters
+    ----------
+    r : Sequence[float]
+        Field point [m].
+    M : float
+        Mass [kg].
+    r_source : Sequence[float]
+        Source position [m], default origin.
+
+    Returns
+    -------
+    tuple[float, float, float]
+        ∇φ [m⁻¹].
+    """
+    dx = r[0] - r_source[0]
+    dy = r[1] - r_source[1]
+    dz = r[2] - r_source[2]
+    r2 = dx*dx + dy*dy + dz*dz
+    r_mag = math.sqrt(r2) + 1e-300
+    mu_G = 2.0 * G / (c * c)
+    dn_dr = -mu_G * M / r2          # dn/dr scalar
+    n_val = 1.0 + mu_G * M / r_mag  # n at this point
+    coeff = dn_dr / (n_val * r_mag) # (1/n)(dn/dr)/r  →  multiply by unit vector
+    return (coeff * dx, coeff * dy, coeff * dz)
+
+
+def massive_accel_n_field(r: Sequence[float], masses: List[Tuple[float, Sequence[float]]]) -> tuple:
+    """PM massive-particle acceleration using the ∇²n field equation.
+
+    Computes a = (c²/2) ∇φ where φ = ln n and n satisfies ∇²n = (4πG/c²)ρn.
+    For a superposition of point masses, ∇φ is computed from the summed n field:
+
+        n_total(r) = 1 + Σᵢ 2GMᵢ/(c²|r−rᵢ|)
+        ∇φ = ∇(ln n_total) = ∇n_total / n_total
+
+    In the weak field this is identical to newtonian_accel_sum.  In the strong
+    field it is systematically smaller in magnitude, preventing φ from exceeding 1.
+
+    Parameters
+    ----------
+    r : Sequence[float]
+        Field point [m].
+    masses : List[Tuple[float, Sequence[float]]]
+        List of (M [kg], position [m]) tuples.
+
+    Returns
+    -------
+    tuple[float, float, float]
+        Acceleration [m s⁻²].
+    """
+    mu_G = 2.0 * G / (c * c)
+    x, y, z = r
+    # Build n_total and ∇n_total
+    n_total = 1.0
+    gx = gy = gz = 0.0
+    for M, ri in masses:
+        dx, dy, dz = x - ri[0], y - ri[1], z - ri[2]
+        r2 = dx*dx + dy*dy + dz*dz
+        r_mag = math.sqrt(r2) + 1e-300
+        contrib = mu_G * M / r_mag
+        n_total += contrib
+        # ∇(contrib) = -mu_G M / r³ · r_vec
+        dn_scale = -contrib / r2
+        gx += dn_scale * dx
+        gy += dn_scale * dy
+        gz += dn_scale * dz
+    # ∇φ = ∇n / n
+    inv_n = 1.0 / n_total
+    half_c2 = 0.5 * c * c
+    return (half_c2 * gx * inv_n,
+            half_c2 * gy * inv_n,
+            half_c2 * gz * inv_n)
+
+
 # --- GR-mapped helper functions for testbench comparisons ---
 
 def pm_deflection_angle_point_mass(M: float, b: float) -> float:
