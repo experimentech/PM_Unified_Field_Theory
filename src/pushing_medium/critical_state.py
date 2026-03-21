@@ -302,3 +302,76 @@ def compute_critical_state(
         rho_crit=rho_crit,
         p_crit=p_crit,
     )
+
+
+# ---------------------------------------------------------------------------
+# Perturbation stability mass-squared (dynamical stability condition)
+# ---------------------------------------------------------------------------
+
+def pm_phase_stability_mass_sq(
+    phi: float,
+    c_phi: float = c,
+    rho_ref: float = RHO_NUC,
+) -> float:
+    """Perturbation mass-squared for the PM medium phase stability.
+
+    Derivation
+    ----------
+    The area-measure action with deformation potential:
+
+        S = ∫ [½|∇φ|² n² − U(φ)/c_φ²] d³x
+
+    gives the Euler-Lagrange field equation (vacuum + source term):
+
+        ∇²φ + |∇φ|² = −U'(φ) / (c_φ² n²) − (8πGρ_nuc/c²) n
+
+    Linearising around a uniform background φ₀ (no spatial gradients):
+
+        ∂²(δφ)/∂t² = c_φ² [∇²(δφ) − m²_eff(φ₀) δφ]
+
+    where the effective perturbation mass-squared is:
+
+        m²_eff(φ₀) = U''(φ₀) / (c_φ² n₀²) = 2ε₀(1−φ₀) / (c_φ² n₀²)
+
+    Sign interpretation:
+      m²_eff > 0  (φ < 1):  massive mode — perturbations oscillate and damp
+                            (stable matter phase).
+      m²_eff = 0  (φ = 1):  massless mode — perturbations are long-range,
+                            marginal stability (second-order phase transition).
+      m²_eff < 0  (φ > 1):  tachyonic — long-wavelength perturbations grow
+                            exponentially (matter phase dissolves to energy phase).
+
+    Consequence
+    -----------
+    The stability cap φ < 1 is not an external postulate — it is the condition
+    m²_eff(φ) ≥ 0, which follows from U''(φ) ≥ 0.  The deformation potential
+    U(φ) encodes the phase transition: its Hessian goes soft (m² → 0) at the
+    critical compression.  Above that compression the matter configuration is
+    dynamically unstable and the medium flows to the energy phase.
+
+    The factor U''(φ)/n² reflects the same softening seen in the sound-speed
+    comparison table (numerical probe: c²_U/c²_EOS = 4(1−φ)/n, decreasing
+    from 4 at φ=0 to 0 at φ=1).
+
+    Parameters
+    ----------
+    phi : float
+        PM compression field.
+    c_phi : float
+        Wave speed for φ-mode perturbations [m s⁻¹].  Default = c (the speed
+        of light).  Use c/√2 to match the EOS sound speed instead.
+    rho_ref : float
+        Reference density for ε₀ = rho_ref × c².  Default = RHO_NUC.
+
+    Returns
+    -------
+    float
+        m²_eff(φ)  [kg m⁻³].  Positive → stable; zero → marginal; negative → unstable.
+
+        Dimensional analysis: [U''] = J/m³ = kg/(m·s²),
+        [c_phi²] = m²/s², [n²] = dimensionless → [m²_eff] = kg/m³.
+    """
+    n = math.exp(phi)
+    u_double_prime = pm_deformation_energy_deriv2(phi, rho_ref=rho_ref)   # = 2ε₀(1−φ)
+    return u_double_prime / (c_phi * c_phi * n * n)
+

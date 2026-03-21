@@ -14,12 +14,12 @@ Key physical results tested:
 import math
 import pytest
 
-from src.general_relativity.classical import (
+from general_relativity.classical import (
     gr_photon_sphere_radius,
     gr_shadow_radius,
     gr_compact_star_shadow_radius,
 )
-from src.pushing_medium.core import pm_shadow_radius, G, c
+from pushing_medium.core import pm_shadow_radius, G, c
 
 # ---------------------------------------------------------------------------
 # Physical constants

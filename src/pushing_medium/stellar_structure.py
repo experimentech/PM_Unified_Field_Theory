@@ -613,6 +613,619 @@ def compute_mr_curve_option_a(
 
 
 # ---------------------------------------------------------------------------
+# N-field (area-measure) compact-star structure solver
+# ---------------------------------------------------------------------------
+
+def solve_pm_star_nfield(
+    rho_central: float,
+    r_max: float = 5.0e4,
+    n_eval: int = 5000,
+    rtol: float = 1e-9,
+    atol: float = 1e-6,
+) -> StarSolution:
+    """PM compact-star structure using the n-field (area-measure) Poisson equation.
+
+    Physical motivation
+    -------------------
+    The standard PM Poisson equation is derived from the coordinate-measure
+    action (α=0).  The n-field equation arises from the area-measure action:
+
+        S₂ = ∫ ½|∇φ|² n² d³x
+
+    whose Euler-Lagrange vacuum equation is ∇²φ + |∇φ|² = 0, linearising to
+    ∇²n = 0  via  n = e^φ.  With the standard matter source the sourced equation
+    is:
+
+        ∇²φ + |∇φ|² = −(8πG/c²) ρ_nuc n
+
+    which in the n-variable reads:
+
+        ∇²n = −(8πG ρ_nuc / c²) n²
+
+    The n² source replaces the standard n source — a stronger coupling at high
+    density (n > 1) that is invisible in the weak field (n → 1).
+
+    Structure system
+    ----------------
+    Define  m̃_n(r) = ∫₀ʳ 4π r'² n(r')² dr'  (n²-accumulator, units m³).
+
+    Applying Gauss's theorem to ∇²n = −(8πGρ_nuc/c²)n²:
+
+        dn/dr = −(2G ρ_nuc / c²) m̃_n / r²
+
+    The PM force law a = (c²/2)∇φ = (c²/2n)∇n gives the hydrostatic equation:
+
+        dP/dr = ρ a = ρ_nuc n · (c²/2n) · (dn/dr) = (c²ρ_nuc/2) dn/dr
+
+    This is already the exact differential of the PM EOS  P = (c²ρ_nuc/2)(n−1).
+    The n-field EOS and the hydrostatic equation are thus **automatically consistent**
+    — the inconsistency that existed in the standard formulation does not appear here.
+
+    The 3-variable ODE state is  y = [m_phys, m̃_n, n]:
+
+        dm_phys/dr = 4π r² ρ_nuc n       (physical mass, for output)
+        dm̃_n/dr   = 4π r² n²             (Poisson accumulator)
+        dn/dr      = −(2G ρ_nuc/c²) m̃_n / r²
+
+    Surface: n = 1  (P = 0, ρ = ρ_nuc).
+
+    Auto-consistency check
+    ----------------------
+    Because P = (c²ρ_nuc/2)(n−1) and dP/dr = (c²ρ_nuc/2)(dn/dr), the φ profile
+    computed as φ = ln n is exactly consistent with the EOS φ = ln(ρ/ρ_nuc) at
+    every grid point — no accumulation of EOS/Poisson drift.
+
+    Parameters
+    ----------
+    rho_central : float
+        Central density [kg m⁻³].  Must satisfy 0 < ρ_c ≤ ρ_crit.
+    r_max : float
+        Maximum integration radius [m].  Default 50 km.
+    n_eval : int
+        Number of output evaluation points.
+    rtol, atol : float
+        ODE integration tolerances.
+
+    Returns
+    -------
+    StarSolution
+        Same structure as solve_pm_star.  phi = ln n is exact by construction.
+    """
+    if rho_central > RHO_CRIT * (1.0 + 1e-6):
+        raise ValueError(
+            f"rho_central = {rho_central:.3e} kg/m³ exceeds PM critical density "
+            f"ρ_crit = {RHO_CRIT:.3e} kg/m³.  Stable PM matter configurations "
+            f"require ρ_c ≤ ρ_crit."
+        )
+
+    n_central   = rho_central / RHO_NUC      # n_c = ρ_c / ρ_nuc = e^{φ_c}
+    phi_central = math.log(n_central)         # φ_c = ln n_c
+
+    # Coefficient: 2G ρ_nuc / c²  [m⁻²]  (same dimensional role as μ_G = 2G/c²
+    # in the standard solver, but weighted by ρ_nuc because m̃_n has units m³
+    # rather than kg)
+    kappa_n = 2.0 * G * RHO_NUC / (c * c)
+
+    def rhs(r, y):
+        m_phys, m_n, n = y
+        if r < 1.0:
+            # Near centre: all gradients → 0 by spherical symmetry
+            dm_phys = 4.0 * math.pi * r * r * RHO_NUC * n
+            dm_n    = 4.0 * math.pi * r * r * n * n
+            return [dm_phys, dm_n, 0.0]
+        dm_phys = 4.0 * math.pi * r * r * RHO_NUC * n
+        dm_n    = 4.0 * math.pi * r * r * n * n
+        dn_dr   = -kappa_n * m_n / (r * r)
+        return [dm_phys, dm_n, dn_dr]
+
+    # Surface event: n = 1  (equivalent to P = 0)
+    def surface_event(r, y):
+        return y[2] - 1.0   # n − 1 = 0
+
+    surface_event.terminal  = True
+    surface_event.direction = -1   # n decreasing toward 1
+
+    # Near-centre series: m ≈ (4π/3)r³ρ_nuc n_c,  m̃_n ≈ (4π/3)r³ n_c²
+    r_start    = 1.0
+    m_phys_0   = (4.0 / 3.0) * math.pi * r_start**3 * RHO_NUC * n_central
+    m_n_0      = (4.0 / 3.0) * math.pi * r_start**3 * n_central**2
+    n_0        = n_central
+
+    r_eval = np.linspace(r_start, r_max, n_eval)
+
+    sol = solve_ivp(
+        rhs,
+        [r_start, r_max],
+        [m_phys_0, m_n_0, n_0],
+        method='DOP853',
+        t_eval=r_eval,
+        events=surface_event,
+        rtol=rtol,
+        atol=atol,
+        dense_output=False,
+    )
+
+    r_arr      = sol.t
+    m_arr      = sol.y[0]
+    n_arr      = np.maximum(sol.y[2], 1.0)    # clamp n ≥ 1 (no vacuum below nuclear density)
+    phi_arr    = np.log(n_arr)                 # exact by construction
+    P_arr      = np.maximum(
+        c * c * RHO_NUC / 2.0 * (n_arr - 1.0), 0.0
+    )
+    rho_arr    = RHO_NUC * n_arr
+
+    surface_mask = n_arr > 1.0 + 1e-12
+    if surface_mask.any():
+        i_surf    = np.where(surface_mask)[0][-1]
+        R_star    = r_arr[i_surf]
+        M_star    = m_arr[i_surf]
+        converged = True
+    else:
+        R_star    = r_max
+        M_star    = m_arr[-1]
+        converged = False
+
+    return StarSolution(
+        M_star=M_star,
+        R_star=R_star,
+        rho_central=rho_central,
+        phi_central=phi_central,
+        converged=converged,
+        r=r_arr,
+        m=m_arr,
+        rho=rho_arr,
+        P=P_arr,
+        phi=phi_arr,
+    )
+
+
+def compute_mr_curve_nfield(
+    n_points: int = 60,
+    rho_min_factor: float = 1.01,
+    rho_max_factor: float = 1.0,
+    **solve_kwargs,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """M–R curve using the n-field (area-measure) stellar structure solver.
+
+    Parameters
+    ----------
+    n_points : int
+        Number of central-density models.
+    rho_min_factor : float
+        Lower central density as a multiple of ρ_nuc.
+    rho_max_factor : float
+        Upper central density as a fraction of ρ_crit.
+    **solve_kwargs
+        Passed to solve_pm_star_nfield.
+
+    Returns
+    -------
+    rho_c : ndarray  [kg m⁻³]
+    M : ndarray      [M_☉]
+    R : ndarray      [km]
+    """
+    rho_c_arr = np.linspace(
+        rho_min_factor * RHO_NUC,
+        rho_max_factor * RHO_CRIT,
+        n_points,
+    )
+    M_arr = np.full(n_points, np.nan)
+    R_arr = np.full(n_points, np.nan)
+
+    for i, rho_c in enumerate(rho_c_arr):
+        try:
+            star = solve_pm_star_nfield(rho_c, **solve_kwargs)
+            if star.converged:
+                M_arr[i] = star.M_star / M_SUN
+                R_arr[i] = star.R_star / 1e3    # m → km
+        except (ValueError, Exception):
+            pass
+
+    return rho_c_arr, M_arr, R_arr
+
+
+# ---------------------------------------------------------------------------
+# N-field + stiffened potential stellar structure solver  (action-derived)
+# ---------------------------------------------------------------------------
+
+def solve_pm_star_nfield_stiffened(
+    rho_central: float,
+    r_max: float = 5.0e4,
+    n_eval: int = 5000,
+    rtol: float = 1e-9,
+    atol: float = 1e-6,
+) -> StarSolution:
+    """PM compact-star with the action-derived self-stiffening potential.
+
+    Action and vacuum-subtracted potential
+    ----------------------------------------
+    The full n-field action with the medium self-energy potential is:
+
+        S_full = ∫ [½|∇φ|² n²  −  A · V̂(n)] d³x
+
+    where  V̂(n) = ½n² + ln n  and  A = (8πG/c²) ρ_nuc = κ ρ_nuc.
+
+    V̂'(n) = n + 1/n, but V̂'(1) = 2 ≠ 0, meaning the bare potential provides
+    a non-zero source even at the vacuum boundary n = 1.  For stellar structure
+    we require the surface (n = 1) to be a stable fixed point of the field
+    equation, so we use the vacuum-subtracted potential:
+
+        V̂_vac(n) = V̂(n) − V̂(1) − V̂'(1)(n − 1)
+                  = ½n² + ln n − 3/2 − 2(n − 1)
+
+    which satisfies  V̂_vac(1) = 0  and  V̂_vac'(1) = 0.
+
+        V̂_vac'(n) = n + 1/n − 2 = (n − 1)² / n  ≥ 0  (for n ≥ 1)
+
+    This is the "above-vacuum" stiffening: it vanishes exactly at the phase
+    boundary (n = 1), is strictly positive inside the medium (n > 1), and is
+    maximally small near the surface, growing only quadratically in (n − 1).
+
+    Euler-Lagrange field equation (exact, vacuum-subtracted)
+    --------------------------------------------------------
+        ∇²n = κ ρ_nuc (n − 1)²/n  −  κ ρ_nuc n²
+
+    The first term (self-stiffening) reduces the effective inward pull; the
+    second is the full n-field gravity source.  At n = 1 (surface):
+        ∇²n = 0 − κ ρ_nuc = −κ ρ_nuc  [same as bare n-field],
+    so the surface physics is unchanged.  Inside the medium the stiffening
+    provides a positive correction to n at each r.
+
+    At n = 2: stiffening = (1/2) = 0.5 / gravity = 4  →  12 % reduction.
+    At n = 2.72: stiffening ≈ 1.09 / gravity ≈ 7.40  →  15 % reduction.
+
+    ODE state  y = [m_phys, m̃_n, m̃_stiff, n]
+    ------------------------------------------
+        dm_phys/dr    = 4π r² ρ_nuc n
+        dm̃_n/dr      = 4π r² n²                   (gravity accumulator)
+        dm̃_stiff/dr  = 4π r² (n − 1)²/n           (vac-subtracted stiffening)
+        dn/dr         = −κ_n (m̃_n − m̃_stiff) / r²
+
+    where  κ_n = 2G ρ_nuc / c²  (same coefficient for both terms).
+
+    Surface: n = 1  (P = 0).
+
+    Parameters
+    ----------
+    rho_central : float
+        Central density [kg m⁻³].  Must satisfy 0 < ρ_c ≤ ρ_crit.
+
+    Returns
+    -------
+    StarSolution
+    """
+    if rho_central > RHO_CRIT * (1.0 + 1e-6):
+        raise ValueError(
+            f"rho_central = {rho_central:.3e} kg/m³ exceeds PM critical density "
+            f"ρ_crit = {RHO_CRIT:.3e} kg/m³."
+        )
+
+    n_central   = rho_central / RHO_NUC
+    phi_central = math.log(n_central)
+
+    # Both n-field and stiffening terms share the same coefficient
+    #   κ_n = 2G ρ_nuc / c²  (this is the Gauss-theorem form: κ/4π × ρ_nuc)
+    kappa_n = 2.0 * G * RHO_NUC / (c * c)
+
+    def rhs(r, y):
+        m_phys, m_n, m_stiff, n_val = y
+        n_s = max(n_val, 1.0)   # clamp at surface
+
+        # Vacuum-subtracted stiffening source: (n-1)²/n = n + 1/n - 2
+        stiff_src = (n_s - 1.0) ** 2 / n_s
+
+        if r < 1.0:
+            dm_phys   = 4.0 * math.pi * r * r * RHO_NUC * n_s
+            dm_n      = 4.0 * math.pi * r * r * n_s * n_s
+            dm_stiff  = 4.0 * math.pi * r * r * stiff_src
+            return [dm_phys, dm_n, dm_stiff, 0.0]
+
+        dm_phys  = 4.0 * math.pi * r * r * RHO_NUC * n_s
+        dm_n     = 4.0 * math.pi * r * r * n_s * n_s
+        dm_stiff = 4.0 * math.pi * r * r * stiff_src
+        dn_dr    = -kappa_n * (m_n - m_stiff) / (r * r)
+        return [dm_phys, dm_n, dm_stiff, dn_dr]
+
+    def surface_event(r, y):
+        return y[3] - 1.0   # n = 1
+
+    surface_event.terminal  = True
+    surface_event.direction = -1
+
+    r_start      = 1.0
+    m_phys_0     = (4.0 / 3.0) * math.pi * r_start**3 * RHO_NUC * n_central
+    m_n_0        = (4.0 / 3.0) * math.pi * r_start**3 * n_central**2
+    stiff_src_0  = (n_central - 1.0) ** 2 / n_central   # vacuum-subtracted
+    m_stiff_0    = (4.0 / 3.0) * math.pi * r_start**3 * stiff_src_0
+    n_0          = n_central
+
+    r_eval = np.linspace(r_start, r_max, n_eval)
+
+    sol = solve_ivp(
+        rhs,
+        [r_start, r_max],
+        [m_phys_0, m_n_0, m_stiff_0, n_0],
+        method='DOP853',
+        t_eval=r_eval,
+        events=surface_event,
+        rtol=rtol,
+        atol=atol,
+        dense_output=False,
+    )
+
+    r_arr   = sol.t
+    m_arr   = sol.y[0]
+    n_arr   = np.maximum(sol.y[3], 1.0)
+    phi_arr = np.log(n_arr)
+    P_arr   = np.maximum(c * c * RHO_NUC / 2.0 * (n_arr - 1.0), 0.0)
+    rho_arr = RHO_NUC * n_arr
+
+    surface_mask = n_arr > 1.0 + 1e-12
+    if surface_mask.any():
+        i_surf    = np.where(surface_mask)[0][-1]
+        R_star    = r_arr[i_surf]
+        M_star    = m_arr[i_surf]
+        converged = True
+    else:
+        R_star    = r_max
+        M_star    = m_arr[-1]
+        converged = False
+
+    return StarSolution(
+        M_star=M_star,
+        R_star=R_star,
+        rho_central=rho_central,
+        phi_central=phi_central,
+        converged=converged,
+        r=r_arr,
+        m=m_arr,
+        rho=rho_arr,
+        P=P_arr,
+        phi=phi_arr,
+    )
+
+
+def compute_mr_curve_nfield_stiffened(
+    n_points: int = 60,
+    rho_min_factor: float = 1.01,
+    rho_max_factor: float = 1.0,
+    **solve_kwargs,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """M–R curve for the action-derived stiffened n-field solver.
+
+    Returns
+    -------
+    rho_c : ndarray  [kg m⁻³]
+    M : ndarray      [M_☉]
+    R : ndarray      [km]
+    """
+    rho_c_arr = np.linspace(
+        rho_min_factor * RHO_NUC,
+        rho_max_factor * RHO_CRIT,
+        n_points,
+    )
+    M_arr = np.full(n_points, np.nan)
+    R_arr = np.full(n_points, np.nan)
+
+    for i, rho_c in enumerate(rho_c_arr):
+        try:
+            star = solve_pm_star_nfield_stiffened(rho_c, **solve_kwargs)
+            if star.converged:
+                M_arr[i] = star.M_star / M_SUN
+                R_arr[i] = star.R_star / 1e3
+        except (ValueError, Exception):
+            pass
+
+    return rho_c_arr, M_arr, R_arr
+
+
+# ---------------------------------------------------------------------------
+# α=3 physical-measure stellar structure solver
+# ---------------------------------------------------------------------------
+
+def solve_pm_star_physical_measure(
+    rho_central: float,
+    r_max: float = 5.0e4,
+    n_eval: int = 5000,
+    rtol: float = 1e-9,
+    atol: float = 1e-6,
+) -> StarSolution:
+    """PM compact-star structure using the physical-measure (α=3) Poisson equation.
+
+    Physical motivation
+    -------------------
+    The physical-measure action uses the volume element n³ d³x:
+
+        S₃ = ∫ ½|∇φ|² n³ d³x
+
+    Euler-Lagrange vacuum equation:
+
+        ∇²φ + (3/2)|∇φ|² = 0
+
+    Linearisation via w = n^{3/2} = e^{3φ/2}:
+
+        ∇²w = 0    (linear in w, exact superposition)
+
+    Exact point-mass vacuum solution:
+
+        w(r) = 1 + 3GM/(c²r)  →  φ(r) = (2/3) ln(1 + 3GM/c²r)
+
+    Force law (from a = (c²/3) ∇w / w):
+
+        a(r) = −GM/r² / (1 + 3GM/c²r)
+
+    Phase boundary (φ=1):
+
+        r_phase = 3GM / [c²(e^{3/2} − 1)] ≈ 0.431 r_s
+
+    sourced equation with matter:
+
+        ∇²w = −K_w w^{1/3}    where K_w = 12πGρ_nuc/c²
+
+    In the weak field (w≈1, n≈1) this reduces to ∇²w ≈ −K_w  which matches
+    the Newton–Poisson source at the same rate as the α=0 and α=2 solvers.
+
+    Structure system (w-variable ODE)
+    ----------------------------------
+    Define  m̃_w(r) = ∫₀ʳ 4π r'² w(r')^{1/3} dr'  (w^{1/3} accumulator).
+
+    Gauss's theorem on ∇²w = −κ_w w^{4/3}  with  κ_w = (3/2)(8πGρ_nuc/c²):
+
+        dw/dr = −(κ_w / (4πr²)) × 4πr² w^{4/3}  [can't factor simply]
+
+    More directly: the sourced equation in w-form is:
+
+        ∇²w = −κ_w w^{4/3}     κ_w = 12πGρ_nuc / c²
+
+    Gauss integral: dw/dr = −K_w/(4πr²) ∫₀ʳ 4πr'² w^{1/3} dr'
+                          = −κ_w m̃_w / r²    where κ_w = K_w/4π = 3Gρ_nuc/c²
+
+    ODE state y = [m_phys, m̃_w, w]:
+
+        dm_phys/dr = 4π r² ρ_nuc n = 4π r² ρ_nuc w^{2/3}
+        dm̃_w/dr   = 4π r² w^{1/3}
+        dw/dr      = −κ_w m̃_w / r²
+
+    Surface: n = 1 → w = n^{3/2} = 1  (P = 0, ρ = ρ_nuc).
+
+    Parameters
+    ----------
+    rho_central : float
+        Central density [kg m⁻³].  Must satisfy 0 < ρ_c ≤ ρ_crit.
+    r_max : float
+        Maximum integration radius [m].
+    n_eval : int
+        Number of output evaluation points.
+    rtol, atol : float
+        ODE tolerances.
+
+    Returns
+    -------
+    StarSolution
+        Same structure as solve_pm_star.  phi = (2/3) ln w by construction.
+    """
+    if rho_central > RHO_CRIT * (1.0 + 1e-6):
+        raise ValueError(
+            f"rho_central = {rho_central:.3e} kg/m³ exceeds PM critical density "
+            f"ρ_crit = {RHO_CRIT:.3e} kg/m³."
+        )
+
+    n_central   = rho_central / RHO_NUC
+    phi_central = math.log(n_central)
+    w_central   = n_central ** 1.5           # w = n^{3/2}
+
+    # κ_w = 3Gρ_nuc / c²  (= K_w / 4π where K_w = 12πGρ_nuc/c² is the
+    # coefficient in ∇²w = −K_w w^{1/3}; same Gauss-theorem convention as
+    # kappa_n = 2Gρ_nuc/c² for the n-field solver)
+    kappa_w = 3.0 * G * RHO_NUC / (c * c)
+
+    def rhs(r, y):
+        m_phys, m_w, w = y
+        # n = w^{2/3}, clamp w ≥ 1 to avoid sub-nuclear densities
+        w_safe = max(w, 1.0)
+        n      = w_safe ** (2.0 / 3.0)
+        if r < 1.0:
+            dm_phys = 4.0 * math.pi * r * r * RHO_NUC * n
+            dm_w    = 4.0 * math.pi * r * r * w_safe ** (1.0 / 3.0)
+            return [dm_phys, dm_w, 0.0]
+        dm_phys = 4.0 * math.pi * r * r * RHO_NUC * n
+        dm_w    = 4.0 * math.pi * r * r * w_safe ** (1.0 / 3.0)
+        dw_dr   = -kappa_w * m_w / (r * r)
+        return [dm_phys, dm_w, dw_dr]
+
+    def surface_event(r, y):
+        return y[2] - 1.0   # w = n^{3/2} = 1  ↔  n = 1
+
+    surface_event.terminal  = True
+    surface_event.direction = -1
+
+    r_start  = 1.0
+    m_phys_0 = (4.0 / 3.0) * math.pi * r_start**3 * RHO_NUC * n_central
+    m_w_0    = (4.0 / 3.0) * math.pi * r_start**3 * w_central ** (1.0 / 3.0)
+    w_0      = w_central
+
+    r_eval = np.linspace(r_start, r_max, n_eval)
+
+    sol = solve_ivp(
+        rhs,
+        [r_start, r_max],
+        [m_phys_0, m_w_0, w_0],
+        method='DOP853',
+        t_eval=r_eval,
+        events=surface_event,
+        rtol=rtol,
+        atol=atol,
+        dense_output=False,
+    )
+
+    r_arr   = sol.t
+    m_arr   = sol.y[0]
+    w_arr   = np.maximum(sol.y[2], 1.0)
+    n_arr   = w_arr ** (2.0 / 3.0)
+    phi_arr = (2.0 / 3.0) * np.log(w_arr)   # φ = (2/3) ln w, exact
+    P_arr   = np.maximum(c * c * RHO_NUC / 2.0 * (n_arr - 1.0), 0.0)
+    rho_arr = RHO_NUC * n_arr
+
+    surface_mask = n_arr > 1.0 + 1e-12
+    if surface_mask.any():
+        i_surf    = np.where(surface_mask)[0][-1]
+        R_star    = r_arr[i_surf]
+        M_star    = m_arr[i_surf]
+        converged = True
+    else:
+        R_star    = r_max
+        M_star    = m_arr[-1]
+        converged = False
+
+    return StarSolution(
+        M_star=M_star,
+        R_star=R_star,
+        rho_central=rho_central,
+        phi_central=phi_central,
+        converged=converged,
+        r=r_arr,
+        m=m_arr,
+        rho=rho_arr,
+        P=P_arr,
+        phi=phi_arr,
+    )
+
+
+def compute_mr_curve_physical_measure(
+    n_points: int = 60,
+    rho_min_factor: float = 1.01,
+    rho_max_factor: float = 1.0,
+    **solve_kwargs,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """M–R curve using the physical-measure (α=3) stellar structure solver.
+
+    Returns
+    -------
+    rho_c : ndarray  [kg m⁻³]
+    M : ndarray      [M_☉]
+    R : ndarray      [km]
+    """
+    rho_c_arr = np.linspace(
+        rho_min_factor * RHO_NUC,
+        rho_max_factor * RHO_CRIT,
+        n_points,
+    )
+    M_arr = np.full(n_points, np.nan)
+    R_arr = np.full(n_points, np.nan)
+
+    for i, rho_c in enumerate(rho_c_arr):
+        try:
+            star = solve_pm_star_physical_measure(rho_c, **solve_kwargs)
+            if star.converged:
+                M_arr[i] = star.M_star / M_SUN
+                R_arr[i] = star.R_star / 1e3
+        except (ValueError, Exception):
+            pass
+
+    return rho_c_arr, M_arr, R_arr
+
+
+# ---------------------------------------------------------------------------
 # Surface gravitational redshift
 # ---------------------------------------------------------------------------
 

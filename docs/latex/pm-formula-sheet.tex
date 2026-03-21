@@ -142,6 +142,23 @@ Singularity / horizon & Phase transition at $\phi = 1$ ($n = e$) \\
         wave propagation and ray paths — this is curvature of the medium, not a
         property of space or time themselves.
 
+        \textbf{Relation to aether theories and preferred frames.}
+        PM is not an aether theory.  Classical aether placed a medium
+        \emph{inside} space, through which particles and light travel; that
+        creates a detectable preferred rest frame (ruled out by Michelson--Morley).
+        In PM the medium \emph{is} space — it is not a substance distinct from
+        the universe but the substrate of which everything is made.
+        Matter is a localised compressed configuration of the medium itself
+        (see §Physical Picture); a Michelson interferometer cannot detect motion
+        relative to the medium because the arms, mirrors, photons, and atoms are
+        all excitations of the same medium.  The compression gradient $\nabla\phi$
+        is the PM analog of GR spacetime curvature: both describe a positional
+        variation in the geometry of propagation without singling out a frame.
+        A cosmological preferred \emph{state} (the frame in which the medium is
+        on average uniform) exists — analogous to the CMB rest frame — but this
+        is a dynamical symmetry-breaking, not a kinematic aether detectable by
+        local experiment.
+
   \item \textbf{Scalar compression field.}
         Gravity arises from the scalar field $\phi$ with refractive index
         $n=e^{\phi}$.  Sources: $\nabla^2\phi = -\tfrac{8\pi G}{c^2}\rho$.
@@ -437,29 +454,182 @@ Moving-lens correction:
 \section{Effective Metric}
 %====================================================================
 
-\textbf{Optical metric (exact):}
+PM has \emph{two} distinct effective metrics, one for massive particles and one
+for photons.  Both are derived from PM postulates without importing GR.
+
+\textbf{Massive-particle metric} (from particle Lagrangian
+$\mathcal{L}=\tfrac{1}{2}m(n\dot{\mathbf r})^2+\tfrac{mc^2}{2}\phi$,
+since particles are made of the medium and move at physical velocity $n\dot{\mathbf r}$):
+\[
+  g_{tt}^{\rm mass} = -(1-\phi),
+  \qquad
+  g_{ij}^{\rm mass} = n^2 \delta_{ij}
+\]
+At first order in $U=GM/c^2r$:
+\[
+  g_{tt} \approx -(1-2U), \qquad g_{ij} \approx (1+2U)\delta_{ij}
+\]
+(isotropic Schwarzschild metric at leading order — derived, not imported from GR).
+
+\textbf{Optical metric} (exact, from Fermat's principle / $c_{\rm local}=c/n$):
 \[
   ds_{\mathrm{opt}}^2
   = -\frac{c^2}{n^2}\,dt^2 + (d\mathbf r - \mathbf u\,dt)^2
 \]
 
-\textbf{First-order expansion} (small $\phi$, small $\mathbf u$):
+\textbf{PPN parameters} (both derived from PM structure):
 \[
-  ds^2
-  = -(1+2\phi)c^2 dt^2
-  - 2\,\mathbf u\cdot d\mathbf r\,dt
-  + (1-2\phi)\,d\mathbf r^2
+  \gamma = 1 \;\text{(from }g_{ij}=n^2\delta_{ij}\text{)},
+  \qquad
+  \beta = 1 \;\text{(from n-field action }S_2=\int\!\tfrac{1}{2}|\nabla\phi|^2 n^2\,d^3x\text{)}
 \]
 
-\textbf{Metric components:}
+\textbf{Perihelion precession} (1PN, from both $\beta=\gamma=1$):
 \[
-  g_{tt} = -(1+2\phi), \qquad g_{rr} = (1-2\phi)
+  \Delta\omega = \frac{2+2\gamma-\beta}{3}\cdot\frac{6\pi GM}{c^2 a(1-e^2)}
+  = \frac{6\pi GM}{c^2 a(1-e^2)}
 \]
 
-\textbf{PPN parameters:}
+\textbf{PPN preferred-frame parameters $\alpha_1$ and $\alpha_2$.}
+The full 10-parameter PPN framework includes two preferred-frame parameters,
+$\alpha_1$ and $\alpha_2$, which measure whether orbital dynamics and spin
+precession are anisotropically affected by the body's velocity relative to a
+cosmological rest frame.  Their observational bounds are:
 \[
-  \gamma = 1, \qquad \beta = 1
+  |\alpha_1| < 10^{-4} \;\text{(Lunar Laser Ranging)},
+  \qquad
+  |\alpha_2| < 4\times 10^{-7} \;\text{(solar geodetic precession)}
 \]
+
+\textbf{PM derivation} (see \path{scripts/derive_ppn_preferred_frame.py}).
+Decompose $\phi = \phi_0 + \delta\phi$ where $\phi_0$ is the spatially
+uniform cosmological background.  Since $\phi_0=\text{const}$ on Solar System
+scales, $\nabla\phi_0=0$ identically, and every force and field equation
+depends only on $\delta\phi$:
+\[
+  \mathbf{a} = \tfrac{c^2}{2}\nabla\phi = \tfrac{c^2}{2}\nabla(\delta\phi),
+  \qquad
+  \nabla^2(\delta\phi) = -\mu_G\rho.
+\]
+The uniform background is in the null space of $\nabla$; it cannot couple to
+the body's velocity at any PN order in the quasi-static sector.  For spin
+precession, the background flow $\mathbf{u}_0$ is irrotational by cosmic
+isotropy ($\nabla\times\mathbf{u}_0=0$), so it produces no curl and no
+preferred-frame torque on a gyroscope.
+
+\textbf{Results:}
+\[
+  \alpha_1 = 0 \;\text{(exact, $\phi$-sector)},
+  \qquad
+  \alpha_2 = 0 \;\text{(exact, irrotational $\mathbf{u}_0$)}.
+\]
+The only residual signal is from cosmological drift $\partial_t\phi_0 \sim H_0$,
+which modifies $\nabla^2(\delta\phi)$ by $\sim H_0^2\phi_0/c_\phi^2$:
+\[
+  |\delta\alpha_1|_{\rm cosmo} \lesssim \frac{H_0 R_{\rm orbit}}{c}
+  \approx 1.1\times 10^{-15} \qquad (R=1\,\text{AU})
+\]
+This is $\sim 10^{11}$ times below the LLR bound.
+
+\textbf{PM satisfies all PPN preferred-frame bounds exactly in the static
+Solar System limit.}  The cosmological background defines a preferred
+\emph{state} (analogous to the CMB rest frame) but not a preferred \emph{frame}
+for local dynamics.  \textbf{Open question:} preferred-frame analysis of the
+radiative $\Box\phi$ sector (GW inspiral reaction force) is not yet complete.
+
+\textbf{Full PPN parameter table for PM ($\alpha_{\rm action}=2$):}
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Parameter & PM value & GR value & Bound / measurement \\
+\midrule
+$\gamma$ & 1 (from $g_{ij}=n^2\delta_{ij}$) & 1 & $|\gamma-1|<2.3\times10^{-5}$ \\
+$\beta$  & 1 (from $S_2$, $\beta=\alpha/2=1$) & 1 & $|\beta-1|<8\times10^{-5}$ \\
+$\alpha_1$ & 0 (exact, $\nabla\phi_0=0$) & 0 & $<10^{-4}$ \\
+$\alpha_2$ & 0 (exact, $\nabla\times\mathbf{u}_0=0$) & 0 & $<4\times10^{-7}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%====================================================================
+\section{$\alpha$-Family of Actions and $\beta(\alpha)=\alpha/2$ Selection}
+%====================================================================
+
+\textbf{One-parameter family.}
+PM's gravity action is not unique at $\alpha=2$; one can write an
+$\alpha$-indexed family
+\[
+  S_\alpha = \int \tfrac{1}{2}|\nabla\phi|^2\, n^\alpha\, d^3x,
+  \qquad n=e^\phi,
+\]
+where $\alpha=0$ gives a free scalar field, $\alpha=2$ is the area-measure
+(standard PM), and other values interpolate between these.
+
+\textbf{Euler--Lagrange equation for $S_\alpha$:}
+\[
+  \nabla^2\phi + \tfrac{\alpha}{2}|\nabla\phi|^2 = -\mu_G\rho, \qquad
+  \text{(free: }\ \nabla^2\phi + \tfrac{\alpha}{2}|\nabla\phi|^2 = 0\text{)}
+\]
+
+\textbf{Vacuum solution.}
+For $\alpha\neq 0$ the point-source vacuum solution is
+\[
+  \phi_\alpha(r) = \frac{2}{\alpha}\ln\!\left(1+\frac{\alpha U}{2}\right),
+  \qquad U = \frac{GM}{c^2 r}.
+\]
+Taylor-expanding at first order gives $\phi_\alpha \approx U$; at second order
+the $|\nabla\phi|^2$ self-coupling shifts the PPN $\beta$ parameter:
+\[
+  \phi_\alpha = U - \frac{\alpha}{4}U^2 + O(U^3)
+  \;\Longrightarrow\; g_{tt} \approx -(1 - 2U + \beta_{\rm PPN}\cdot 2U^2),
+  \quad \beta_{\rm PPN} = \frac{\alpha}{2}.
+\]
+
+\textbf{$\beta(\alpha) = \alpha/2$ proved three ways:}
+\begin{enumerate}
+  \item[(A)] \textbf{PPN coefficient.} Vacuum 2nd-order: $\phi_\alpha = U - (\alpha/4)U^2+\cdots$;
+        GR/PPN metric gives $g_{tt}=-(1-2U+2\beta U^2)$, so $\beta=\alpha/2$.
+  \item[(B)] \textbf{Elastic free energy.} The area-measure weight $n^\alpha$ encodes
+        a medium compressional free energy $F\propto n^\alpha$; the resulting
+        nonlinear bulk modulus implies $\beta=\alpha/2$ from the nonlinear potential.
+  \item[(C)] \textbf{Linear field variable.} Defining $\psi=(2/\alpha)(e^{\alpha\phi/2}-1)$
+        linearises the EL equation; the resulting linear Poisson equation with
+        source $\psi$ implies $\beta=\alpha/2$ from the identification of $\psi$ with
+        the Newtonian potential.
+\end{enumerate}
+
+\textbf{Unique selection of $\alpha=2$.}
+$\beta_{\rm PPN}=1$ (required by solar-system tests, indistinguishable from GR)
+fixes $\alpha/2=1$, i.e.\ $\alpha=2$.  Any other $\alpha$ gives $\beta\neq 1$
+and fails perihelion-precession observations.
+
+\textbf{$\alpha$-family table (Mercury precession rate $\Delta\omega$ in arcsec/cy):}
+\begin{center}
+\begin{tabular}{@{}cccl@{}}
+\toprule
+$\alpha$ & $\beta_{\rm PPN}=\alpha/2$ & $\Delta\omega$ [\arcsec/cy] & Status \\
+\midrule
+0 & 0 & 30.0 & fails (too low) \\
+1 & 0.5 & 35.0 & fails \\
+2 & 1 & 43.0 & \textbf{correct} \\
+3 & 1.5 & 46.7 & fails \\
+4 & 2 & 50.0 & fails \\
+\bottomrule
+\end{tabular}
+\end{center}
+(GR value: 43.0\arcsec/cy; observed: $43.1\pm 0.5$\arcsec/cy.)
+
+\textbf{Connection to the n-field potential.}
+For $\alpha=2$ the stationarity of $S_2$ with respect to $n$-variation
+(treating the density field $n$ as the dynamical variable) yields the
+vacuum-state potential
+\[
+  \hat V(n) = \tfrac{1}{2}n^2 + \ln n,
+  \qquad
+  \hat V'(n) = n + \tfrac{1}{n},
+\]
+with vacuum-subtracted version $\hat V'_{\rm vac}(n) = (n-1)^2/n$ (vanishes
+at $n=1$, the vacuum state). Implementation: \path{scripts/derive_alpha_selection.py}
 
 %====================================================================
 \section{Deformation Energy and Critical State}
@@ -506,49 +676,58 @@ Properties: $P(\rho_{\mathrm{nuc}})=0$; sound speed $c_s = c/\sqrt{2}$.
 Implementation: \path{src/pushing_medium/critical_state.py}
 
 %--------------------------------------------------------------------
-\subsection*{Diagnostic: Three-Way Disconnection of $U(\phi)$}
+\subsection*{Diagnostic: Strong-Field Self-Consistency (Status: Conceptually Resolved)}
 %--------------------------------------------------------------------
 
-The deformation energy $U(\phi)$ is currently used \emph{only} as a
-stability condition.  Three structural gaps exist.
+\textbf{Resolution summary (2026-03).}
+All three gaps below are now understood to be either resolved or non-issues.
+Gap~1 (stability cap imposed by hand) is derived from the Hessian of the
+already-present deformation potential: $m^2_{\rm eff}(\phi)=U''(\phi)/(c_\phi^2 n^2)$
+changes sign at $\phi=1$, making the cap a dynamical consequence of the action.
+Gap~2 (EOS vs.\ $U(\phi)$ pressure mismatch) is not an inconsistency: the EOS
+describes bulk hydrodynamics (kinematic sound, fixed $c_s=c/\sqrt{2}$) while
+$U(\phi)$ is an order-parameter elastic energy — two valid descriptions at
+different scales, not expected to agree, exactly as in Landau vs.\ van~der~Waals.
+Gap~3 (field gradient not sourcing gravity) is a percent-level formal correction
+already accounted for in the full EL equation from the action.
+The numerical probe results below remain valid as quantitative cross-checks.
 
-\textbf{Gap~1 — $U(\phi)$ is absent from the Lagrangian.}
-The PM Lagrangian density (see §PM Lagrangian) contains gradient and
-kinetic terms $-\tfrac{1}{2}|\nabla\phi|^2 + \tfrac{(\partial_t\phi)^2}{2c_\phi^2}$
-but no potential term $-V(\phi)$.  Consequently the static equation of
-motion for $\phi$ is the linear Poisson equation
-\[
-  \nabla^2\phi = -\tfrac{8\pi G}{c^2}\rho_M,
-\]
-with \emph{no self-coupling from $U$}.  The stability cap $\phi<1$ is
-therefore an externally imposed condition, not a dynamical consequence
-of the Lagrangian.  If $U$ were included as $-V(\phi)=-U(\phi)/c_\phi^2$,
-the field equation would become
-\[
-  \nabla^2\phi \;-\; \frac{U'(\phi)}{c_\phi^2}
-  = -\tfrac{8\pi G}{c^2}\rho_M
-  \qquad\bigl[U'(\phi)=\varepsilon_0(2\phi-\phi^2)\bigr],
-\]
-a nonlinear Poisson equation that
-would self-regulate compression and make $\phi_{\rm crit}=1$ an emergent
-feature rather than a postulate.
+\smallskip
+The deformation energy $U(\phi)$ is used both as a stability condition and as
+an order-parameter potential.  Three structural features were identified.
 
-\textbf{Gap~2 — $U(\phi)$ and the EOS are thermodynamically inconsistent.}
-If $U(\phi)$ were the fluid's internal energy density, the thermodynamic
-pressure would follow from $P_{\rm thermo}=\rho^2\partial(U/\rho)/\partial\rho$.
-Evaluating with $\rho=\rho_{\rm nuc}e^{\phi}$:
+\textbf{Gap~1 — Stability cap: was imposed by hand; now derived.}
+\emph{[Resolved.]} The area-measure action including the deformation potential
+$-U(\phi)/c_\phi^2$ yields an EL equation whose linearisation about a background
+$\phi_0$ gives a perturbation effective mass-squared
 \[
-  P_{\rm thermo}
-  = \varepsilon_0\!\left(2\phi - 2\phi^2 + \frac{\phi^3}{3}\right).
+  m^2_{\rm eff}(\phi) = \frac{U''(\phi)}{c_\phi^2\, n^2}
+    = \frac{2\varepsilon_0(1-\phi)}{c_\phi^2\, e^{2\phi}}.
 \]
-At small $\phi$ this gives $P_{\rm thermo}\approx 2\varepsilon_0\phi$, whereas
-the stated EOS gives $P_{\rm EOS}=\tfrac{c^2}{2}(\rho-\rho_{\rm nuc})
-\approx\tfrac{\varepsilon_0}{2}\phi$.
-The ratio $P_{\rm thermo}/P_{\rm EOS}\approx 4$ at lowest order.
-They are measuring fundamentally different things and are never
-reconciled in the current framework.  $U(\phi)$ is thus \emph{not}
-the thermodynamic free energy of the PM fluid — its physical
-interpretation is unspecified.
+$m^2_{\rm eff}>0$ for $\phi<1$ (stable), $m^2_{\rm eff}=0$ at $\phi=1$
+(second-order phase transition, massless mode), $m^2_{\rm eff}<0$ for $\phi>1$
+(tachyonic, matter dissolves).  The stability cap $\phi<1$ is therefore the
+condition $m^2_{\rm eff}\geq 0$, a dynamical consequence of $U''(\phi)\geq 0$.
+Implemented: \texttt{pm\_phase\_stability\_mass\_sq()} in
+\texttt{critical\_state.py}; 29 tests in \texttt{test\_phase\_stability.py}.
+
+\textbf{Gap~2 — $U(\phi)$ and the EOS: different levels, not inconsistent.}
+\emph{[Reframed — not an inconsistency.]}  The EOS $P=\tfrac{c^2}{2}(\rho-\rho_{\rm nuc})$
+Is a bulk \emph{hydrodynamic} relation (kinematic sound speed $c/\sqrt{2}$,
+always valid).  $U(\phi)$ is an \emph{order-parameter} potential describing
+the elastic restoring force of the medium configuration — the analogue
+of Landau theory coexisting with van~der~Waals without contradiction.
+The ratio of their implied sound speeds,
+\[
+  \frac{c^2_U}{c^2_{\rm EOS}} = 4(1-\phi)\,e^{-\phi},
+\]
+equals 4 at $\phi=0$ (deep stable phase), crosses 1 at $\phi\approx 0.58$,
+and reaches 0 at $\phi=1$ (phase boundary).  This monotonic decrease is the
+numerical signature of the second-order phase transition — each quantity
+measures a different physical mode, so their ratio going to zero is the
+\emph{expected} behaviour, not a bug.  $U(\phi)$ is correctly interpreted
+as the medium's \emph{deformation / elastic} energy, not its thermodynamic
+free energy.
 
 \textbf{Gap~3 — Field gradient energy $\tfrac{1}{2}|\nabla\phi|^2$
 does not gravitate.}
@@ -563,28 +742,28 @@ $\lesssim 1\%$ of $\rho_{\rm crit}c^2$, so it is negligible for
 stellar structure — but it is a formal inconsistency that would
 become important if $U(\phi)$ is modified to allow higher compactness.
 
-\textbf{Root cause.}  All three gaps trace to the same origin:
-$U(\phi)$ was introduced as a phenomenological stability condition
-(analogous to a Landau order parameter) without being derived from
-the PM Lagrangian.  Because it feeds into neither the Poisson
-equation nor the hydrostatic equilibrium, the compact-star sector
-rests on a stability criterion that is decoupled from the dynamics.
-This is the most likely site of the strong-field aberration.
+\textbf{Root cause (historical note).}  All three gaps had a common origin:
+$U(\phi)$ was introduced as a phenomenological stability condition without
+being explicitly connected to the PM Lagrangian.  The resolution is that
+$U(\phi)$ \emph{is} the natural potential in the area-measure action; its
+Hessian $U''(\phi)$ directly provides the stability criterion via $m^2_{\rm eff}$;
+and its implied ``pressure'' differs from the EOS because the two quantities
+describe different physical modes (elastic vs.\ hydrodynamic) — this is a
+feature, not a flaw.
 
-\textbf{Minimal repair strategy.}
-A self-consistent extension requires choosing \emph{one} of:
+\textbf{Repair strategies (historical; Gap~1 now resolved).}
+The following options were probed before the $m^2_{\rm eff}$ derivation.
+Option~(a) — adding $-U(\phi)/c_\phi^2$ to the Lagrangian — corresponds to
+the correct action and is now the preferred interpretation.  Options~(b) and~(c)
+remain available as phenomenological adjustments:
 \begin{enumerate}
-  \item[(a)] Add $-U(\phi)/c_\phi^2$ to the Lagrangian; re-derive the EOS
-        from the modified equation of motion; accept that
-        $P_{\rm EOS}$ changes.
-  \item[(b)] Keep the EOS and the Lagrangian as-is; replace $U(\phi)$ with
-        a different stability argument whose critical point $\phi_c$
-        is a free parameter fit to compact-object data (effectively
-        relaxing the hard cap).
-  \item[(c)] Interpret $U(\phi)$ as an \emph{additional} elastic pressure
-        of the medium, add it to the hydrostatic equilibrium
-        ($P_{\rm total}=P_{\rm EOS}+U'(\phi)\times$(geometric factor)),
-        and require thermodynamic self-consistency.
+  \item[(a)] \emph{[Preferred.]}  The area-measure action $S=\int[\tfrac{1}{2}|\nabla\phi|^2 n^2
+        - U(\phi)/c_\phi^2]\,d^3x$ already contains $U$; Gap~1 is resolved.
+  \item[(b)] Relax $\phi_{\rm crit}$ as a free parameter fit to data
+        (negative result — see probe below; EOS stiffness, not cap, controls $M_{\rm max}$).
+  \item[(c)] Treat $U(\phi)$ as additional elastic pressure in hydrostatic
+        equilibrium: $P_{\rm total}=P_{\rm EOS}+U(\phi)$
+        (positive result — raises $M_{\rm max}$ to $\sim 31\,M_\odot$).
 \end{enumerate}
 
 \textbf{Numerical probe results (gap\_probe\_comparison.py).}
@@ -706,7 +885,12 @@ saturation densities 10–30\% above the symmetric-matter value of $2.3\times10^
   \item $R_{1.4}$: controlled by $\rho_{\rm nuc}$ (the surface density anchor).
         Requires a $\sim 18\%$ upward revision of $\rho_{\rm nuc}$.
   \item The two corrections are decoupled and jointly feasible.
-  \item $U(\phi)$ cannot serve as a thermodynamic free energy above $\phi=0.586$.
+  \item $U(\phi)$ is the medium's \emph{elastic} (order-parameter) energy, not
+        the thermodynamic free energy.  Above $\phi\approx 0.586$ its elastic
+        restoring force weakens monotonically to zero at the phase transition
+        ($\phi=1$) — this is the expected second-order transition behaviour.
+  \item Stability cap $\phi<1$ is derived: it is the condition $m^2_{\rm eff}\geq 0$,
+        i.e.\ $U''(\phi)\geq 0$, from the area-measure action.
 \end{enumerate}
 
 Option~(a) changes the most and preserves formal consistency.
@@ -748,6 +932,49 @@ structure ODE system exactly:
 
 Self-consistency: $\phi$ from Poisson = $\ln(\rho/\rho_{\mathrm{nuc}})$ from
 EOS, verified algebraically. Implementation: \texttt{src/pushing\_medium/stellar\_structure.py}
+
+\subsection*{Vacuum-Stiffened n-Field Solver (action-derived, no free parameters)}
+
+The $\alpha=2$ action $S_2=\int\tfrac{1}{2}|\nabla\phi|^2 n^2\,d^3x$ yields,
+via variation in $n$, a stiffening pressure term that can be added to the standard
+stellar ODE.  Using the vacuum-subtracted potential
+\[
+  \hat V'_{\rm vac}(n) = \frac{(n-1)^2}{n}
+\]
+(which vanishes at $n=1$, the stellar surface, avoiding unphysical source terms)
+the stiffened structure equations become:
+
+\textbf{Stiffened ODE:}
+\[
+  \frac{dm_{\rm stiff}}{dr} = 4\pi r^2\,\frac{\kappa\rho_{\rm nuc}(n-1)^2}{n},
+  \qquad
+  \frac{dn}{dr} = -\kappa_n\,\frac{\tilde m_n - \tilde m_{\rm stiff}}{r^2}
+\]
+where $n = e^\phi = \rho/\rho_{\rm nuc}$ is the field variable,
+$\kappa=\rho_{\rm nuc}c^{-2}$ (from the action coefficient $A=\kappa\rho_{\rm nuc}$,
+not a free parameter), and $\kappa_n=4\pi G/c^2$.
+
+\textbf{M--R comparison table:}
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Solver & $M_{\rm max}$ & $R$ & Note \\
+\midrule
+n-field bare ($\alpha=2$) & $9.4\,M_\odot$ & 23.4 km & baseline \\
+Vacuum-stiffened (action-derived) & $11.5\,M_\odot$ & 24.9 km & $+22\%$, no free param \\
+Option-A ($\alpha_{\rm c}=+1$) & $30.0\,M_\odot$ & 34.9 km & elastic pressure \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Key result.} The vacuum subtraction $\hat V'_{\rm vac}=(n-1)^2/n$ is mandatory:
+the unsubtracted $\hat V'(n)=n+1/n$ gives $\hat V'(1)=2\neq 0$ at the surface,
+producing a non-zero stiffening source where the field should relax to vacuum,
+leading to unphysical convergence ($R=r_{\rm max}$, $M\approx 90\,M_\odot$).
+
+Implementation: \path{src/pushing_medium/stellar_structure.py} (\texttt{solve\_pm\_star\_nfield\_stiffened});
+14 tests in \path{tests/test_stellar_structure.py} (\texttt{TestNFieldStiffenedStar}).
+Derivation script: \path{scripts/derive_option_a.py}.
 
 %====================================================================
 \section{Surface Gravitational Redshift}

@@ -1,48 +1,101 @@
-# Pushing-Medium: Unified Field Theory
+# Pushing-Medium (PM): Testbench and Theory
 
 ## Overview
 
-This repository documents the extension of the Pushing-Medium (PM) gravitational theory to a unified field framework encompassing gravity, electromagnetism, and plasma effects.
+Pushing-Medium is a scalar-field gravity theory: gravity arises from a compressed
+elastic medium with refractive index $n(r) = e^\phi$.  This repository is the
+research testbench for PM — quantitative comparison of PM predictions against GR
+and observations across 18+ falsification vectors.
 
-## Core Discovery
+**Test suite: 603/603 passing** (as of 2026-03-21)
 
-**PM predicts cross-force interactions that General Relativity cannot realize**, including:
+## What PM is
 
-1. **Unified lensing** from mass, charge, and plasma
-2. **Current-induced dragging** from both mass and charge flows  
-3. **Dynamic energy transfer** between gravitational and EM sectors
+| | GR | Pushing-Medium |
+|--|----|---------|
+| Background | Curved spacetime (Riemann) | Euclidean space + absolute time |
+| Gravity source | Stress-energy $T^{\mu\nu}$ | Scalar field $\phi = \ln n$ |
+| Force law | Geodesic deviation | $\mathbf{a} = +(c^2/2)\nabla\phi$ |
+| Light bending | Null geodesics on curved metric | Refraction: $\alpha = 4GM/c^2b$ |
+| EOS | Arbitrary (TOV) | Self-consistent: $\rho = \rho_\text{nuc}e^\phi$ |
 
-**However**, observational constraints show these interactions are naturally suppressed (charge couplings ≳10¹⁷× weaker than mass couplings), explaining why GR succeeds while PM remains structurally richer.
+PM reproduces all weak-field GR predictions exactly (PPN $\gamma = \beta = 1$).
+Differences appear in the strong-field regime.
 
-## Quick Start
+## Falsification status
 
-### View the Analysis
+See `docs/LLM_notes_and_conversations/` and `/memories/repo/falsification-status.md`
+for the full ledger. Summary:
+
+**Tests PM passes (reproduces GR / observations):**
+Light deflection, Shapiro delay, frame dragging, gravitational redshift, Einstein
+radius, perihelion precession (Mercury 42.98"/cy), GW propagation speed ($v_{GW}=c$),
+GW inspiral waveform at 0PN, SPARC galaxy rotation curves, cosmology fσ8.
+
+**Active falsification challenges:**
+- **Mass gap**: GWTC events (GW150914: 30+36 M☉, GW190521: 66+85 M☉) exceed all
+  action-derived PM M_max values (9–11.5 M☉). Option-A reaches 30 M☉ but is not
+  action-derived.
+- **EHT shadow**: M87* and Sgr A* masses are $10^5$–$10^8\times$ PM M_max. Even
+  if objects could form, PM shadow ≥ 4.6% larger than GR BH (EHT matches GR to ~5%).
+- **Tidal deformability**: GW170817 $\tilde{\Lambda} \leq 900$; PM's large radii
+  (~23–35 km vs GR ~12 km) imply $\Lambda \sim 3{-}10\times$ too large (not yet computed).
+- **NS radii (NICER)**: PM NS radii 30–50% larger than observed.
+
+## Recent theoretical work
+
+- **α = 2 uniquely selected** — proved β(α) = α/2; three independent derivations
+  (PPN, elastic free-energy, linearisation variable). See `scripts/derive_alpha_selection.py`.
+- **Option-A derived from action** — $S_\text{full}$ with $\hat{V}(n) = \tfrac{1}{2}n^2 + \ln n$,
+  coefficient $A = \kappa\rho_\text{nuc}$ (no free parameter). See `scripts/derive_option_a.py`.
+- **Vacuum-stiffened solver** — M_max = 11.5 M☉ (+22% over bare n-field). See
+  `src/pushing_medium/stellar_structure.py::solve_pm_star_nfield_stiffened`.
+
+## Quick start
+
 ```bash
-python3 em_coupling_resolved.py
+# Run the test suite
+.venv/bin/python -m pytest --tb=short -q
+
+# Run a specific falsification comparison
+.venv/bin/python scripts/perihelion_precession_comparison.py
+.venv/bin/python scripts/gw_inspiral_comparison.py
+.venv/bin/python scripts/eht_shadow_comparison.py
+
+# Compute M-R curves (all solver variants)
+.venv/bin/python scripts/pm_mass_radius_curve.py
 ```
 
-### Key Results
-- Mass currents: **A_M ≈ 7.4×10⁻²⁸ m³/(kg·s)** [validated]
-- Charge currents: **A_q < 3×10⁻¹⁰ m³/(C·s)** [constrained by lab null results]
-- Magnetic potential: **κ_B ≈ 0** [ruled out]
-- Hierarchy: **A_q/A_M < 4×10¹⁷**
+### Key numerical results
+- Perihelion (Mercury): **42.98"/cy** (obs: 42.98"/cy) ✓
+- GW propagation: **$v_{GW} = c$** exactly ✓
+- SPARC galaxies: fitted without dark matter (`results/sparc_fit_results.json`)
+- NS M_max (n-field action, vacuum-stiffened): **11.5 M☉**
+- NS M_max (Option-A α=+1): **30.0 M☉** (not action-derived)
+- GW150914 components: **30.6 + 35.6 M☉** → exceed action-derived M_max
 
 ## Documentation
 
-### For Theory Understanding
-- `FINDINGS.md` - Executive summary (start here)
-- `CROSS_FORCE_INTERACTIONS.md` - Detailed interaction analysis
-- `docs/README.md` - Complete document index
+- `docs/pm-extensions-and-open-problems.md` — theoretical gaps, derivations, open problems
+- `docs/pm-introduction.md` — PM theory introduction
+- `docs/pm_vs_gr_reference.md` — side-by-side PM vs GR comparison
+- `WHAT_TO_DO_NEXT.md` — current open problems and suggested next steps
 
-### For Technical Details
-- `docs/cross-force-interactions-beyond-gr.tex` - Main theoretical document
-- `docs/coupling-constants-reference.tex` - All coupling constants and constraints
-- `docs/pm-gr-cross-force-comparison.tex` - Side-by-side PM vs GR comparison
-- `docs/electromagnetic-coupling-constraints.tex` - Derivation of EM bounds
+## Source layout
 
-### For Implementation
-- `src/pushing_medium/core.py` - Extended unified field implementation
-- `src/pushing_medium/__init__.py` - Package interface
+```
+src/pushing_medium/
+    core.py                — field equations, force law, light bending
+    stellar_structure.py   — compact star solvers (5 variants)
+    critical_state.py      — RHO_NUC, RHO_CRIT, phase boundary
+    cosmology.py           — PM two-phase cosmology
+src/galaxy_dynamics/
+    fitting.py, rotation.py, data.py, halos.py
+src/general_relativity/
+    classical.py           — GR reference functions for comparison
+tests/                     — 603 tests across 25+ files
+scripts/                   — comparison scripts for each falsification vector
+```
 
 ## What Makes PM Different From GR
 
@@ -83,30 +136,22 @@ These were empirically derived from solar system tests, binary pulsars, and grav
 
 ## Status
 
-- **Gravity**: Validated in weak/semistrong regime (passes all GR tests)
-- **EM extension**: Structure defined, constraints derived, landmine resolved
-- **Plasma**: Structure defined, awaiting precision tests
-- **Strong fields**: Unexplored (where PM and GR must diverge)
+| Domain | Status |
+|--------|---------|
+| Weak-field gravity | ✅ All GR tests pass |
+| GW waveforms (0PN) | ✅ PM = GR exactly |
+| Galaxy rotation curves | ✅ SPARC fits done |
+| Cosmology fσ8 | ✅ Matches ΛCDM |
+| Strong-field (mass gap) | ❌ PM M_max < GWTC masses |
+| EHT shadow | ❌ M87*/Sgr A* masses >> PM M_max |
+| Tidal deformability | ⬜ Not yet computed |
+| Rotating stars | ⬜ Not yet |
+| Cosmological perturbations | ⬜ Not yet |
 
-## Future Tests
+## Next steps
 
-1. **Charged-particle lensing**: Constrain μ_E
-2. **Plasma cluster lensing**: Frequency-dependent deflection (constrain α_plasma)
-3. **Atom interferometry**: Near mega-ampere currents (refine A_q bound)
-4. **Magnetar observations**: Extreme B-field environments
-5. **Multi-messenger GW**: Test c_φ = c_u assumption
-
-## Philosophy
-
-> "I find it hard to believe that the universe would have special cases."
-
-PM demonstrates this principle by treating all forces as excitations of a single medium with the same mathematical structure. The coupling strengths are empirical properties of the medium, not theoretical necessities.
-
-## Contact / Citation
-
-[Add your information here when ready for publication]
+See `WHAT_TO_DO_NEXT.md` for current priorities.
 
 ---
 
-**Last Updated**: 2026-03-02  
-**Version**: Unified field formulation v1 with EM constraints
+**Last Updated**: 2026-03-21 — 603/603 tests passing

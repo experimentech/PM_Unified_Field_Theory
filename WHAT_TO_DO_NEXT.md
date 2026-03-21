@@ -1,6 +1,106 @@
-# What To Do Next: Concrete Path to Publication
+# What To Do Next
 
-## ✅ VERIFIED: Galaxy Fitting Infrastructure Works
+Last updated: 2026-03-21  
+Test suite: **603/603 passing**
+
+---
+
+## What was just completed (this session)
+
+- **β(α) = α/2 proved** — three independent derivations (PPN, elastic free-energy,
+  linearisation variable). Script: `scripts/derive_alpha_selection.py`.
+- **Option-A action derived** — $S_\text{full}$ with $\hat{V}(n) = \tfrac{1}{2}n^2 + \ln n$,
+  coefficient $A = \kappa\rho_\text{nuc}$ (no free parameter). Script: `scripts/derive_option_a.py`.
+- **Vacuum-stiffened solver implemented** — `solve_pm_star_nfield_stiffened` in
+  `stellar_structure.py`. M_max = 11.5 M☉ (+22% over bare n-field 9.4 M☉).
+  14 new tests, all passing.
+- **`docs/pm-extensions-and-open-problems.md` §2.0 updated** with all derived results.
+
+---
+
+## Open problems (ranked by impact)
+
+### 1. Mass gap — primary falsification challenge
+
+Every PM solver variant has M_max below the GWTC event masses:
+
+| Solver | M_max |
+|--------|-------|
+| n-field bare (α=2) | 9.4 M☉ |
+| Vacuum-stiffened (action-derived) | 11.5 M☉ |
+| Standard PM (α=0) | ~13.4 M☉ |
+| Option-A α=+1 | 30.0 M☉ |
+| GW150914 components | 30.6–35.6 M☉ |
+| GW190521 components | 66–85 M☉ |
+
+Option-A reaches 30 M☉ but is not derived from the n-field action. The
+action-derived stiffened solver tops out at 11.5 M☉.
+
+To make progress here requires theory work, not code: does PM's phase-transition
+picture (§2.1 of `pm-extensions-and-open-problems.md`) describe objects above
+φ_crit = 1? Does the two-phase model predict collapsed objects more massive than
+the stellar M_max?
+
+### 2. Tidal deformability Λ(M) — tractable next testbench item
+
+GW170817 measured $\tilde{\Lambda} \leq 900$.  PM's large NS radii (23–35 km vs GR's
+~12 km) mean $\Lambda \propto R^5$ is likely 3–10× too large — a quantitative
+falsification in reach.
+
+**What to build:** Add two ODEs to the existing stellar structure integration for
+the tidal perturbation $y_2(r)$ (Hinderer 2008 formalism). All infrastructure is
+already in place in `stellar_structure.py`.
+
+```python
+# Extra ODEs appended to the n-field structure system:
+# dy2/dr = -(y2^2 + y2*F(r) + Q(r)) / r
+# where F, Q are functions of n, m, rho at each r
+# At surface: k2 from y2(R); then Lambda = (2/3)k2/C^5
+```
+
+This would be the **19th completed falsification vector**.
+
+### 3. GWTC catalog sweep
+
+No systematic table exists comparing all GWTC-3 event masses to PM M_max variants.
+A dedicated script loading the catalog and flagging events as
+"PM-accessible" / "above M_max" / "mass-gap" would be the clearest single-page
+summary of the mass-gap problem.
+
+### 4. Bulk modulus K — last implicit free parameter
+
+The n-field action has $K$ absorbed into $\mu_G = 2G/c^2$. A constitutive
+derivation of $K$ from PM's medium compressibility would close the last gap in the
+"no free parameters" claim for the action-derived solver.
+
+### 5. 1.5PN waveform corrections
+
+0PN: PM = GR exactly (proved, 36 tests). Differences enter at 1.5PN from the
+near-zone structure. GW170817 is the only PM-accessible event. The PM 1.5PN
+phase correction from the non-Schwarzschild near-zone is not computed.
+
+### 6. PDE hyperbolicity
+
+The n-field equation $\nabla^2 n = -\kappa\rho_\text{nuc}n^2$ is nonlinear.
+Whether the Cauchy problem is well-posed (characteristics, energy estimates)
+has not been analysed.
+
+### 7. Rotating star structure
+
+No PM analogue of Hartle-Thorne. M–R–J relation (mass, radius, moment of inertia)
+unconstrained. NICER moment-of-inertia measurements depend on this.
+
+---
+
+## Suggested immediate next step
+
+**Tidal deformability (item 2)** is the highest-value near-term task:
+- ~50 LOC extension of existing stellar structure code
+- Direct GW170817 comparison (quantitative falsification or validation)
+- Would be the 19th completed falsification vector
+- Uses identical testbench infrastructure
+
+For theoretical context, see `docs/pm-extensions-and-open-problems.md` §2.0.
 
 Just ran demo: PM fitted GAL_X rotation curve with χ²_red = 5.98, RMS = 3.8 km/s.
 The medium provides the "missing" acceleration without dark matter.
@@ -316,8 +416,6 @@ wget http://astroweb.cwru.edu/SPARC/SPARC_Lelli2016c.mrt -O data/sparc_full.dat
 
 ---
 
-**Status**: Infrastructure verified, venv set up, ready for full SPARC analysis  
-**Timeline**: 4 weeks to submittable galaxy paper  
-**Impact**: Could challenge dark matter paradigm
-
-**Next**: Get SPARC data and start batch fitting!
+*(This file previously contained a galaxy-fitting project plan. That work is
+complete — SPARC batch fits are in `results/sparc_fit_results.json`. See above
+for current open problems.)*

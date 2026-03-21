@@ -1,7 +1,66 @@
-# Pushing-Medium: Concrete Action Plan
+# Pushing-Medium: Action Plan
 
-## TL;DR
-You have a validated gravity model and working code. Here's what to do with it.
+Last updated: 2026-03-21
+
+## Current state summary
+
+| Item | Status |
+|------|--------|
+| Test suite | 603/603 passing |
+| Falsification vectors completed | 18 (see `falsification-status.md`) |
+| α=2 action derived | ✅ β(α)=α/2, three proofs |
+| Option-A action derived | ✅ V̂(n) = ½n²+ln n, no free parameter |
+| Stiffened solver | ✅ M_max = 11.5 M☉, 14 tests |
+| SPARC galaxy fits | ✅ Done (`results/sparc_fit_results.json`) |
+| EHT shadow comparison | ✅ Done (double falsification noted) |
+| GW inspiral | ✅ 0PN identity proved |
+| Cosmology fσ8 | ✅ PM-Drag matches ΛCDM |
+
+## Priority action items
+
+### Highest priority: Tidal deformability Λ(M)
+
+**Why:** GW170817 measured $\tilde{\Lambda} \leq 900$. PM's large NS radii predict
+$\Lambda \sim 3{-}10\times$ too large. This is a quantitative falsification with
+all infrastructure already in place.
+
+**What to build:** Extend `stellar_structure.py` with the tidal Love number ODE.
+
+```python
+# Hinderer (2008) perturbation equations, adapted to PM:
+# State: [...existing stellar state..., y2]
+# dy2/dr = -(y2**2 + y2*F(r) + Q(r)) / r
+#
+# At surface R: C = G*M/(c**2*R)
+#               Y = R * y2_surface / y2_R   # logarithmic derivative
+#               k2 = ... (Hinderer eq. 23)
+#               Lambda = (2/3) * k2 / C**5
+```
+
+Then add to `TestNFieldStar`: `test_tidal_deformability_gw170817_constraint`.
+
+### Second: GWTC catalog mass comparison
+
+Create `scripts/gwtc_mass_gap.py` loading GWTC-3 event masses and comparing to
+all PM M_max variants. Output: table of all events flagged by accessibility.
+
+### Third: Mass-gap theory
+
+The two-phase picture (§2.1 of `pm-extensions-and-open-problems.md`) needs
+developing: can PM describe collapsed objects above φ_crit = 1? What is the
+theory's prediction for objects that would be black holes in GR?
+
+## Falsification ledger
+
+See `/memories/repo/falsification-status.md` for the full 18-vector ledger.
+Key open vectors:
+- **19th**: Tidal deformability Λ(M) from GW170817 (not yet computed)
+- **20th**: Cosmological perturbations / matter power spectrum P(k)
+
+## Physics reference
+
+For PM formalism, force law, and what NOT to import from GR, see
+`/memories/repo/pushing-medium-framework.md`.
 
 ---
 
@@ -327,8 +386,5 @@ You need:
 ---
 
 **Next command**: 
-```bash
-cd legacy/Pushing-Medium && pytest tests/test_galaxy_rotation.py -v
-```
-
-Then we start fitting real galaxies.
+*(Earlier sections of this file described galaxy-fitting and EHT shadow plans;
+those are now complete. See above for current priorities.)*

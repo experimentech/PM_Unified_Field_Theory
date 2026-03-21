@@ -487,12 +487,20 @@ def massive_accel_medium(grad_ln_n: Sequence[float]):
 
     Derivation
     ----------
-    The PM effective metric is g_tt = -(1+2φ), g_rr = (1-2φ) with φ = μ_G M/r > 0
-    near a mass.  Light bending uses both metric components and sees the full
-    n = e^φ field → α = 4GM/(c²b).  Massive slow particles are governed only by
-    the time-dilation component (g_tt), giving half the bending acceleration:
+    The PM massive-particle metric is g_tt = -(1-φ), g_ij = n²δ_ij, derived from
+    the particle Lagrangian L = ½m(nẋ)² + (mc²/2)φ (particles are made of the
+    medium; coordinate velocity ẋ ↔ physical velocity nẋ).
 
-        a_massive = +(c²/2) ∇φ  NOT  -(c²∇φ)
+    From the geodesic equation in a static metric with g_tt = -(1+h_tt):
+        a_i = -(c²/2) ∂_i h_tt
+    Here h_tt = -φ (since g_tt = -(1-φ)), so:
+        a_i = +(c²/2) ∂_i φ
+
+    Light bending uses the optical metric ds² = -(c²/n²)dt² + dr² and sees the
+    full n = e^φ field → α = 4GM/(c²b).  The 2:1 lensing ratio relative to
+    massive particles is a direct consequence of the two-metric structure.
+
+        a_massive = +(c²/2) ∇φ  (NOT  -(c²∇φ))
 
     With φ = μ_G M/r = 2GM/c²r and ∇φ = -2GM/(c²r²) r̂ (inward, toward mass):
         a = +(c²/2)·(-2GM/c²r²)r̂ = -GM/r² r̂  (attractive, Newtonian ✓)
@@ -652,6 +660,137 @@ def massive_accel_n_field(r: Sequence[float], masses: List[Tuple[float, Sequence
             half_c2 * gz * inv_n)
 
 
+# --- Physical-measure field equation  (∇²w = 0, w = n^{3/2}) ---
+
+def phi_physical_measure_point_mass(r_dist: float, M: float) -> float:
+    """Scalar field φ under the physical-measure action, point mass.
+
+    The standard PM field action is ∫ ½|∇φ|² d³x, integrated over the
+    coordinate volume element.  If the physical volume element n³ d³x is
+    used instead (rulers and volumes measured in medium units), the action
+    becomes S = ∫ ½|∇φ|² n³ d³x.
+
+    The Euler–Lagrange equation (vacuum) is:
+
+        ∇²φ + (3/2)|∇φ|² = 0
+
+    This is nonlinear in φ but becomes the Laplace equation ∇²w = 0 under
+    the substitution w = n^{3/2} = e^{3φ/2}.  Superposition is therefore
+    exact in w (not in φ or n).
+
+    The spherically symmetric point-mass solution is:
+
+        w(r) = 1 + 3GM/(c²r)   →   φ(r) = (2/3) ln(1 + 3GM/(c²r))
+
+    Weak-field limit (r ≫ GM/c²): φ ≈ 2GM/(c²r)  — identical to standard PM.
+    Phase boundary φ = 1 at:
+
+        r_phase = 3GM / [c²(e^{3/2} − 1)] ≈ 0.431 r_s
+
+    Force: a = −GM/r² / (1 + 3GM/(c²r)) — Newtonian suppressed in strong field.
+
+    Parameters
+    ----------
+    r_dist : float
+        Radial distance from the mass [m].
+    M : float
+        Mass [kg].
+
+    Returns
+    -------
+    float
+        φ(r) [dimensionless].
+    """
+    return (2.0 / 3.0) * math.log1p(3.0 * G * M / (c * c * r_dist))
+
+
+def grad_phi_physical_measure_point_mass(r: Sequence[float], M: float,
+                                         r_source: Sequence[float] = (0.0, 0.0, 0.0)) -> tuple:
+    """Gradient ∇φ under the physical-measure field equation, point mass.
+
+    With w = 1 + 3GM/(c²r) and φ = (2/3) ln w:
+
+        ∇φ = (2/3) ∇w / w
+
+    where ∇w = −3GM/(c²r³) r_vec.
+
+    Parameters
+    ----------
+    r : Sequence[float]
+        Field point [m].
+    M : float
+        Mass [kg].
+    r_source : Sequence[float]
+        Source position [m], default origin.
+
+    Returns
+    -------
+    tuple[float, float, float]
+        ∇φ [m⁻¹].
+    """
+    dx = r[0] - r_source[0]
+    dy = r[1] - r_source[1]
+    dz = r[2] - r_source[2]
+    r2 = dx * dx + dy * dy + dz * dz
+    r_mag = math.sqrt(r2) + 1e-300
+    mu_G = 3.0 * G / (c * c)           # = 3GM/c² coefficient
+    w_val = 1.0 + mu_G * M / r_mag     # w at this point
+    # ∇w = −(mu_G M / r³) r_vec = (−mu_G M / r²) r̂, scaled to vector
+    dw_over_r = -mu_G * M / (r2 * r_mag)   # dw/dr / r_mag  (vector scale)
+    coeff = (2.0 / 3.0) * dw_over_r / w_val
+    return (coeff * dx, coeff * dy, coeff * dz)
+
+
+def massive_accel_physical_measure(r: Sequence[float],
+                                   masses: List[Tuple[float, Sequence[float]]]) -> tuple:
+    """PM massive-particle acceleration using the physical-measure field equation.
+
+    The physical-measure field equation ∇²φ + (3/2)|∇φ|² = source is linear
+    in w = n^{3/2} = e^{3φ/2}.  Superposition is therefore exact in w:
+
+        w_total(r) = 1 + Σᵢ 3GMᵢ / (c²|r−rᵢ|)
+        ∇φ = (2/3) ∇w_total / w_total
+        a  = (c²/2) ∇φ = (c²/3) ∇w_total / w_total
+
+    In the weak field this reduces to Newtonian (same as newtonian_accel_sum).
+    In the strong field each contribution is suppressed by w_total, keeping
+    the phase boundary fixed at r_phase ≈ 0.431 r_s per mass.
+
+    Parameters
+    ----------
+    r : Sequence[float]
+        Field point [m].
+    masses : List[Tuple[float, Sequence[float]]]
+        List of (M [kg], position [m]) tuples.
+
+    Returns
+    -------
+    tuple[float, float, float]
+        Acceleration [m s⁻²].
+    """
+    mu_G = 3.0 * G / (c * c)
+    x, y, z = r
+    w_total = 1.0
+    gx = gy = gz = 0.0
+    for M, ri in masses:
+        dx, dy, dz = x - ri[0], y - ri[1], z - ri[2]
+        r2 = dx * dx + dy * dy + dz * dz
+        r_mag = math.sqrt(r2) + 1e-300
+        contrib = mu_G * M / r_mag
+        w_total += contrib
+        # ∇w from this mass: −(mu_G M / r³) r_vec
+        dw_scale = -contrib / r2    # = −mu_G M / r³  (per r_vec component)
+        gx += dw_scale * dx
+        gy += dw_scale * dy
+        gz += dw_scale * dz
+    # a = (c²/3) ∇w / w
+    inv_w = 1.0 / w_total
+    c2_over_3 = c * c / 3.0
+    return (c2_over_3 * gx * inv_w,
+            c2_over_3 * gy * inv_w,
+            c2_over_3 * gz * inv_w)
+
+
 # --- GR-mapped helper functions for testbench comparisons ---
 
 def pm_deflection_angle_point_mass(M: float, b: float) -> float:
@@ -712,16 +851,30 @@ def pm_integrate_orbit(M: float, a: float, e: float,
                        n_orbits: int = 10) -> dict:
     """Numerically integrate a 1PN orbit and measure perihelion precession.
 
-    Uses the 1PN radial equation of motion derived from the PM/GR effective
-    potential V_eff = −GM/r + L²/(2r²) − GML²/(c²r³):
+    Uses the 1PN radial equation of motion derived from the PM effective metric
+    with PPN parameters β=γ=1 (both derived from PM's own structure):
 
         r̈ = h²/r³ − GM/r² − 3GM h²/(c² r⁴)
         φ̇ = h / r²
 
     where h = √(GMa(1−e²)) is the (conserved) specific angular momentum.
 
-    The 1PN correction term −3GMh²/(c²r⁴) is the same for both PM and GR
-    because both have PPN parameters β=γ=1.
+    The 1PN correction term −3GMh²/(c²r⁴) is a PM-derived result, not a GR
+    import.  The derivation chain:
+
+      1. g_ij = n²δ_ij from the particle Lagrangian in medium units
+         (particles are made of the medium; coordinate velocity ẋ corresponds
+          to physical velocity n·ẋ; kinetic term ½m(nẋ)² gives g_ij = n²δ_ij)
+         → γ = 1
+
+      2. φ = ln(1+2GM/c²r) from the n-field equation, which is the
+         Euler-Lagrange equation of S₂ = ∫½|∇φ|²n²d³x (area-measure action)
+         → β = 1
+
+      3. PPN 1PN radial term: −(2+2γ−β)GMh²/(c²r⁴) = −3GMh²/(c²r⁴)
+
+    The coincidence with GR's formula is not an import — it is a consequence of
+    PM independently deriving β=γ=1 from its own Lagrangian structure.
 
     Parameters
     ----------

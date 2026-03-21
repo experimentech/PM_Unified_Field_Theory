@@ -12,7 +12,7 @@ import math
 import numpy as np
 import pytest
 
-from src.pushing_medium.stellar_structure import (
+from pushing_medium.stellar_structure import (
     G,
     M_SUN,
     MU_G,
@@ -20,12 +20,18 @@ from src.pushing_medium.stellar_structure import (
     StarSolution,
     c,
     compute_mr_curve,
+    compute_mr_curve_nfield,
+    compute_mr_curve_nfield_stiffened,
+    compute_mr_curve_physical_measure,
     pm_eos_density,
     pm_eos_pressure,
     pm_eos_sound_speed,
     solve_pm_star,
+    solve_pm_star_nfield,
+    solve_pm_star_nfield_stiffened,
+    solve_pm_star_physical_measure,
 )
-from src.pushing_medium.critical_state import RHO_NUC
+from pushing_medium.critical_state import RHO_NUC
 
 
 # ---------------------------------------------------------------------------
@@ -265,3 +271,395 @@ class TestMRCurve:
         """Central densities should span up to ρ_crit."""
         rho_c, _, _ = mr_curve
         assert rho_c[-1] <= RHO_CRIT * (1.0 + 1e-6)
+
+
+# ---------------------------------------------------------------------------
+# N-field (area-measure) stellar structure tests
+# ---------------------------------------------------------------------------
+
+class TestNFieldStar:
+    """Tests for the n-field compact-star solver (area-measure action S₂).
+
+    Key differences from the standard solver:
+      • Poisson source scales as n² rather than n (stronger gravity at high density).
+      • EOS and field equation are automatically consistent in the n-variable.
+      • φ = ln n is exact by construction — no φ/EOS drift.
+      • Expected: smaller max mass and slightly smaller radii than standard PM.
+    """
+
+    @pytest.fixture(scope="class")
+    def star_mid(self):
+        return solve_pm_star_nfield(RHO_MID)
+
+    # --- Basic sanity ---
+
+    def test_converged(self, star_mid):
+        """N-field integrator must find the stellar surface within r_max."""
+        assert star_mid.converged
+
+    def test_positive_mass(self, star_mid):
+        assert star_mid.M_star > 0.0
+
+    def test_finite_radius(self, star_mid):
+        R_km = star_mid.R_star / 1e3
+        assert 1.0 < R_km < 50.0, f"Radius {R_km:.2f} km out of range"
+
+    def test_surface_pressure_zero(self, star_mid):
+        """Surface pressure ≈ 0 (integration terminates at n = 1)."""
+        P_central = c**2 * RHO_NUC / 2.0 * (RHO_MID / RHO_NUC - 1.0)
+        assert star_mid.P[-1] / P_central < 1e-3
+
+    def test_solar_mass_range(self, star_mid):
+        M_solar = star_mid.M_star / M_SUN
+        assert 0.01 < M_solar < 20.0
+
+    def test_rejects_supercritical_density(self):
+        with pytest.raises(ValueError, match="ρ_crit"):
+            solve_pm_star_nfield(RHO_CRIT * 1.05)
+
+    def test_critical_density_star_converges(self):
+        star = solve_pm_star_nfield(RHO_CRIT)
+        assert star.converged
+
+    def test_low_density_limit(self):
+        star = solve_pm_star_nfield(RHO_NUC * 1.05)
+        assert star.converged
+        assert star.M_star > 0.0
+
+    # --- EOS/field auto-consistency (key test for n-field) ---
+
+    def test_phi_equals_ln_n_exactly(self, star_mid):
+        """φ = ln n is exact by construction — no EOS/Poisson drift."""
+        rho = star_mid.rho
+        phi_from_eos = np.log(rho / RHO_NUC)
+        np.testing.assert_allclose(
+            star_mid.phi, phi_from_eos, rtol=1e-10,
+            err_msg="φ ≠ ln(ρ/ρ_nuc): n-field auto-consistency broken"
+        )
+
+    def test_eos_consistent_inside_star(self, star_mid):
+        """P and ρ satisfy the PM EOS pointwise."""
+        interior = star_mid.P > 0
+        rho_from_P = pm_eos_density(star_mid.P[interior])
+        np.testing.assert_allclose(
+            rho_from_P, star_mid.rho[interior], rtol=1e-6,
+            err_msg="P(r) and ρ(r) inconsistent with PM EOS"
+        )
+
+    def test_density_decreases_outward(self, star_mid):
+        interior = star_mid.P > 0
+        rho_in = star_mid.rho[interior]
+        if len(rho_in) > 2:
+            assert np.all(np.diff(rho_in) <= 1e3)
+
+    def test_phi_decreases_outward(self, star_mid):
+        interior = star_mid.P > 0
+        phi_in = star_mid.phi[interior]
+        if len(phi_in) > 2:
+            assert np.all(np.diff(phi_in) <= 1e-10)
+
+    def test_mass_enclosed_increases(self, star_mid):
+        assert np.all(np.diff(star_mid.m) >= 0.0)
+
+    # --- Comparison with standard PM solver ---
+
+    def test_weak_field_agreement(self):
+        """At very low central density (n_c → 1), both solvers should give similar M and R."""
+        rho_low = RHO_NUC * 1.05
+        std  = solve_pm_star(rho_low)
+        nfld = solve_pm_star_nfield(rho_low)
+        if std.converged and nfld.converged:
+            # At low density n≈1, n²≈n so the two Poisson sources are similar.
+            # Agree to within 10%.
+            assert abs(nfld.M_star - std.M_star) / std.M_star < 0.10
+            assert abs(nfld.R_star - std.R_star) / std.R_star < 0.10
+
+    def test_nfield_max_mass_less_than_standard(self):
+        """N-field gravity is stronger at high density (n² > n for n > 1).
+
+        The n²-weighted Poisson source compresses the star more, so M_max
+        from the n-field solver should be ≤ the standard PM M_max.
+        """
+        _, M_std,   _ = compute_mr_curve(n_points=20)
+        _, M_nfld, _  = compute_mr_curve_nfield(n_points=20)
+        max_std  = float(np.nanmax(M_std))
+        max_nfld = float(np.nanmax(M_nfld))
+        assert max_nfld <= max_std * 1.02, (
+            f"N-field M_max ({max_nfld:.2f} M_☉) > standard M_max ({max_std:.2f} M_☉) "
+            f"— expected n² source to give smaller or equal max mass"
+        )
+
+    # --- M-R curve ---
+
+    def test_mr_curve_nfield_basic(self):
+        rho_c, M, R = compute_mr_curve_nfield(n_points=10)
+        valid = ~np.isnan(M)
+        assert valid.any()
+        assert np.all(M[valid] > 0.0)
+        assert np.all(R[valid] > 1.0)
+        assert np.all(R[valid] < 100.0)
+
+
+# ---------------------------------------------------------------------------
+# Physical-measure stellar structure (α=3 action, w = n^{3/2} variable)
+# ---------------------------------------------------------------------------
+
+class TestPhysicalMeasureStar:
+    """Tests for the physical-measure compact-star solver (volume-measure action S₃).
+
+    Key properties vs the other variants:
+      • Linearising variable: w = n^{3/2} = e^{3φ/2}
+      • Vacuum equation: ∇²w = 0  (exact, same as n-field has ∇²n = 0)
+      • Sourced equation: ∇²w = −κ_w w^{1/3}  with κ_w = 3Gρ_nuc/c²
+      • Source grows as w^{1/3} = n^{1/2}  — sub-linear in density,
+        WEAKER coupling at high n than both α=0 (source ∝ n) and α=2 (∝ n²).
+      • Exact identity: φ = (2/3) ln w  at every grid point.
+      • Expected: M_max **larger** than standard PM (α=0) because of weaker coupling.
+    """
+
+    @pytest.fixture(scope="class")
+    def star_mid(self):
+        return solve_pm_star_physical_measure(RHO_MID)
+
+    # --- Basic sanity ---
+
+    def test_converged(self, star_mid):
+        assert star_mid.converged
+
+    def test_positive_mass(self, star_mid):
+        assert star_mid.M_star > 0.0
+
+    def test_finite_radius(self, star_mid):
+        R_km = star_mid.R_star / 1e3
+        assert 1.0 < R_km < 100.0, f"Radius {R_km:.2f} km out of range"
+
+    def test_solar_mass_range(self, star_mid):
+        M_sol = star_mid.M_star / M_SUN
+        assert 0.01 < M_sol < 200.0
+
+    def test_surface_pressure_zero(self, star_mid):
+        P_central = c**2 * RHO_NUC / 2.0 * (RHO_MID / RHO_NUC - 1.0)
+        assert star_mid.P[-1] / P_central < 1e-3
+
+    def test_rejects_supercritical_density(self):
+        with pytest.raises(ValueError, match="ρ_crit"):
+            solve_pm_star_physical_measure(RHO_CRIT * 1.05)
+
+    def test_critical_density_star_converges(self):
+        star = solve_pm_star_physical_measure(RHO_CRIT)
+        assert star.converged
+
+    def test_low_density_limit(self):
+        star = solve_pm_star_physical_measure(RHO_NUC * 1.05)
+        assert star.converged
+        assert star.M_star > 0.0
+
+    # --- φ = (2/3) ln w exactness ---
+
+    def test_phi_equals_two_thirds_ln_w(self, star_mid):
+        """φ = (2/3) ln w is exact by construction."""
+        rho = star_mid.rho
+        n   = rho / RHO_NUC
+        w   = n ** 1.5
+        phi_from_w = (2.0 / 3.0) * np.log(w)
+        np.testing.assert_allclose(
+            star_mid.phi, phi_from_w, rtol=1e-10,
+            err_msg="φ ≠ (2/3)ln(n^{3/2}): α=3 self-consistency broken"
+        )
+
+    def test_phi_equals_ln_n(self, star_mid):
+        """φ = ln(ρ/ρ_nuc) must also hold (both identities are equivalent)."""
+        phi_from_eos = np.log(star_mid.rho / RHO_NUC)
+        np.testing.assert_allclose(
+            star_mid.phi, phi_from_eos, rtol=1e-10,
+            err_msg="φ ≠ ln(ρ/ρ_nuc) in physical-measure solver"
+        )
+
+    def test_eos_consistent_inside_star(self, star_mid):
+        interior = star_mid.P > 0
+        rho_from_P = pm_eos_density(star_mid.P[interior])
+        np.testing.assert_allclose(
+            rho_from_P, star_mid.rho[interior], rtol=1e-6,
+            err_msg="P(r) and ρ(r) inconsistent with PM EOS in α=3 solver"
+        )
+
+    def test_density_decreases_outward(self, star_mid):
+        interior = star_mid.P > 0
+        rho_in = star_mid.rho[interior]
+        if len(rho_in) > 2:
+            assert np.all(np.diff(rho_in) <= 1e3)
+
+    def test_mass_enclosed_increases(self, star_mid):
+        assert np.all(np.diff(star_mid.m) >= 0.0)
+
+    # --- Comparison with other solvers ---
+
+    def test_weak_field_agreement_with_standard(self):
+        """At very low central density (n_c → 1) all solvers agree."""
+        rho_low = RHO_NUC * 1.05
+        std  = solve_pm_star(rho_low)
+        phys = solve_pm_star_physical_measure(rho_low)
+        if std.converged and phys.converged:
+            assert abs(phys.M_star - std.M_star) / std.M_star < 0.20
+            assert abs(phys.R_star - std.R_star) / std.R_star < 0.20
+
+    def test_phys_measure_max_mass_greater_than_standard(self):
+        """α=3 source  w^{1/3} = n^{1/2} is SUB-linear in n, so weaker coupling
+        at high density → larger M_max than α=0 (source ∝ n) and α=2 (∝ n²).
+        """
+        _, M_std,  _ = compute_mr_curve(n_points=20)
+        _, M_phys, _ = compute_mr_curve_physical_measure(n_points=20)
+        max_std  = float(np.nanmax(M_std))
+        max_phys = float(np.nanmax(M_phys))
+        assert max_phys >= max_std * 0.98, (
+            f"Physical-measure M_max ({max_phys:.2f} M☉) unexpectedly < "
+            f"standard M_max ({max_std:.2f} M☉); weak-coupling action "
+            f"should give larger or equal max mass"
+        )
+
+    def test_phys_measure_diverges_from_standard_at_high_density(self):
+        """At high central density the two predictions must diverge significantly."""
+        rho_high = RHO_NUC * 2.0
+        std  = solve_pm_star(rho_high)
+        phys = solve_pm_star_physical_measure(rho_high)
+        if std.converged and phys.converged:
+            rel_diff = abs(phys.M_star - std.M_star) / std.M_star
+            assert rel_diff > 0.10, (
+                f"Expected >10%% divergence at 2ρ_nuc but got {rel_diff*100:.1f}%%"
+            )
+
+    # --- M-R curve ---
+
+    def test_mr_curve_physical_measure_basic(self):
+        rho_c, M, R = compute_mr_curve_physical_measure(n_points=10)
+        valid = ~np.isnan(M)
+        assert valid.any()
+        assert np.all(M[valid] > 0.0)
+        assert np.all(R[valid] > 1.0)
+        assert np.all(R[valid] < 200.0)
+
+
+# ---------------------------------------------------------------------------
+# Vacuum-stiffened n-field stellar structure (action-derived self-stiffening)
+# ---------------------------------------------------------------------------
+
+class TestNFieldStiffenedStar:
+    """Tests for the vacuum-stiffened n-field compact-star solver.
+
+    Physical background
+    -------------------
+    The full n-field action with a vacuum-subtracted medium self-energy potential:
+
+        S_full = ∫ [½|∇φ|² n²  −  A V̂_vac(n)] d³x,
+        V̂_vac'(n) = (n−1)²/n  (vanishes at surface n=1)
+
+    gives the field equation:
+
+        ∇²n = κρ_nuc (n−1)²/n − κρ_nuc n²
+
+    The stiffening term (n−1)²/n reduces effective gravity by 12–15 % at
+    typical neutron-star densities.  At the surface (n=1) it vanishes exactly,
+    so all surface physics is identical to the bare n-field solver.
+
+    Expected properties:
+      • M_max > bare n-field M_max (~22% larger: 9.4 → 11.5 M☉)
+      • M_max < Option-A M_max (different base equation — Option-A is not
+        derived from the n-field action)
+      • n decreases monotonically from center to surface (same as n-field)
+      • Surface: n = 1  (P = 0)
+      • φ = ln n exact by construction
+    """
+
+    @pytest.fixture(scope="class")
+    def star_mid(self):
+        return solve_pm_star_nfield_stiffened(RHO_MID)
+
+    # --- Basic sanity ---
+
+    def test_converged(self, star_mid):
+        """Stiffened integrator must find the stellar surface within r_max."""
+        assert star_mid.converged
+
+    def test_positive_mass(self, star_mid):
+        assert star_mid.M_star > 0.0
+
+    def test_finite_radius(self, star_mid):
+        R_km = star_mid.R_star / 1e3
+        assert 1.0 < R_km < 50.0, f"Radius {R_km:.2f} km out of range"
+
+    def test_surface_pressure_zero(self, star_mid):
+        """Surface pressure ≈ 0 (integration terminates at n = 1)."""
+        P_central = c**2 * RHO_NUC / 2.0 * (RHO_MID / RHO_NUC - 1.0)
+        assert star_mid.P[-1] / P_central < 1e-3
+
+    def test_solar_mass_range(self, star_mid):
+        M_solar = star_mid.M_star / M_SUN
+        assert 0.01 < M_solar < 30.0
+
+    def test_rejects_supercritical_density(self):
+        with pytest.raises(ValueError, match="ρ_crit"):
+            solve_pm_star_nfield_stiffened(RHO_CRIT * 1.05)
+
+    def test_critical_density_star_converges(self):
+        star = solve_pm_star_nfield_stiffened(RHO_CRIT)
+        assert star.converged
+
+    def test_low_density_limit(self):
+        star = solve_pm_star_nfield_stiffened(RHO_NUC * 1.05)
+        assert star.converged
+        assert star.M_star > 0.0
+
+    # --- EOS / field consistency ---
+
+    def test_phi_equals_ln_n_exactly(self, star_mid):
+        """φ = ln n is exact by construction (uses n directly)."""
+        phi_from_eos = np.log(star_mid.rho / RHO_NUC)
+        np.testing.assert_allclose(
+            star_mid.phi, phi_from_eos, rtol=1e-10,
+            err_msg="φ ≠ ln(ρ/ρ_nuc): stiffened solver self-consistency broken"
+        )
+
+    def test_density_decreases_outward(self, star_mid):
+        interior = star_mid.P > 0
+        rho_in = star_mid.rho[interior]
+        if len(rho_in) > 2:
+            assert np.all(np.diff(rho_in) <= 1e3)
+
+    def test_mass_enclosed_increases(self, star_mid):
+        assert np.all(np.diff(star_mid.m) >= 0.0)
+
+    # --- Stiffening raises M_max vs bare n-field ---
+
+    def test_stiffened_max_mass_greater_than_bare_nfield(self):
+        """Vacuum-stiffening reduces effective gravity, raising M_max.
+
+        Expected: M_max_stiffened > M_max_nfield (~22% increase).
+        Tolerance: stiffened must exceed bare by at least 5%.
+        """
+        _, M_nfld, _ = compute_mr_curve_nfield(n_points=25)
+        _, M_stif, _ = compute_mr_curve_nfield_stiffened(n_points=25)
+        max_nfld = float(np.nanmax(M_nfld))
+        max_stif = float(np.nanmax(M_stif))
+        assert max_stif > max_nfld * 1.05, (
+            f"Stiffened M_max ({max_stif:.2f} M☉) not > 105% of bare n-field "
+            f"M_max ({max_nfld:.2f} M☉)"
+        )
+
+    def test_stiffened_max_mass_in_expected_range(self):
+        """M_max for the vacuum-stiffened solver should be around 10–13 M☉."""
+        _, M_stif, _ = compute_mr_curve_nfield_stiffened(n_points=25)
+        max_stif = float(np.nanmax(M_stif))
+        assert 9.0 < max_stif < 15.0, (
+            f"Stiffened M_max {max_stif:.2f} M☉ outside expected 9–15 M☉"
+        )
+
+    # --- M-R curve ---
+
+    def test_mr_curve_stiffened_basic(self):
+        rho_c, M, R = compute_mr_curve_nfield_stiffened(n_points=10)
+        valid = ~np.isnan(M)
+        assert valid.any()
+        assert np.all(M[valid] > 0.0)
+        assert np.all(R[valid] > 1.0)
+        assert np.all(R[valid] < 60.0)
+

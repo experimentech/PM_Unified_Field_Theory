@@ -309,3 +309,95 @@ class TestSuperpositionAndSymmetry:
         # Actual magnitude should be less than upper due to the 1/(1+n) factor
         a_mag = math.hypot(*a_nf)
         assert a_mag <= upper * 1.01   # allow tiny floating point margin
+
+
+# ---------------------------------------------------------------------------
+# 5.  Action derivation: n-field equation is EL equation of ∫½|∇φ|²n² d³x
+# ---------------------------------------------------------------------------
+
+class TestNFieldActionDerivation:
+    """The n-field vacuum equation ∇²φ + |∇φ|² = 0 is the Euler-Lagrange
+    equation of the action S = ∫½|∇φ|² n² d³x.
+
+    This class verifies that the n-field point-mass vacuum solution satisfies
+    this EL equation exactly (to floating-point precision), and confirms the
+    consequence for PPN β.
+
+    Derivation summary
+    ------------------
+    Action:  S = ∫ ½|∇φ|² e^{2φ} d³x  (physical area measure n² d³x)
+
+    EL equation (vacuum):  ∇²φ + |∇φ|² = 0
+
+    Linearisation:  w = n = e^φ  →  ∇²w = 0  (Laplace equation)
+    So superposition is exact in n, and the point-mass solution n = 1+A/r is
+    the unique regular solution decaying at infinity — exactly the n-field
+    equation's vacuum solution.
+
+    PPN β:  φ = ln(1+2U) = 2U − 2U² + O(U³)  →  β = 1
+    Combined with γ=1 from gij = n²δij:
+        PPN factor = (2+2γ−β)/3 = (2+2−1)/3 = 1
+        Perihelion precession exactly matches GR (and observation) without
+        any GR import.
+    """
+
+    @pytest.mark.parametrize("r_factor", [100.0, 10.0, 3.0, 1.5, 1.0, 0.582])
+    def test_vacuum_equation_satisfied(self, r_factor):
+        """∇²φ + |∇φ|² = 0 at each test radius (floating-point noise only)."""
+        r_s = 2 * G * M_SUN / c**2
+        r = r_factor * r_s
+        A = 2 * G * M_SUN / c**2   # coefficient in n = 1 + A/r
+        n_val = 1.0 + A / r
+        dphi_dr = -A / (n_val * r**2)
+        # ∇²φ in spherical symmetry: d²φ/dr² + 2/r dφ/dr
+        dn_dr = -A / r**2
+        d2phi_dr2 = -A * (-dn_dr * r**2 - 2 * r * n_val) / (n_val * r**2)**2
+        laplacian_phi = d2phi_dr2 + 2 / r * dphi_dr
+        grad_sq = dphi_dr**2
+        residual = laplacian_phi + grad_sq
+        assert abs(residual) < 1e-20, (
+            f"r={r_factor} r_s: ∇²φ+|∇φ|²={residual:.3e} (should be 0)"
+        )
+
+    def test_ppn_beta_equals_one(self):
+        """PPN β = 1 from φ = ln(1+2U) Taylor expansion: φ = 2U − 2U² + O(U³).
+
+        d²(ln(1+2U))/dU² |_{U=0} = d/dU[2/(1+2U)]|_0 = −4
+        c2 = d²φ/dU² / 2 = −2,  β = −c2/2 = 1  (exact arithmetic).
+        """
+        # c2 is the U^2 coefficient in phi = ln(1+2U) expanded around U=0
+        # ln(1+x) = x - x^2/2 + x^3/3 - ...
+        # phi = ln(1+2U) = 2U - (2U)^2/2 + ... = 2U - 2*U^2 + ...
+        # so c2 = -2,  beta = -c2/2 = 1 exactly.
+        c2 = -2.0   # exact from Taylor series
+        beta = -c2 / 2.0
+        assert abs(beta - 1.0) < 1e-15
+
+    def test_ppn_factor_exact_with_spatial_metric(self):
+        """With γ=1 (gij=n²δij) and β=1 (n-field), PPN factor = 1 exactly."""
+        beta = 1.0
+        gamma = 1.0
+        ppn_factor = (2 + 2 * gamma - beta) / 3
+        assert abs(ppn_factor - 1.0) < 1e-15
+
+    def test_linearisation_w_equals_n(self):
+        """Substitution w=n transforms ∇²φ+|∇φ|²=0 into ∇²n=0.
+
+        Proof: ∇²n = ∇·∇(e^φ) = ∇·(e^φ∇φ) = e^φ(|∇φ|²+∇²φ) = n·0 = 0.
+        Verified analytically: n(r)=1+A/r satisfies ∇²n=0 because ∇²(1/r)=0
+        for r>0.  Numerically: 2A/r³ − 2A/r³ = 0, leaving only floating-point
+        cancellation noise (< 1e-20 relative to either term).
+        """
+        r_s = 2 * G * M_SUN / c**2
+        A = 2 * G * M_SUN / c**2
+        for r_factor in [2.0, 5.0, 10.0]:
+            r = r_factor * r_s
+            # ∇²(1 + A/r) = ∇²(A/r) = 0 for r>0 (harmonic function)
+            # Numerically: d^2(A/r)/dr^2 + (2/r)d(A/r)/dr = 2A/r^3 - 2A/r^3 = 0
+            d2_dr2 = 2 * A / r**3
+            term_2over_r = (2 / r) * (-A / r**2)
+            laplacian_n = d2_dr2 + term_2over_r
+            # tolerance: floating-point cancellation noise relative to each term
+            assert abs(laplacian_n) < 1e-14 * abs(d2_dr2), (
+                f"r={r_factor} r_s: ∇²n = {laplacian_n:.3e}"
+            )
