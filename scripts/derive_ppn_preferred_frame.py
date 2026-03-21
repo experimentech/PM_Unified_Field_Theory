@@ -130,6 +130,81 @@ print(f"\n   Cross-term ∇φ₀ · ∇(δφ) = {cross_term}  ✓ (identically z
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# 2b.  Boosted-wave cross-term: 1PN radiative coupling
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# ChatGPT's valid point: the Poisson analysis (Section 2) uses ∇²φ = −μ_G ρ,
+# which is the c_φ → ∞ limit.  For finite c_φ, in the Solar System frame
+# (moving at w relative to the medium's cosmological rest frame), the wave
+# operator picks up a Galilean cross-term:
+#
+#   □φ = (1/c_φ²)∂ₜ²φ − ∇²φ                [medium rest frame]
+#
+#   □'φ = (1/c_φ²)(∂ₜ + w·∇)²φ − ∇²φ        [boosted frame]
+#        = □φ + (2/c_φ²)(w·∇)∂ₜφ + O(w²/c_φ²)
+#                ↑ preferred-frame cross-term
+#
+# This is the term ChatGPT identified.  We now compute its size.
+
+print("\n── 2b. 1PN boosted-wave cross-term ─────────────────────────────────────")
+print()
+print("   The static-Poisson result (Section 2) holds in the c_φ→∞ limit.")
+print("   For finite c_φ, a Galilean boost by w (Solar System speed relative")
+print("   to the medium rest frame) transforms the wave operator as:")
+print()
+print("   □φ   = (1/c_φ²)∂ₜ²φ − ∇²φ                [medium rest frame]")
+print("   □'φ  = □φ + (2/c_φ²)(w·∇)∂ₜφ + O(w²)     [boosted frame]")
+print()
+print("   Cross-term:  (2w·∇/c_φ²) ∂ₜφ")
+print()
+print("   For a gravitational source moving at orbital velocity v_orb:")
+print("     ∂ₜδφ  ~  v_orb × |∂_r δφ|  ~  v_orb × GM/(c²r²)")
+print("     w·∇   ~  w/r")
+print()
+print("   Relative correction to the gravitational force:")
+print("     |cross-term| / |∇²δφ|  ~  2 w v_orb / c_φ²")
+print("                            =  2 (w/c)(v_orb/c)   [if c_φ = c]")
+print()
+
+c_val   = 3e8          # m/s  –  speed of light (defined early for Section 2b)
+# Numerical estimates for different contexts
+w_SS   = 370e3      # m/s  –  Solar System speed relative to CMB dipole
+w_SS_c = w_SS / c_val                  # in units of c  ~  1.23×10⁻³
+
+v_earth = 30e3      # m/s  –  Earth orbital speed around Sun
+v_moon  = 1e3       # m/s  –  Moon orbital speed around Earth
+v_earth_c = v_earth / c_val            # ~ 1.0×10⁻⁴
+v_moon_c  = v_moon  / c_val            # ~ 3.3×10⁻⁶
+
+alpha1_earth = 2 * w_SS_c * v_earth_c  # Earth-orbit context (perihelion)
+alpha1_moon  = 2 * w_SS_c * v_moon_c   # Moon-orbit context (LLR)
+
+alpha1_bound = 1e-4                    # LLR observational bound
+
+print(f"   Numerical estimates (c_φ = c assumed):")
+print(f"     w (CMB dipole)  =  {w_SS/1e3:.0f} km/s  =  {w_SS_c:.2e} c")
+print(f"     v (Earth orbit) =  {v_earth/1e3:.0f} km/s  =  {v_earth_c:.1e} c")
+print(f"     v (Moon orbit)  =  {v_moon/1e3:.0f} km/s  =  {v_moon_c:.1e} c")
+print()
+print(f"   |α₁|_wave (Earth orbit context):  2w·v_earth/c²  =  {alpha1_earth:.1e}")
+print(f"   |α₁|_wave (Moon orbit context):   2w·v_moon/c²   =  {alpha1_moon:.1e}")
+print(f"   LLR bound: |α₁| < {alpha1_bound:.0e}")
+print()
+
+margin_earth = alpha1_bound / alpha1_earth
+margin_moon  = alpha1_bound / alpha1_moon
+print(f"   Margin (Earth context): bound/signal  =  {margin_earth:.0f}×  ✓ WITHIN BOUND")
+print(f"   Margin (Moon context):  bound/signal  =  {margin_moon:.0f}×  ✓ WITHIN BOUND")
+print()
+print("   ChatGPT is correct that the Galilean cross-term is a real mechanism.")
+print("   However, the cross-term is suppressed by BOTH w/c AND v_orb/c,")
+print("   making it second-order small — well within the LLR bound.")
+print()
+print("   ⟹  Static sector:  α₁ = 0 (exact, ∇φ₀ = 0 drops out)")
+print(f"   ⟹  Boosted-wave:  |α₁| ≲ {alpha1_earth:.0e}  (within LLR bound by {margin_earth:.0f}×)")
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # 3.  Spin precession and α₂ (u-field sector)
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -209,16 +284,18 @@ print(f"   Margin:  bound / signal  ≈  {1e-4 / correction:.0e}  (signal is {1/
 
 print("\n── 5. Summary ──────────────────────────────────────────────────────────")
 print()
-print("  Parameter   PM prediction                        Bound         Status")
-print("  ─────────────────────────────────────────────────────────────────────────")
-print("  α₁          0  (uniform background drops out)    < 1×10⁻⁴      ✓ PASS (exact)")
-print("  α₂          0  (irrotational u₀, no curl)        < 4×10⁻⁷      ✓ PASS (exact)")
-print("  δα₁_cosmo  ~H₀R/c ≈ 2×10⁻¹⁷  (cosm. drift)     < 1×10⁻⁴      ✓ PASS (×10¹³ margin)")
+print("  Parameter      PM prediction                              Bound         Status")
+print("  ─────────────────────────────────────────────────────────────────────────────")
+print("  α₁ (static)    0  (exact; uniform φ₀ drops out of ∇)    < 1×10⁻⁴      ✓ PASS (exact)")
+print(f"  α₁ (wave)     ~{alpha1_earth:.0e}  (boosted-wave cross-term)       < 1×10⁻⁴      ✓ PASS ({margin_earth:.0f}× margin)")
+print("  α₂             0  (exact; irrotational u₀, no curl)      < 4×10⁻⁷      ✓ PASS (exact)")
+print(f"  δα₁_cosmo     ~{correction:.0e}  (cosmological drift H₀R/c)       < 1×10⁻⁴      ✓ PASS (×10¹¹ margin)")
 print()
-print("  These results hold in the static-background (Solar System) limit.")
-print("  The uniform background φ₀ = const is in the null space of ∇, so")
-print("  no velocity coupling to the preferred frame can appear at any PN order")
-print("  in the quasi-static φ-sector.")
+print("  The static sector result (α₁ = 0 exact) holds because the uniform")
+print("  background φ₀ = const is in the null space of ∇ at all PN orders.")
+print()
+print("  The boosted-wave cross-term (2w·∇/c_φ²)∂ₜφ is a genuine mechanism")
+print("  but is suppressed by (w/c)(v_orb/c) ~ 10⁻⁷ — well within bounds.")
 print()
 print("  The only genuine preferred-frame quantity in PM is the cosmological")
 print("  background density ρ₀ = ρ_nuc exp(φ₀) — analogous to the CMB rest")
@@ -226,7 +303,7 @@ print("  frame — which defines a preferred STATE but not a preferred FRAME")
 print("  for local dynamics.")
 print()
 print("  CONCLUSION: PM satisfies all current PPN preferred-frame bounds")
-print("  without requiring Lorentz-covariant reformulation.")
+print("  in both the static and boosted-wave quasi-static sectors.")
 print("  PM competes with GR on phenomenology, not symmetry group.")
 
 
@@ -236,8 +313,14 @@ print("  PM competes with GR on phenomenology, not symmetry group.")
 
 print("\n── 6. Residual open question ───────────────────────────────────────────")
 print()
-print("  The derivation above covers the quasi-static, near-field limit.")
-print("  Radiative sector (gravitational waves from binary inspiral) involves")
-print("  the full time-dependent □φ operator; a preferred-frame analysis of")
-print("  the radiation reaction force is not yet complete.  This is a valid")
-print("  open problem but does not affect Solar System or NICER observables.")
+print("  The derivation above covers:")
+print("    (a) quasi-static sector: α₁ = 0 exact (∇φ₀ = 0)")
+print("    (b) boosted-wave quasi-static: |α₁| ≲ 2wv/c² ~ 10⁻⁷ (within bounds)")
+print("    (c) spin-precession sector: α₂ = 0 exact (irrotational u₀)")
+print()
+print("  What remains open:")
+print("    Radiative sector — gravitational waves from binary inspiral involve")
+print("    the full far-field □φ solution.  The radiation-reaction force on the")
+print("    binary may carry preferred-frame corrections at higher PN order.")
+print("    A full analysis of the GW inspiral α₁ contribution is not yet complete.")
+print("    This does not affect Solar System observables (perihelion, LLR, NICER).")

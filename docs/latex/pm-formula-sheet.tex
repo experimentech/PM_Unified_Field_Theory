@@ -517,25 +517,54 @@ precession, the background flow $\mathbf{u}_0$ is irrotational by cosmic
 isotropy ($\nabla\times\mathbf{u}_0=0$), so it produces no curl and no
 preferred-frame torque on a gyroscope.
 
+\textbf{Boosted-wave cross-term (1PN, radiative sector).}
+A subtlety raised by the Galilean-boost analysis: for finite $c_\phi$, a
+boost by $\mathbf{w}$ (Solar System velocity relative to the medium rest frame)
+transforms the wave operator as
+\[
+  \Box\phi
+  = \frac{1}{c_\phi^2}\partial_t^2\phi - \nabla^2\phi
+  \;\xrightarrow{\rm boost}\;
+  \Box\phi + \frac{2\mathbf{w}\cdot\nabla}{c_\phi^2}\partial_t\phi + O(w^2/c_\phi^2).
+\]
+The cross-term $\frac{2\mathbf{w}\cdot\nabla}{c_\phi^2}\partial_t\phi$ is a
+genuine preferred-frame coupling absent from the static-Poisson analysis.
+For a source at orbital speed $v_{\rm orb}$, $\partial_t(\delta\phi)\sim
+v_{\rm orb}|\nabla(\delta\phi)|$, so the correction to the gravitational force
+is of order
+\[
+  |\alpha_1|_{\rm wave} \sim \frac{2\,w\,v_{\rm orb}}{c_\phi^2}.
+\]
+Numerically (Earth-orbit context, $w=370\,{\rm km\,s}^{-1}$,
+$v_{\rm orb}=30\,{\rm km\,s}^{-1}$, $c_\phi = c$):
+\[
+  |\alpha_1|_{\rm wave}
+  \approx 2\times\frac{370}{3\times10^5}\times\frac{30}{3\times10^5}
+  \approx 2.5\times10^{-7}.
+\]
+This is within the LLR bound $10^{-4}$ by a factor of $\sim\!400$.
+
 \textbf{Results:}
 \[
-  \alpha_1 = 0 \;\text{(exact, $\phi$-sector)},
+  \alpha_1^{\rm static} = 0 \;\text{(exact; $\nabla\phi_0=0$)},
   \qquad
-  \alpha_2 = 0 \;\text{(exact, irrotational $\mathbf{u}_0$)}.
+  |\alpha_1|_{\rm wave} \lesssim 2.5\times10^{-7} \;\text{(1PN boost)},
+  \qquad
+  \alpha_2 = 0 \;\text{(exact; irrotational $\mathbf{u}_0$)}.
 \]
-The only residual signal is from cosmological drift $\partial_t\phi_0 \sim H_0$,
-which modifies $\nabla^2(\delta\phi)$ by $\sim H_0^2\phi_0/c_\phi^2$:
+The only additional residual is cosmological drift $\partial_t\phi_0 \sim H_0$:
 \[
   |\delta\alpha_1|_{\rm cosmo} \lesssim \frac{H_0 R_{\rm orbit}}{c}
   \approx 1.1\times 10^{-15} \qquad (R=1\,\text{AU})
 \]
 This is $\sim 10^{11}$ times below the LLR bound.
 
-\textbf{PM satisfies all PPN preferred-frame bounds exactly in the static
-Solar System limit.}  The cosmological background defines a preferred
-\emph{state} (analogous to the CMB rest frame) but not a preferred \emph{frame}
-for local dynamics.  \textbf{Open question:} preferred-frame analysis of the
-radiative $\Box\phi$ sector (GW inspiral reaction force) is not yet complete.
+\textbf{PM satisfies all PPN preferred-frame bounds in both the static and
+boosted-wave quasi-static sectors.}  The cosmological background defines a
+preferred \emph{state} (analogous to the CMB rest frame) but not a preferred
+\emph{frame} for local dynamics.  \textbf{Open question:} preferred-frame
+analysis of the purely radiative $\Box\phi$ sector (GW inspiral reaction force,
+far-field) is not yet complete — but does not affect Solar System observables.
 
 \textbf{Full PPN parameter table for PM ($\alpha_{\rm action}=2$):}
 \begin{center}
@@ -545,7 +574,7 @@ Parameter & PM value & GR value & Bound / measurement \\
 \midrule
 $\gamma$ & 1 (from $g_{ij}=n^2\delta_{ij}$) & 1 & $|\gamma-1|<2.3\times10^{-5}$ \\
 $\beta$  & 1 (from $S_2$, $\beta=\alpha/2=1$) & 1 & $|\beta-1|<8\times10^{-5}$ \\
-$\alpha_1$ & 0 (exact, $\nabla\phi_0=0$) & 0 & $<10^{-4}$ \\
+$\alpha_1$ & 0 (static, exact); $\lesssim 2.5\times10^{-7}$ (1PN wave) & 0 & $<10^{-4}$ \\
 $\alpha_2$ & 0 (exact, $\nabla\times\mathbf{u}_0=0$) & 0 & $<4\times10^{-7}$ \\
 \bottomrule
 \end{tabular}
