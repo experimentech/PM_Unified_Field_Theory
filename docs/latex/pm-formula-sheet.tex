@@ -1059,86 +1059,90 @@ Derivation script: \path{scripts/derive_option_a.py}.
 \section{Surface Gravitational Redshift}
 %====================================================================
 
-\textbf{PM formula} (from optical metric $g_{tt}=-c^2/n^2$, conserved frequency):
+\textbf{PM has two distinct effective metrics:}
 \[
-  \boxed{z_{\mathrm{PM}} = e^{\mu_G M/R} - 1}
+  g_{tt}^{\rm opt}  = -\frac{c^2}{n^2} = -c^2 e^{-2\phi}
+  \quad\text{(optical metric: photons)}
 \]
-Interior field $\phi$ integrates to zero at the surface; the
-physically relevant quantity is the \emph{exterior} Poisson solution
-$\phi_{\mathrm{ext}}(R)=\mu_G M/R$, giving a ratio of emitted to received
-frequency $\nu_\infty/\nu_s = e^{-\phi_\mathrm{ext}} = n(R)^{-1}$.
-
-\textbf{GR Schwarzschild formula} (for comparison):
 \[
-  z_{\mathrm{GR}} = \frac{1}{\sqrt{1-2GM/c^2 R}} - 1
+  g_{tt}^{\rm mass} = -(1-\phi)
+  \quad\text{(particle metric: massive matter)}
 \]
 
-\textbf{Weak-field expansion} (both theories):
+\textbf{Old formula — optical-metric clock ratio (photon clocks only):}
 \[
-  z_{\mathrm{PM}} \approx \frac{\mu_G M}{R} = \frac{2GM}{c^2 R}, \qquad
-  z_{\mathrm{GR}} \approx \frac{GM}{c^2 R}
+  1+z_{\rm old}
+  = \sqrt{\frac{-g_{tt}^{\rm opt}(\infty)}{-g_{tt}^{\rm opt}(R)}}
+  = n(R) = e^{\phi_s}
+  \implies z_{\rm old} = e^{\mu_G M/R} - 1
 \]
-\textbf{Exact analytic result:}
-\[
-  \boxed{\frac{z_{\mathrm{PM}}}{z_{\mathrm{GR}}} = 2 \quad (\text{weak field, exact})}
-\]
-\emph{Derivation.} The leading term of the PM redshift is $z_{\mathrm{PM}} = \mu_G M/R$
-and of GR is $z_{\mathrm{GR}} = GM/c^2 R$.  Since $\mu_G = 2G/c^2$, the ratio is
-exactly~2, independent of mass, radius, or any EOS parameter.  The same factor-of-2
-is the origin of PM's doubled light deflection and Shapiro delay.
+This formula is correct for a \emph{photon} clock but \emph{not} for the
+massive atomic oscillators that produce observed X-ray spectral lines.
 
-\textbf{PM predicts a factor of exactly $2$ larger surface redshift than GR}
-for the same $(M,R)$.  This is a direct, falsifiable prediction testable
-with X-ray spectroscopy of neutron stars.
+\textbf{Corrected derivation — particle-metric atom clock:}
+
+\begin{enumerate}\setlength\itemsep{0pt}
+  \item \emph{Conserved coordinate frequency.} The PM medium is static;
+    its Killing vector $\partial_t$ gives
+    $\omega_{\rm coord} = \mathrm{const}$ along the photon path.
+  \item \emph{Atom proper time.} The emitting atom obeys the particle
+    metric: $d\tau = \sqrt{1-\phi_s}\,dt$, \;
+    $\phi_s = \mu_G M/R = 2GM/c^2R$.
+  \item \emph{Coordinate emission frequency.}
+    $\omega_{\rm coord} = \omega_0\sqrt{1-\phi_s}$.
+  \item \emph{Reception at infinity.} $\phi(\infty)=0 \Rightarrow
+    \omega_{\rm recv} = \omega_{\rm coord}$.
+  \item \emph{Redshift:}
+    $1+z = \omega_0/\omega_{\rm recv} = 1/\sqrt{1-\phi_s}$.
+\end{enumerate}
+\[
+  \boxed{z_{\rm PM,\,corr}
+  = \frac{1}{\sqrt{1 - \mu_G M/R}} - 1
+  = \frac{1}{\sqrt{1 - 2GM/c^2 R}} - 1
+  = z_{\rm GR}}
+\]
+
+\textbf{The corrected PM surface redshift equals GR exactly, at all
+compactnesses $C < 0.5$.}
+
+The factor-of-2 in $\mu_G = 2G/c^2$ correctly gives $4GM/c^2 b$
+light deflection and $2GM/c^3\ln(\cdot)$ Shapiro delay — both purely
+optical-metric (photon) phenomena.  For atomic spectral lines the
+emitting clock is massive matter using $g_{tt}^{\rm mass} = -(1-\phi)$,
+which is numerically $-(1-2U)$, identical to the Schwarzschild $g_{tt}$.
 
 \textbf{NICER spot-checks} (central values):
 \begin{center}
 \resizebox{\columnwidth}{!}{%
-\begin{tabular}{@{}lccccc@{}}
+\begin{tabular}{@{}lccccccc@{}}
 \toprule
-Source & $M$\;[M$_\odot$] & $R$\;[km] & $z_{\rm PM}$ & $z_{\rm GR}$ & ratio \\
+Source & $M$\;[M$_\odot$] & $R$\;[km]
+  & $z_{\rm old}$ & $z_{\rm corr}$ & $z_{\rm GR}$ & ratio \\
 \midrule
-J0030+0451 & 1.34 & 12.71 & 0.365 & 0.205 & 1.78 \\
-J0740+6620 & 2.08 & 12.39 & 0.642 & 0.408 & 1.57 \\
+J0030+0451 & 1.34 & 12.71 & 0.365 & 0.205 & 0.205 & 1.000 \\
+J0740+6620 & 2.08 & 12.39 & 0.642 & 0.408 & 0.408 & 1.000 \\
 \bottomrule
 \end{tabular}%
 }
 \end{center}
-EXO\,0748$-$676 (Cottam 2002): $z_{\rm obs}\approx 0.35$,
-consistent with PM at NICER masses but insufficient to distinguish
-the theories without an independent $(M,R)$ measurement.
 
-\textbf{Status: structural prediction, not a gap.}
-The factor-of-2 in $\mu_G = 2G/c^2$ is the \emph{same} coefficient that produces
-the correct $4GM/c^2 b$ light deflection and the $2GM/c^3\ln(\cdot)$ Shapiro delay.
-These cannot be adjusted without destroying PM's agreement with solar-system tests.
-The larger surface redshift is therefore a genuine, irreducible prediction of PM's
-optical-metric prescription — no choice of EOS parameters ($f$, $\alpha$, $\gamma$,
-$\rho_{\rm nuc}$) can lower $z_{\rm PM}/z_{\rm GR}$ below $\approx 1.7$
-at neutron-star compactness.  Numerical confirmation: $z_{\rm PM}/z_{\rm GR}
-= 1.78\pm 0.02$ over all $(f,\alpha)$ variants tested.
+Domain of validity: $\phi_s = 2GM/c^2 R < 1$ (compactness $C < 0.5$).
+Typical NICER stars: $C \approx 0.15$--$0.25$ \checkmark.
+Returns NaN for $C \geq 0.5$ (particle metric degenerates; an explicit
+higher-order extension of $g_{tt}^{\rm mass}$ is needed there).
 
-\textbf{Observational discriminant.}
-A spectroscopic $z_{\rm surface}$ measurement that is \emph{independent} of $(M,R)$
-would sharply distinguish the theories.  If any well-characterised neutron star
-(e.g.\ from NICER timing + hotspot modelling) yields $z \lesssim 0.25$,
-PM's optical-metric formula is falsified.  If $z \gtrsim 0.35$ is confirmed,
-it favours PM over GR.
+\textbf{Status: RESOLVED.}
+The $1.6$--$1.8\times$ discrepancy was a derivation error: the optical
+metric was applied to the atomic emitter's clock, whereas atoms are
+massive particles governed by $g_{tt}^{\rm mass}$.
+The corrected formula reproduces $z_{\rm GR}$ identically.
+All solar-system tests are unaffected.
 
-\textbf{Open question.}
-The formula $1+z = e^{\phi_{\rm ext}}$ is derived from the \emph{static}
-ratio of $g_{tt}$ at emission and reception in the optical metric.  In a
-physical dispersive medium, however, the photon frequency also evolves
-as it propagates through a spatially varying refractive index
-(analogous to adiabatic wavelength stretching in fibre optics).
-Whether the medium wave-equation derivation reproduces the static $g_{tt}$
-ratio exactly, or introduces a correction factor, is not yet settled.
-If the wave-equation result differs, the $\approx 2\times$ discrepancy
-could be reduced without touching $\mu_G$.
-
-Implementation: \path{stellar_structure.pm_surface_redshift},
+Implementation: \path{stellar_structure.pm_surface_redshift_corrected},
+\path{stellar_structure.pm_surface_redshift} (old formula, kept for reference),
 \path{classical.gr_surface_redshift},
-\path{scripts/surface_redshift_track.py},
+\path{scripts/derive_redshift_two_metric.py},
+\path{tests/test_surface_redshift.TestPMSurfaceRedshiftCorrected},
 \path{tests/test_z_surface_variants.py}
 
 %====================================================================

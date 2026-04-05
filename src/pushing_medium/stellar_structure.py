@@ -1814,6 +1814,76 @@ def pm_surface_redshift(M_star: float, R_star: float) -> float:
     return math.exp(phi_surface) - 1.0
 
 
+def pm_surface_redshift_corrected(M_star: float, R_star: float) -> float:
+    """PM surface gravitational redshift — corrected two-metric derivation.
+
+    PM has two distinct effective metrics:
+      - Optical metric:   g_tt^opt  = −c²/n² = −c²e^{−2φ}    (governs photons)
+      - Particle metric:  g_tt^mass = −(1 − φ)                (governs massive matter)
+
+    The old formula ``pm_surface_redshift`` (z = e^φ − 1) derives the clock-rate
+    ratio from the optical metric, which is correct for a *photon* clock but not
+    for a massive atomic oscillator.
+
+    Corrected derivation (see ``scripts/derive_redshift_two_metric.py``)
+    -------------------------------------------------------------------
+    1.  **Conserved coordinate frequency.**  The PM optical metric is static;
+        its Killing vector ∂_t guarantees a conserved null-geodesic invariant:
+            E = −k_t = ω_coord = const  along the photon path.
+
+    2.  **Atom proper time from particle metric.**  The emitting atom is at rest
+        at the stellar surface (exterior field):
+            dτ_atom = sqrt(1 − φ_s) dt,   φ_s = μ_G M/R = 2GM/c²R.
+
+    3.  **Coordinate emission frequency.**  The atom's transition has proper
+        frequency ω₀ (fixed by quantum mechanics in the atom's rest frame):
+            ω_coord = ω₀ × dτ_atom/dt = ω₀ sqrt(1 − φ_s).
+
+    4.  **Reception at infinity.**  φ(∞) = 0 → dτ_recv = dt →
+            ω_recv = ω_coord.
+
+    5.  **Redshift:**
+            1 + z = ω₀ / ω_recv = 1 / sqrt(1 − φ_s).
+
+    With φ_s = μ_G M/R = 2GM/c²R, this is **exactly** the GR Schwarzschild
+    formula:
+        z_PM_corrected = 1/sqrt(1 − 2GM/c²R) − 1  =  z_GR.
+
+    Why μ_G = 2G/c² is unaffected
+    ------------------------------
+    The factor-of-2 in μ_G correctly produces the doubled light deflection and
+    Shapiro delay — both purely optical-metric effects (photon propagation).
+    For atomic spectral lines the emitting clock is massive matter governed by
+    g_tt^mass = −(1 − φ) = −(1 − 2U), which is numerically identical to the
+    Schwarzschild g_tt at all orders where φ_s < 1.  All solar-system tests
+    remain unaffected.
+
+    Domain of validity
+    ------------------
+    Requires φ_s = 2GM/c²R < 1  (compactness C = GM/c²R < 0.5).
+    Typical NICER neutron stars: C ≈ 0.15–0.25, well within range.
+    Returns ``nan`` for C ≥ 0.5; that regime requires a higher-order
+    extension of g_tt^mass beyond the linear-in-φ approximation.
+
+    Parameters
+    ----------
+    M_star : float
+        Total stellar mass [kg].
+    R_star : float
+        Stellar radius [m].
+
+    Returns
+    -------
+    float
+        Dimensionless surface gravitational redshift z = Δν/ν.
+        Returns nan if compactness C = GM/c²R ≥ 0.5.
+    """
+    phi_s = MU_G * M_star / R_star   # = 2GM/c²R
+    if phi_s >= 1.0:
+        return float('nan')
+    return 1.0 / math.sqrt(1.0 - phi_s) - 1.0
+
+
 def compute_surface_redshift_track(
     n_points: int = 60,
     rho_min_factor: float = 1.01,
