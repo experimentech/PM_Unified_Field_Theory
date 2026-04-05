@@ -30,6 +30,30 @@ curvature in GR.
 PM reproduces all weak-field GR predictions exactly (PPN $\gamma = \beta = 1$).
 Differences appear in the strong-field regime.
 
+### PM is not an aether theory
+
+The classical aether was a substance *inside* the universe — a medium occupying
+space, through which matter and light moved.  That picture requires a preferred
+rest frame (the frame in which the aether is stationary), which Michelson–Morley
+ruled out.
+
+PM's medium is not inside the universe.  **It is the universe** — matter is a
+localised compressed configuration of the medium itself.  A Michelson
+interferometer cannot detect motion relative to the medium because the arms,
+mirrors, photons, and atoms are all excitations of the same substrate.  There is
+no exterior reference frame relative to which "motion through the medium" could
+mean anything.  The compression gradient $\nabla\phi$ plays the same role as GR's
+spacetime curvature: a positional variation in the geometry of propagation, not a
+kinematic background.
+
+A cosmological preferred *state* exists (the frame where the medium is on average
+uniform, analogous to the CMB rest frame), but this is dynamical
+symmetry-breaking — not a locally detectable preferred frame.
+
+See `docs/pm-extensions-and-open-problems.md` §"The aether analogy fails at the
+level of ontology" and `docs/latex/pm-formula-sheet.tex` §"Relation to aether
+theories" for the full argument.
+
 ## Falsification status
 
 See `docs/LLM_notes_and_conversations/` and `/memories/repo/falsification-status.md`
