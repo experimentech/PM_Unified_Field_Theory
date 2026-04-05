@@ -1,5 +1,7 @@
 # Pushing Medium: A Medium-Based Reformulation of Gravity and Dynamics
 
+*Tristan Mumford*
+
 ## Abstract
 Pushing Medium (PM) models gravity and inertial effects as propagation through a refractive medium with coupled scalar and flow fields. In the weak-field, slow-motion limit PM is constructed to match General Relativity (GR) observables to numerical precision while enabling additional cross-force structures (charge, plasma, current-induced dragging) that are tightly constrained but not excluded. We summarize the field equations, calibrated constants, rotation-curve model, validation against GR benchmarks, galaxy fitting results on SPARC data, and a strengths/weaknesses assessment.
 

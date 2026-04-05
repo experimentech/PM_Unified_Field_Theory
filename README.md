@@ -1,5 +1,7 @@
 # Pushing-Medium (PM): Testbench and Theory
 
+*Author: Tristan Mumford*
+
 ## Overview
 
 Pushing-Medium is a scalar-field gravity theory: gravity arises from a compressed
