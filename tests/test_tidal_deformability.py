@@ -30,7 +30,13 @@ import numpy as np
 sys.path.insert(0, 'src')
 sys.path.insert(0, 'scripts')
 
-from pushing_medium.stellar_structure import RHO_NUC, M_SUN, c, G
+from pushing_medium.stellar_structure import (
+    RHO_NUC, M_SUN, c, G,
+    solve_pm_star,
+    pm_clairaut_k2,
+    pm_tidal_lambda,
+    compute_lambda_M_curve,
+)
 from scipy.integrate import solve_ivp
 from scipy.interpolate import interp1d
 from scipy.optimize import brentq
@@ -331,3 +337,128 @@ class TestRadiusLambdaScaling:
             rho_c, _, _ = find_rho_c_for_mass(1.4, ep, er, rne)
             res = clairaut_radau_lambda(rho_c, ep, er, rne)
             assert res['Lambda'] > 0, f"f={f}, alpha={alpha}: Lambda={res['Lambda']:.1f} <= 0"
+
+
+# ---------------------------------------------------------------------------
+# Tests for stellar_structure.py API  (pm_clairaut_k2, solve_pm_star tidal)
+# ---------------------------------------------------------------------------
+
+# Central density producing a ~1.4-1.5 Msun PM star (baseline EOS)
+RHO_C_1P45 = 1.173 * RHO_NUC   # M ≈ 1.45 Msun, Λ ≈ 378
+# GW170817 constraints
+GW170817_90CI_LIMIT = 800.0     # 90% CL upper bound (Abbott+ 2018)
+GW170817_50CI_LIMIT = 580.0     # 50% CL upper bound
+
+
+class TestStellarStructureTidalAPI:
+    """Test pm_clairaut_k2, pm_tidal_lambda and solve_pm_star(compute_tidal=True).
+
+    These functions expose the Clairaut-Radau tidal computation through the
+    stellar_structure module API, consistent with the standalone CR ODE above.
+    """
+
+    @pytest.fixture(scope="class")
+    def star_1p45(self):
+        """Converged PM star near 1.45 Msun with tidal fields populated."""
+        return solve_pm_star(RHO_C_1P45, compute_tidal=True, n_eval=3000)
+
+    # --- pm_clairaut_k2 formula ---
+
+    def test_k2_uniform_density_limit(self):
+        """k₂ → 1/18 ≈ 0.056 for uniform-density (y_R = 3) star."""
+        k2 = pm_clairaut_k2(3.0)
+        assert k2 == pytest.approx(1.0 / 18.0, rel=1e-10)
+
+    def test_k2_positive_for_yr_above_two(self):
+        """k₂ > 0 whenever y_R > 2 (as in all physical PM stars)."""
+        for y_R in [2.5, 2.7, 2.9, 3.0, 3.1]:
+            assert pm_clairaut_k2(y_R) > 0.0
+
+    def test_k2_zero_at_yr_equals_two(self):
+        """k₂ = 0 when y_R = 2 (star with no tidal response — vacuous limit)."""
+        assert pm_clairaut_k2(2.0) == pytest.approx(0.0, abs=1e-15)
+
+    # --- pm_tidal_lambda formula ---
+
+    def test_tidal_lambda_formula(self):
+        """Λ = (2/3) k₂ / C⁵  exactly."""
+        k2 = 0.046
+        C  = 0.152
+        assert pm_tidal_lambda(k2, C) == pytest.approx((2.0/3.0)*k2/C**5, rel=1e-12)
+
+    # --- solve_pm_star(compute_tidal=True) fields ---
+
+    def test_tidal_fields_populated(self, star_1p45):
+        """k2_love and lambda_tidal must be set after compute_tidal=True."""
+        assert star_1p45.k2_love is not None
+        assert star_1p45.lambda_tidal is not None
+
+    def test_tidal_fields_none_by_default(self):
+        """k2_love and lambda_tidal remain None without compute_tidal flag."""
+        star = solve_pm_star(RHO_C_1P45, compute_tidal=False, n_eval=1000)
+        assert star.k2_love is None
+        assert star.lambda_tidal is None
+
+    def test_k2_near_uniform_density_value(self, star_1p45):
+        """PM 1.45 Msun star k₂ ≈ 0.04–0.06 (near-incompressible limit 1/18)."""
+        k2 = star_1p45.k2_love
+        assert 0.03 < k2 < 0.10
+
+    def test_lambda_positive(self, star_1p45):
+        assert star_1p45.lambda_tidal > 0.0
+
+    def test_lambda_matches_formula(self, star_1p45):
+        """Λ stored in star is consistent with k₂ and C."""
+        C = G * star_1p45.M_star / (c**2 * star_1p45.R_star)
+        expected = pm_tidal_lambda(star_1p45.k2_love, C)
+        assert star_1p45.lambda_tidal == pytest.approx(expected, rel=1e-6)
+
+    # --- GW170817 compatibility ---
+
+    def test_lambda_within_gw170817_90ci(self, star_1p45):
+        """PM Λ₁.₄ must be within the GW170817 90% CI upper bound of 800.
+
+        Using the Clairaut-Radau (correct Newtonian) tidal formalism, the PM
+        baseline EOS gives Λ ≈ 300–400 for a 1.4–1.5 Msun star.  This is
+        inside the 90% CI (< 800) but ~1–2σ above the preferred value
+        (~70–300 for favoured GR EOSs).
+
+        The 'tighter' config (f=1.20) brings Λ ≈ 315, near the measurement
+        centre, resolving the tension.  The baseline EOS is not falsified.
+        """
+        Lam = star_1p45.lambda_tidal
+        assert Lam < GW170817_90CI_LIMIT, (
+            f"PM Λ₁.₄ = {Lam:.0f} exceeds GW170817 90% CI limit {GW170817_90CI_LIMIT}"
+        )
+
+    def test_lambda_decreases_with_higher_density(self):
+        """Λ decreases with increasing central density (higher M, higher C)."""
+        rho_lo = 1.15 * RHO_NUC   # lighter, less compact
+        rho_hi = 1.25 * RHO_NUC   # heavier, more compact
+        star_lo = solve_pm_star(rho_lo, compute_tidal=True, n_eval=2000)
+        star_hi = solve_pm_star(rho_hi, compute_tidal=True, n_eval=2000)
+        assert star_lo.lambda_tidal > star_hi.lambda_tidal
+
+    # --- compute_lambda_M_curve ---
+
+    def test_lambda_m_curve_positive_lambdas(self):
+        """All returned Λ values in the curve are positive or NaN."""
+        M_arr, R_arr, Lam_arr, k2_arr = compute_lambda_M_curve(n_points=6, n_eval=1500)
+        finite_lam = Lam_arr[~np.isnan(Lam_arr)]
+        assert (finite_lam > 0.0).all()
+
+    def test_lambda_m_curve_shape(self):
+        """Arrays returned by compute_lambda_M_curve have matching lengths."""
+        M_arr, R_arr, Lam_arr, k2_arr = compute_lambda_M_curve(n_points=4, n_eval=1000)
+        assert len(M_arr) == len(R_arr) == len(Lam_arr) == len(k2_arr) == 4
+
+    def test_lambda_m_curve_monotone(self):
+        """Λ decreases with increasing M (higher-M stars are more compact)."""
+        M_arr, _, Lam_arr, _ = compute_lambda_M_curve(n_points=8, n_eval=2000)
+        valid = ~(np.isnan(M_arr) | np.isnan(Lam_arr))
+        if valid.sum() >= 2:
+            idx = np.argsort(M_arr[valid])
+            lam_sorted = Lam_arr[valid][idx]
+            # Λ should be strictly decreasing with M for PM EOS
+            assert lam_sorted[0] > lam_sorted[-1]
+
