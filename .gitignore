@@ -60,6 +60,9 @@ Thumbs.db
 .ipynb_checkpoints/
 *.ipynb
 
+# ─── LLM conversation notes ───────────────────────────────────────────────────
+docs/LLM_notes_and_conversations/
+
 # ─── Misc ─────────────────────────────────────────────────────────────────────
 *.orig
 *.rej
