@@ -1353,6 +1353,38 @@ Because $\dot{f} \propto M_c^{5/3} f^{11/3}$ depends only on these, the
 \emph{chirp mass} measured by LIGO is indistinguishable between PM and GR
 at this order.
 
+\subsection*{PM Radiation Structure (partial derivation)}
+
+\noindent The PM Lagrangian has two radiation channels:
+\begin{enumerate}
+  \item \textbf{Scalar $\phi$ channel.}
+        Sourced by mass density $\rho$ (coupling $\mu_G = 2G/c^2$).
+        Far-field retarded: $\phi_\mathrm{rad} = \tfrac{\mu_G}{2c^2 r}\hat{n}_i\hat{n}_j\ddot{I}_{ij}(t_r)
+                          = \tfrac{G}{c^4 r}\hat{n}_i\hat{n}_j\ddot{I}_{ij}(t_r)$.
+        Then $\partial_t\phi_\mathrm{rad} = \tfrac{G}{c^4 r}\hat{n}_i\hat{n}_j\dddot{I}_{ij}$.
+        Energy density scale $K_\mathrm{grav} = c^4/(32\pi G)$ from Newtonian field energy
+        $\varepsilon = c^4|\nabla\phi|^2/(32\pi G)$.
+        Angular integral for traceless quadrupole: $\int(\hat{n}_i\hat{n}_j\dddot{I}_{ij})^2\,d\Omega = \tfrac{8\pi}{15}\langle\dddot{I}_{ij}^2\rangle$.
+        For a circular orbit $\mathrm{tr}(I) = \mu a^2 = \mathrm{const}$, so the trace vanishes:
+        \[
+          P_\phi = K_\mathrm{grav} \cdot \frac{G^2}{c^9} \cdot \frac{8\pi}{15}
+                  \bigl\langle\dddot{I}_{ij}\dddot{I}_{ij}\bigr\rangle
+                = \frac{G}{60\,c^5}\,\bigl\langle\dddot{I}_{ij}\dddot{I}_{ij}\bigr\rangle
+                = \frac{1}{12}\,P_\mathrm{Peters}
+        \]
+        (exact ratio $(1/60)/(1/5) = 1/12$; numerically confirmed: ratio = $0.0833...\,$).
+
+  \item \textbf{Vector $\mathbf{u}$ channel (dominant).}
+        Sourced by mass current $\mathbf{J}_M = \rho\mathbf{v}$ (coupling $A_M = G/c^2$).
+        Carries transverse-traceless polarisation states ($+$ and $\times$).
+        The remaining $\tfrac{11}{12}P_\mathrm{Peters}$ must come from this channel for $k_\mathrm{TT}=1$,
+        but the exact calculation requires fixing the energy normalisation of the $\mathbf{u}$-field
+        relative to $\phi$ in the PM action (open, \S Open Questions).
+\end{enumerate}
+\noindent\textbf{What is proved:} The scalar $\phi$ channel contributes $\tfrac{1}{12}$ of Peters.
+The combined $(\phi + \mathbf{u})$ total must equal Peters at 0PN (Hulse--Taylor).
+The $\mathbf{u}$ energy scale is the unique open normalisation needed to complete the proof.
+
 \subsection*{Key Formulas (0PN, circular orbit)}
 
 \noindent\textbf{Chirp mass (directly measured from $df/dt$):}
@@ -1903,7 +1935,7 @@ Symbol & Value & Physical meaning \\
 $c$ & $2.998\times10^8$ m/s & Speed of light \\
 $G$ & $6.674\times10^{-11}$ m$^3$\,kg$^{-1}$\,s$^{-2}$ & Newton's constant \\
 $\mu_G$ & $1.486\times10^{-27}$ m$^2$\,kg$^{-1}$ & Grav.\ index coeff.\ ($=2G/c^2$) \\
-$k_{\mathrm{TT}}$ & $\approx 1$ (Hulse--Taylor, not PM-derived) & GW power normalisation \\
+$k_{\mathrm{TT}}$ & $= 1$ (obs: Hulse--Taylor $\pm0.5\%$; PM structure: open, see §GW) & GW power coefficient \\
 $k_{\mathrm{Fizeau}}$ & $1.0$ (exact) & Moving-lens drag \\
 $c_\phi$ & $= c$ (PM action; GW170817: $|c_\phi/c-1|<5\times10^{-16}$) & Scalar-wave speed \\
 $A_M$ & $G/c^2 \approx 7.43\times10^{-28}$ m$^3$\,kg$^{-1}$\,s$^{-1}$ & Mass-current coupling \\
@@ -1947,9 +1979,40 @@ Calibration derivation & \texttt{calibration-constants-derivation.tex} \\
 Coupling constants & \texttt{coupling-constants-reference.tex} \\
 Cross-force analysis & \texttt{cross-force-hierarchy-honest.tex} \\
 GR comparison table & \texttt{pm-gr-cross-force-comparison.tex} \\
+k\_TT radiation derivation & \texttt{scripts/derive\_k\_TT.py} \\
 \bottomrule
 \end{tabular}%
 }
 \end{center}
+
+%====================================================================
+\section{Open Questions in PM}
+%====================================================================
+
+\begin{enumerate}
+  \item \textbf{$\mathbf{u}$-field energy normalisation (k\_TT gap).}
+        The PM Lagrangian contains both $\phi$ (scalar) and $\mathbf{u}$ (vector) radiation channels.
+        The $\phi$ channel gives $P_\phi = \frac{1}{12}P_\mathrm{Peters}$ (derived).
+        The $\mathbf{u}$ channel must supply the remaining $\frac{11}{12}$ for $k_\mathrm{TT}=1$,
+        but this requires fixing the energy density $K_u$ of the $\mathbf{u}$-field waves —
+        a normalisation that is not directly read off from the PM Lagrangian as written
+        (which uses dimensionless $\phi$ and velocity $\mathbf{u}$ with different engineering units).
+        \emph{Needed:} Derive the gravitational action as a functional of $(\phi, \mathbf{u})$
+        with an explicit energy prefactor, then identify $K_u$ from the coefficient of $|\nabla\mathbf{u}|^2$.
+
+  \item \textbf{Closed form for $\Xi = 3.2796\ldots$\,.}
+        The PM Lane--Emden radius $\Xi$ (where Lane--Emden $\theta'=0$) does not
+        appear to be a simple algebraic number.  Its analytic form (if any) is unknown.
+
+  \item \textbf{Core EOS selection.}
+        The two-zone stellar solver accepts $P = $ constant, radiation, or vacuum core EOS.
+        No PM principle yet selects among these.  The physical choice requires understanding
+        what happens to the medium in the deep interior at $\phi \to 1$.
+
+  \item \textbf{$\rho_\mathrm{nuc}$ as a derived quantity.}
+        Nuclear saturation density $\rho_\mathrm{nuc} = 2.3\times10^{17}$ kg\,m$^{-3}$ is currently
+        an external input (QCD boundary condition).  A fully self-consistent PM theory would
+        derive $\rho_\mathrm{nuc}$ from the medium's deformation energy $U(\phi)$.
+\end{enumerate}
 
 \end{document}
