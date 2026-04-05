@@ -15,7 +15,7 @@
 \twocolumn[{%
   \centering
   {\large\bfseries Pushing Medium (PM) — Consolidated Formula Sheet}\\[0.3em]
-  {\small March 2026}\\[0.8em]
+  {\small April 2026}\\[0.8em]
 }]
 
 %====================================================================
@@ -56,17 +56,21 @@ the region of higher density.  For a massive (slow) particle:
 \]
 
 \textbf{Lensing: why light bends twice as much as a thrown ball.}
-Light is refracted by the medium.  A denser region ($n > 1$) slows light
-locally, causing wavefronts to tip toward it — exactly Fermat's principle.
-Light couples to \emph{both} the time-stretching and space-compression of
-the effective metric (both $g_{tt}$ and $g_{rr}$), giving a deflection
+Light is refracted by the compression-density gradient of the medium.
+A denser region ($n > 1$) slows light locally ($c_{\rm local} = c/n$).
+This causes \emph{two} contributions to bending simultaneously:
+(1)~the wavefront tips toward the denser region (Fermat's principle /
+gradient in propagation speed), and
+(2)~the ray direction continuously adjusts as the optical path length
+across the wavefront changes.
+Both effects add in the same sense, giving a net deflection
 \[
   \alpha_{\mathrm{light}} = \frac{4GM}{c^2 b}
 \]
-A massive slow particle is governed only by the time component ($g_{tt}$,
-i.e.\ kinetic-energy vs.\ potential-energy balance), giving acceleration
-$c^2/2$ per unit $\nabla\phi$ instead of $c^2$.  The ratio is exactly
-$\mathbf{2:1}$ — the origin of the factor $\tfrac{1}{2}$ in the force law.
+A massive slow particle is governed only by the compression-gradient
+force $\mathbf{a} = (c^2/2)\nabla\phi$ — only one coupling, not two.
+The ratio is exactly $\mathbf{2:1}$ — the origin of the
+factor $\tfrac{1}{2}$ in the gravitational force law.
 
 \textbf{The flow field $\mathbf{u}$ and frame drag.}
 A moving or rotating mass also \emph{drags} the medium, inducing a vector
@@ -657,8 +661,45 @@ vacuum-state potential
   \qquad
   \hat V'(n) = n + \tfrac{1}{n},
 \]
-with vacuum-subtracted version $\hat V'_{\rm vac}(n) = (n-1)^2/n$ (vanishes
-at $n=1$, the vacuum state). Implementation: \path{scripts/derive_alpha_selection.py}
+with vacuum-subtracted version
+$\hat V_{\rm vac}(n) = \tfrac{1}{2}n^2+\ln n-\tfrac{1}{2}-2(n-1)$,
+$\hat V'_{\rm vac}(n) = (n-1)^2/n \geq 0$ (global minimum, zero, at $n=1$).
+Implementation: \path{scripts/derive_alpha_selection.py}
+
+\textbf{Derrick scaling: no stable classical solitons.}
+The static energy functional for a spherically symmetric field $n(r)$ is
+\[
+  E[n] = I_{\rm grad} + I_{\rm pot},
+  \quad
+  I_{\rm grad} = 4\pi\!\int\!\tfrac{1}{2}(dn/dr)^2 r^2\,dr,
+  \quad
+  I_{\rm pot}  = 4\pi\!\int\!\hat V_{\rm vac}(n)\,n^2 r^2\,dr.
+\]
+Under Derrick rescaling $n_\lambda(r)=n(\lambda r)$:
+\[
+  E(\lambda) = \lambda^{-1}I_{\rm grad} + \lambda^{-3}I_{\rm pot}.
+\]
+A stationary point requires $I_{\rm grad}+3I_{\rm pot}=0$, which forces
+$I_{\rm pot}<0$ (field rarefied, $n<1$ somewhere).  Stability requires
+$d^2E/d\lambda^2|_{\lambda^*}>0$, but
+\[
+  \left.\frac{d^2E}{d\lambda^2}\right|_{\lambda^*}
+  = \frac{-2\,I_{\rm grad}}{\lambda^{*3}} < 0 \quad (\text{always}).
+\]
+\textbf{Conclusion (Derrick's theorem in 3D):}
+All Derrick stationary points are saddles in the scaling direction.
+PM's classical $\alpha=2$ action admits \emph{no stable static solitons}.
+A nucleon-like object (stable localised compression) requires either
+a topological charge, a second coupled field, or a quantum length scale
+--- all outside the classical single-field action.
+
+Corollary: $\rho_{\rm nuc}$ is structurally an external input.
+Fixing it requires one scale from outside the PM action:
+the calibrated value $f=1.18$ is fixed by the GW170817 radius constraint,
+not derived.  This is PM's analogue of importing the electron mass in QED.
+
+Implementation: \path{scripts/derrick_soliton_analysis.py};
+24 tests in \path{tests/test_derrick_scaling.py}.
 
 %====================================================================
 \section{Deformation Energy and Critical State}
@@ -1173,8 +1214,11 @@ its analytic closed form is an open question (Lane--Emden analogy).
 \begin{itemize}\setlength\itemsep{1pt}
   \item GW150914 ($29+36\,M_\odot$ progenitors): both exceed
         $M_{\mathrm{max}}^{\mathrm{PM}}$; PM predicts no compact progenitors.
-  \item GW170817 ($1.46+1.27\,M_\odot$): within PM range, but PM predicts
-        $R\approx15$\,km vs NICER $\approx12$\,km ($+30\%$ offset).
+  \item GW170817 ($1.46+1.27\,M_\odot$): within PM range.
+        At the calibrated $f{=}1.18$ ($\rho_{\rm nuc}=2.71\times10^{17}$\,kg\,m$^{-3}$),
+        PM gives $R_{1.4}\approx13.2$\,km (within the GW170817 90\%\,CI bound
+        of $\leq13.3$\,km) and tidal $\Lambda_{1.4}\approx324$ (below the
+        90\%\,CI bound $\tilde\Lambda<800$).
   \item At $M\approx2\,M_\odot$: $f_{\mathrm{surf}}\approx8\,\mathrm{kHz}
         > f_{\mathrm{QNM}}\approx6\,\mathrm{kHz}$ (factor-of-1.3 difference;
         accessible to Einstein Telescope).
@@ -1941,7 +1985,8 @@ $c_\phi$ & $= c$ (PM action; GW170817: $|c_\phi/c-1|<5\times10^{-16}$) & Scalar-
 $A_M$ & $G/c^2 \approx 7.43\times10^{-28}$ m$^3$\,kg$^{-1}$\,s$^{-1}$ & Mass-current coupling \\
 $A_q$ & $< 3\times10^{-10}$ m$^3$\,C$^{-1}$\,s$^{-1}$ & Charge-current coupling \\
 $\kappa_B$ & $\approx 0$ (ruled out) & Magnetic potential coupling \\
-$\rho_{\mathrm{nuc}}$ & $2.3\times10^{17}$ kg\,m$^{-3}$ & Nuclear saturation density \\
+$\rho_{\mathrm{nuc}}$ & $2.3\times10^{17}$ kg\,m$^{-3}$ (baseline $f{=}1$);
+        $2.71\times10^{17}$ (calibrated $f{=}1.18$, GW170817) & Nuclear saturation density \\
 \midrule
 \multicolumn{3}{@{}l@{}}{\textit{Unconstrained:}
   $\mu_E$, $K_E$, $B_q$, $K_{\rm plasma}$, $\alpha_{\rm plasma}$, $c_u$} \\
@@ -2009,10 +2054,23 @@ k\_TT radiation derivation & \texttt{scripts/derive\_k\_TT.py} \\
         No PM principle yet selects among these.  The physical choice requires understanding
         what happens to the medium in the deep interior at $\phi \to 1$.
 
-  \item \textbf{$\rho_\mathrm{nuc}$ as a derived quantity.}
-        Nuclear saturation density $\rho_\mathrm{nuc} = 2.3\times10^{17}$ kg\,m$^{-3}$ is currently
-        an external input (QCD boundary condition).  A fully self-consistent PM theory would
-        derive $\rho_\mathrm{nuc}$ from the medium's deformation energy $U(\phi)$.
+  \item \textbf{$\rho_\mathrm{nuc}$ is an irreducible external input (classically).}
+        Derrick's theorem applied to PM's $\alpha=2$ vacuum action proves that no stable
+        static soliton exists in PM's classical single-field equations in 3D
+        (see $\S\alpha$-Family above and \path{scripts/derrick_soliton_analysis.py}).
+        A nucleon requires one of: (a)~topological charge, (b)~a second coupled field, or
+        (c)~a quantum length scale fixing the minimum excitation size of the medium.
+        None of these exist in the classical action.  $\rho_\mathrm{nuc}$ is therefore
+        structural\-ly analogous to the electron mass in QED: one number imported from
+        experiment, not derivable from the classical theory.  The GW170817 radius bound
+        selects $f=\rho_\mathrm{nuc}/\rho_0=1.18$, i.e.\ $\rho_\mathrm{nuc}=2.71\times10^{17}$\,kg\,m$^{-3}$.
+
+  \item \textbf{Quantum sector of the medium.}
+        If the medium has granular structure at small scales (a minimum excitation size,
+        analogous to a lattice spacing or Planck length), that scale sets the minimum
+        soliton size, giving the nucleon volume and hence $\rho_\mathrm{nuc}$.
+        This is PM's quantum sector — not required for any classical prediction,
+        but necessary to close the one open parameter.
 \end{enumerate}
 
 \end{document}
