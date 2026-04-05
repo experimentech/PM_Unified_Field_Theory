@@ -27,9 +27,13 @@ PM force law for massive particles
 -----------------------------------
     a_PM = +(c²/2) ∇φ
 
-Light uses both the time-dilation and spatial-compression components of
-the optical metric (factor 2), giving α = 4GM/(c²b).  Massive particles
-couple only to the time-dilation component (factor 1), giving the 1/2.
+Light bends twice as much as a Newtonian particle because the density gradient
+of the medium affects both the propagation speed (slowing light in the denser
+region) and the direction of the wavefront — both effects add, giving the
+factor-of-2 excess over the Newtonian (speed-only) prediction:
+    α_PM = 4GM/(c²b)   vs   α_Newton = 2GM/(c²b)
+Massive particles respond only to the force-law gradient a = +(c²/2)∇φ,
+not to the wavefront-direction effect, giving the factor of 1/2 in the force.
 
 Why the PM structure equations are EXACT — not a Newtonian approximation
 -------------------------------------------------------------------------
@@ -205,7 +209,7 @@ def pm_clairaut_k2(y_R: float) -> float:
     deformability in PM's matter sector.  PM uses Euclidean space + absolute time
     but a curved effective optical metric (ds² = −c²/n² dt² + dr²); the
     stellar hydrostatics and tidal perturbation of the matter field operate
-    on the flat background via the PM Poisson equation ∇²φ = 4πGρ/c², so
+    on the Euclidean background via the PM Poisson equation ∇²φ = −(8πG/c²)ρ, so
     the Newtonian Clairaut-Radau equation is the appropriate tidal ODE.
     (GR Regge-Wheeler/Hinderer tidal terms are absent — no background curvature.)
 
@@ -231,9 +235,10 @@ def pm_tidal_lambda(k2: float, C: float) -> float:
     This is the quantity measured by LIGO/Virgo from the GW phase.
     GW170817 constraint: Λ̃ ≤ 800 (combined binary parameter, 90% CL).
 
-    PM stars with large radii (R ~ 25–35 km vs GR ~ 12 km) give Λ ∝ R⁵/M⁵;
-    the typical PM prediction is Λ ~ 3000–40000 for a 1.4 M☉ star,
-    roughly 4–50× the GW170817 upper bound.
+    PM baseline (standard EOS, 1.4 M☉): R ≈ 14 km, C ≈ 0.15, Λ ≈ 378.
+    This is within the GW170817 90% CI but 1–2σ above the GR-preferred
+    range (Λ ~ 70–300 for favoured GR EOSs).  With threshold tuning
+    (ρ_nuc_eff = 1.18 ρ_nuc) the prediction drops to Λ ≈ 315.
     """
     return (2.0 / 3.0) * k2 / C**5
 
