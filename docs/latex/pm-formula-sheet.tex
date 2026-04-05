@@ -114,6 +114,7 @@ where the matter phase becomes mechanically unstable.
 \textbf{At a glance.}
 \begin{center}
 \renewcommand{\arraystretch}{1.3}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}ll@{}}
 \hline
 \textbf{GR / standard concept} & \textbf{PM equivalent} \\
@@ -128,7 +129,8 @@ Rest-mass energy & Deformation energy $U(\phi)$ stored in that config. \\
 $E=mc^2$ & Medium reconfiguring between organisational states \\
 Singularity / horizon & Phase transition at $\phi = 1$ ($n = e$) \\
 \hline
-\end{tabular}
+\end{tabular}%
+}
 \end{center}
 
 %====================================================================
@@ -482,11 +484,10 @@ At first order in $U=GM/c^2r$:
 \]
 
 \textbf{PPN parameters} (both derived from PM structure):
-\[
-  \gamma = 1 \;\text{(from }g_{ij}=n^2\delta_{ij}\text{)},
-  \qquad
-  \beta = 1 \;\text{(from n-field action }S_2=\int\!\tfrac{1}{2}|\nabla\phi|^2 n^2\,d^3x\text{)}
-\]
+\begin{align*}
+  \gamma &= 1 \;\text{(from $g_{ij}=n^2\delta_{ij}$)} \\
+  \beta  &= 1 \;\text{(from $S_2=\int\tfrac{1}{2}|\nabla\phi|^2 n^2\,d^3x$)}
+\end{align*}
 
 \textbf{Perihelion precession} (1PN, from both $\beta=\gamma=1$):
 \[
@@ -499,11 +500,10 @@ The full 10-parameter PPN framework includes two preferred-frame parameters,
 $\alpha_1$ and $\alpha_2$, which measure whether orbital dynamics and spin
 precession are anisotropically affected by the body's velocity relative to a
 cosmological rest frame.  Their observational bounds are:
-\[
-  |\alpha_1| < 10^{-4} \;\text{(Lunar Laser Ranging)},
-  \qquad
-  |\alpha_2| < 4\times 10^{-7} \;\text{(solar geodetic precession)}
-\]
+\begin{align*}
+  |\alpha_1| &< 10^{-4} \;\text{(Lunar Laser Ranging)} \\
+  |\alpha_2| &< 4\times 10^{-7} \;\text{(solar geodetic precession)}
+\end{align*}
 
 \textbf{PM derivation} (see \path{scripts/derive_ppn_preferred_frame.py}).
 Decompose $\phi = \phi_0 + \delta\phi$ where $\phi_0$ is the spatially
@@ -549,13 +549,11 @@ $v_{\rm orb}=30\,{\rm km\,s}^{-1}$, $c_\phi = c$):
 This is within the LLR bound $10^{-4}$ by a factor of $\sim\!400$.
 
 \textbf{Results:}
-\[
-  \alpha_1^{\rm static} = 0 \;\text{(exact; $\nabla\phi_0=0$)},
-  \qquad
-  |\alpha_1|_{\rm wave} \lesssim 2.5\times10^{-7} \;\text{(1PN boost)},
-  \qquad
-  \alpha_2 = 0 \;\text{(exact; irrotational $\mathbf{u}_0$)}.
-\]
+\begin{align*}
+  \alpha_1^{\rm static} &= 0 \;\text{(exact; $\nabla\phi_0=0$)} \\
+  |\alpha_1|_{\rm wave} &\lesssim 2.5\times10^{-7} \;\text{(1PN boost)} \\
+  \alpha_2 &= 0 \;\text{(exact; irrotational $\mathbf{u}_0$)}
+\end{align*}
 The only additional residual is cosmological drift $\partial_t\phi_0 \sim H_0$:
 \[
   |\delta\alpha_1|_{\rm cosmo} \lesssim \frac{H_0 R_{\rm orbit}}{c}
@@ -572,6 +570,7 @@ far-field) is not yet complete — but does not affect Solar System observables.
 
 \textbf{Full PPN parameter table for PM ($\alpha_{\rm action}=2$):}
 \begin{center}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}llll@{}}
 \toprule
 Parameter & PM value & GR value & Bound / measurement \\
@@ -581,7 +580,8 @@ $\beta$  & 1 (from $S_2$, $\beta=\alpha/2=1$) & 1 & $|\beta-1|<8\times10^{-5}$ \
 $\alpha_1$ & 0 (static, exact); $\lesssim 2.5\times10^{-7}$ (1PN wave) & 0 & $<10^{-4}$ \\
 $\alpha_2$ & 0 (exact, $\nabla\times\mathbf{u}_0=0$) & 0 & $<4\times10^{-7}$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{center}
 
 %====================================================================
@@ -612,11 +612,11 @@ For $\alpha\neq 0$ the point-source vacuum solution is
 \]
 Taylor-expanding at first order gives $\phi_\alpha \approx U$; at second order
 the $|\nabla\phi|^2$ self-coupling shifts the PPN $\beta$ parameter:
-\[
-  \phi_\alpha = U - \frac{\alpha}{4}U^2 + O(U^3)
-  \;\Longrightarrow\; g_{tt} \approx -(1 - 2U + \beta_{\rm PPN}\cdot 2U^2),
-  \quad \beta_{\rm PPN} = \frac{\alpha}{2}.
-\]
+\begin{align*}
+  \phi_\alpha &= U - \tfrac{\alpha}{4}U^2 + O(U^3) \\
+  &\Rightarrow g_{tt} \approx -(1 - 2U + 2\beta_{\rm PPN}U^2),
+  \quad \beta_{\rm PPN} = \tfrac{\alpha}{2}
+\end{align*}
 
 \textbf{$\beta(\alpha) = \alpha/2$ proved three ways:}
 \begin{enumerate}
@@ -638,6 +638,7 @@ and fails perihelion-precession observations.
 
 \textbf{$\alpha$-family table (Mercury precession rate $\Delta\omega$ in arcsec/cy):}
 \begin{center}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}cccl@{}}
 \toprule
 $\alpha$ & $\beta_{\rm PPN}=\alpha/2$ & $\Delta\omega$ [\arcsec/cy] & Status \\
@@ -648,7 +649,8 @@ $\alpha$ & $\beta_{\rm PPN}=\alpha/2$ & $\Delta\omega$ [\arcsec/cy] & Status \\
 3 & 1.5 & 35.8 & fails (too low) \\
 4 & 2 & 28.7 & fails (too low) \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{center}
 (GR value: 43.0\arcsec/cy; observed: $43.1\pm 0.5$\arcsec/cy.)
 
@@ -668,13 +670,11 @@ Implementation: \path{scripts/derive_alpha_selection.py}
 
 \textbf{Derrick scaling: no stable classical solitons.}
 The static energy functional for a spherically symmetric field $n(r)$ is
-\[
-  E[n] = I_{\rm grad} + I_{\rm pot},
-  \quad
-  I_{\rm grad} = 4\pi\!\int\!\tfrac{1}{2}(dn/dr)^2 r^2\,dr,
-  \quad
-  I_{\rm pot}  = 4\pi\!\int\!\hat V_{\rm vac}(n)\,n^2 r^2\,dr.
-\]
+\begin{align*}
+  E[n] &= I_{\rm grad} + I_{\rm pot}, \\
+  I_{\rm grad} &= 4\pi\!\int\!\tfrac{1}{2}(dn/dr)^2 r^2\,dr, \\
+  I_{\rm pot}  &= 4\pi\!\int\!\hat V_{\rm vac}(n)\,n^2 r^2\,dr.
+\end{align*}
 Under Derrick rescaling $n_\lambda(r)=n(\lambda r)$:
 \[
   E(\lambda) = \lambda^{-1}I_{\rm grad} + \lambda^{-3}I_{\rm pot}.
@@ -1033,6 +1033,7 @@ not a free parameter), and $\kappa_n=2G\rho_{\rm nuc}/c^2$
 
 \textbf{M--R comparison table:}
 \begin{center}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}llll@{}}
 \toprule
 Solver & $M_{\rm max}$ & $R$ & Note \\
@@ -1041,7 +1042,8 @@ n-field bare ($\alpha=2$) & $9.4\,M_\odot$ & 23.4 km & baseline \\
 Vacuum-stiffened (action-derived) & $11.5\,M_\odot$ & 24.9 km & $+22\%$, no free param \\
 Option-A ($\alpha_{\rm c}=+1$) & $30.0\,M_\odot$ & 34.9 km & elastic pressure \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{center}
 
 \textbf{Key result.} The vacuum subtraction $\hat V'_{\rm vac}=(n-1)^2/n$ is mandatory:
@@ -1184,18 +1186,17 @@ no exterior trapped photon orbits and no horizon QNMs.
 \textbf{PM maximum compact-star mass (semi-analytic).}
 Newtonian structure (no TOV); mass grows monotonically with $\rho_c$ up
 to the stability cap.  Introducing the natural length and mass scales:
-\[
-  \lambda \;=\; \frac{c/\sqrt{2}}{\sqrt{G\rho_{\mathrm{crit}}}}
-  \;=\; \frac{c_s}{\sqrt{G\rho_{\mathrm{crit}}}} \;\approx\; 32.8\;\mathrm{km},
-  \qquad
-  M_* \;=\; \rho_{\mathrm{nuc}}\,\lambda^3 \;\approx\; 4.09\;M_\odot
-\]
+\begin{align*}
+  \lambda &= \frac{c/\sqrt{2}}{\sqrt{G\rho_{\mathrm{crit}}}}
+  = \frac{c_s}{\sqrt{G\rho_{\mathrm{crit}}}} \approx 32.8\;\mathrm{km} \\
+  M_* &= \rho_{\mathrm{nuc}}\,\lambda^3 \approx 4.09\;M_\odot
+\end{align*}
 (note: defined with $\rho_{\mathrm{nuc}}$, not $\rho_{\mathrm{crit}}$).  The
 numerical PM stellar ODE gives
 \[
   \boxed{M_{\mathrm{max}}^{\mathrm{PM}} \;=\; \Xi\,M_* \;\approx\; 13.40\;M_\odot}
-  \qquad \Xi = 3.2796 \text{ (numerical, no closed form known)}
 \]
+$\Xi = 3.2796$ (numerical; no closed form known)
 \emph{Exact identity (no free parameters):}
 \[
   \mu_G\,\rho_{\mathrm{nuc}}\,\lambda^2
@@ -1403,19 +1404,25 @@ at this order.
 \begin{enumerate}
   \item \textbf{Scalar $\phi$ channel.}
         Sourced by mass density $\rho$ (coupling $\mu_G = 2G/c^2$).
-        Far-field retarded: $\phi_\mathrm{rad} = \tfrac{\mu_G}{2c^2 r}\hat{n}_i\hat{n}_j\ddot{I}_{ij}(t_r)
-                          = \tfrac{G}{c^4 r}\hat{n}_i\hat{n}_j\ddot{I}_{ij}(t_r)$.
-        Then $\partial_t\phi_\mathrm{rad} = \tfrac{G}{c^4 r}\hat{n}_i\hat{n}_j\dddot{I}_{ij}$.
+        Far-field retarded potential and time derivative:
+        \begin{align*}
+          \phi_\mathrm{rad} &= \tfrac{G}{c^4 r}\hat{n}_i\hat{n}_j\ddot{I}_{ij}(t_r),\\
+          \partial_t\phi_\mathrm{rad} &= \tfrac{G}{c^4 r}\hat{n}_i\hat{n}_j\dddot{I}_{ij}
+        \end{align*}
         Energy density scale $K_\mathrm{grav} = c^4/(32\pi G)$ from Newtonian field energy
         $\varepsilon = c^4|\nabla\phi|^2/(32\pi G)$.
-        Angular integral for traceless quadrupole: $\int(\hat{n}_i\hat{n}_j\dddot{I}_{ij})^2\,d\Omega = \tfrac{8\pi}{15}\langle\dddot{I}_{ij}^2\rangle$.
-        For a circular orbit $\mathrm{tr}(I) = \mu a^2 = \mathrm{const}$, so the trace vanishes:
+        Angular integral for traceless quadrupole:
         \[
-          P_\phi = K_\mathrm{grav} \cdot \frac{G^2}{c^9} \cdot \frac{8\pi}{15}
-                  \bigl\langle\dddot{I}_{ij}\dddot{I}_{ij}\bigr\rangle
-                = \frac{G}{60\,c^5}\,\bigl\langle\dddot{I}_{ij}\dddot{I}_{ij}\bigr\rangle
-                = \frac{1}{12}\,P_\mathrm{Peters}
+          \int(\hat{n}_i\hat{n}_j\dddot{I}_{ij})^2\,d\Omega
+          = \tfrac{8\pi}{15}\langle\dddot{I}_{ij}^2\rangle.
         \]
+        For a circular orbit $\mathrm{tr}(I) = \mu a^2 = \mathrm{const}$, so the trace vanishes:
+        \begin{align*}
+          P_\phi &= K_\mathrm{grav} \cdot \frac{G^2}{c^9} \cdot \frac{8\pi}{15}
+                  \bigl\langle\dddot{I}_{ij}\dddot{I}_{ij}\bigr\rangle \\
+                 &= \frac{G}{60\,c^5}\,\bigl\langle\dddot{I}_{ij}\dddot{I}_{ij}\bigr\rangle
+                  = \frac{1}{12}\,P_\mathrm{Peters}
+        \end{align*}
         (exact ratio $(1/60)/(1/5) = 1/12$; numerically confirmed: ratio = $0.0833...\,$).
 
   \item \textbf{Vector $\mathbf{u}$ channel (dominant).}
@@ -1436,18 +1443,15 @@ The $\mathbf{u}$ energy scale is the unique open normalisation needed to complet
   \boxed{M_c = \frac{(M_1 M_2)^{3/5}}{(M_1+M_2)^{1/5}}}
 \]
 
-\begin{align}
+\begin{align*}
   \frac{df}{dt} &= \frac{96}{5}\,\pi^{8/3}
-      \left(\frac{G M_c}{c^3}\right)^{5/3} f^{11/3}
-      & \text{(frequency sweep)} \\[6pt]
+      \left(\frac{G M_c}{c^3}\right)^{5/3} f^{11/3} \\[4pt]
   t_\mathrm{coal}(f) &= \frac{5}{256}
       \left(\frac{c^3}{G M_c}\right)^{5/3}
-      (\pi f)^{-8/3}
-      & \text{(time to merger)} \\[6pt]
+      (\pi f)^{-8/3} \\[4pt]
   h_c &= \frac{4}{D}\,\frac{G M_c}{c^2}
       \left(\frac{\pi G M_c f}{c^3}\right)^{2/3}
-      & \text{(peak strain, face-on)}
-\end{align}
+\end{align*}
 
 \noindent The \textbf{analytic 0PN chirp} ($\tau = t_\mathrm{coal}-t$):
 \begin{align}
