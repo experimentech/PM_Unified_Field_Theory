@@ -133,7 +133,7 @@ The computed critical state is:
 | \( \phi_{\text{crit}} \) | 1.00000000 |
 | \( n_{\text{crit}} = e^{\phi_{\text{crit}}} \) | 2.71828183 |
 | \( \rho_{\text{crit}} \) | \( 6.25\times 10^{17}\,\mathrm{kg/m^3} \) |
-| \( P_{\text{crit}} \) | \( 1.87\times 10^{34}\,\mathrm{Pa} \) |
+| \( P_{\text{crit}} \) | \( 1.78\times 10^{34}\,\mathrm{Pa} \) |
 
 This places the PM matter/energy transition at approximately:
 

@@ -261,10 +261,10 @@ For a moving point mass with velocity $\mathbf v$:
 \section{Dynamic PM-Fluid Equations}
 %====================================================================
 
-\textbf{Scalar field:}
+\textbf{Scalar field (Euler--Lagrange equation from $\mathcal{L}$):}
 \[
-  \frac{\partial\phi}{\partial t} + \nabla\cdot(\phi\,\mathbf u)
-  = S_\phi + \frac{1}{c_\phi^2}\frac{\partial^2\phi}{\partial t^2}
+  \frac{1}{c_\phi^2}\frac{\partial^2\phi}{\partial t^2}
+  = \nabla^2\phi + \phi\,\nabla\cdot\mathbf{u} + S_\phi
 \]
 
 \textbf{Vector flow:}
@@ -327,13 +327,13 @@ Kinetic and gradient terms are positive-definite; the system is stable in the li
   \partial_t\phi = c_\phi^2\,\pi_\phi
 \]
 \[
-  \partial_t\pi_\phi = \nabla^2\phi + \nabla\cdot(\phi\mathbf u) + \phi\,\nabla\cdot\mathbf u
+  \partial_t\pi_\phi = \nabla^2\phi + \phi\,\nabla\cdot\mathbf u
 \]
 \[
   \partial_t u_i = c_u^2\,\pi_{u_i}
 \]
 \[
-  \partial_t\pi_{u_i} = \nabla^2 u_i + \partial_i(\phi^2)
+  \partial_t\pi_{u_i} = \nabla^2 u_i - \tfrac{1}{2}\partial_i(\phi^2)
 \]
 
 %====================================================================
@@ -638,11 +638,11 @@ and fails perihelion-precession observations.
 \toprule
 $\alpha$ & $\beta_{\rm PPN}=\alpha/2$ & $\Delta\omega$ [\arcsec/cy] & Status \\
 \midrule
-0 & 0 & 30.0 & fails (too low) \\
-1 & 0.5 & 35.0 & fails \\
+0 & 0 & 57.3 & fails (too high) \\
+1 & 0.5 & 50.2 & fails (too high) \\
 2 & 1 & 43.0 & \textbf{correct} \\
-3 & 1.5 & 46.7 & fails \\
-4 & 2 & 50.0 & fails \\
+3 & 1.5 & 35.8 & fails (too low) \\
+4 & 2 & 28.7 & fails (too low) \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -699,8 +699,14 @@ Properties: $P(\rho_{\mathrm{nuc}})=0$; sound speed $c_s = c/\sqrt{2}$.
   \;\approx 2.7\,\rho_{\mathrm{nuc}}
 \]
 \[
-  P_{\mathrm{crit}} \approx 1.87\times10^{34}\;\mathrm{Pa}
+  P_{\mathrm{crit}}
+    = \tfrac{c^2}{2}(\rho_{\mathrm{crit}} - \rho_{\mathrm{nuc}})
+    = \tfrac{c^2}{2}\,\rho_{\mathrm{nuc}}(e-1)
+    \approx 1.78\times10^{34}\;\mathrm{Pa}
 \]
+\emph{The code now implements this PM-native EOS; the radiation formula
+$\rho_{\mathrm{crit}}c^2/3 = 1.873\times10^{34}$\,Pa (5.5\% higher) has been
+removed.}
 
 Implementation: \path{src/pushing_medium/critical_state.py}
 
@@ -981,7 +987,8 @@ the stiffened structure equations become:
 \]
 where $n = e^\phi = \rho/\rho_{\rm nuc}$ is the field variable,
 $\kappa=\rho_{\rm nuc}c^{-2}$ (from the action coefficient $A=\kappa\rho_{\rm nuc}$,
-not a free parameter), and $\kappa_n=4\pi G/c^2$.
+not a free parameter), and $\kappa_n=2G\rho_{\rm nuc}/c^2$
+(units: $\mathrm{m}^{-2}$; a factor of $\rho_{\rm nuc}$ is required so$\;dn/dr = -\kappa_n\,\tilde{m}/r^2$ is dimensionally consistent).
 
 \textbf{M--R comparison table:}
 \begin{center}
@@ -1025,10 +1032,19 @@ frequency $\nu_\infty/\nu_s = e^{-\phi_\mathrm{ext}} = n(R)^{-1}$.
 
 \textbf{Weak-field expansion} (both theories):
 \[
-  z_{\mathrm{PM}} \approx \frac{2GM}{c^2 R}, \qquad
+  z_{\mathrm{PM}} \approx \frac{\mu_G M}{R} = \frac{2GM}{c^2 R}, \qquad
   z_{\mathrm{GR}} \approx \frac{GM}{c^2 R}
 \]
-\textbf{PM predicts $\approx 2\times$ larger surface redshift than GR}
+\textbf{Exact analytic result:}
+\[
+  \boxed{\frac{z_{\mathrm{PM}}}{z_{\mathrm{GR}}} = 2 \quad (\text{weak field, exact})}
+\]
+\emph{Derivation.} The leading term of the PM redshift is $z_{\mathrm{PM}} = \mu_G M/R$
+and of GR is $z_{\mathrm{GR}} = GM/c^2 R$.  Since $\mu_G = 2G/c^2$, the ratio is
+exactly~2, independent of mass, radius, or any EOS parameter.  The same factor-of-2
+is the origin of PM's doubled light deflection and Shapiro delay.
+
+\textbf{PM predicts a factor of exactly $2$ larger surface redshift than GR}
 for the same $(M,R)$.  This is a direct, falsifiable prediction testable
 with X-ray spectroscopy of neutron stars.
 
@@ -1124,13 +1140,33 @@ no exterior trapped photon orbits and no horizon QNMs.
   \approx 73\,\mu\mathrm{s}\times\frac{R_\star}{11\,\mathrm{km}}
 \]
 
-\textbf{PM maximum compact-star mass.}
+\textbf{PM maximum compact-star mass (semi-analytic).}
 Newtonian structure (no TOV); mass grows monotonically with $\rho_c$ up
-to the stability cap:
+to the stability cap.  Introducing the natural length and mass scales:
+\[
+  \lambda \;=\; \frac{c/\sqrt{2}}{\sqrt{G\rho_{\mathrm{crit}}}}
+  \;=\; \frac{c_s}{\sqrt{G\rho_{\mathrm{crit}}}} \;\approx\; 32.8\;\mathrm{km},
+  \qquad
+  M_* \;=\; \rho_{\mathrm{nuc}}\,\lambda^3 \;\approx\; 4.09\;M_\odot
+\]
+(note: defined with $\rho_{\mathrm{nuc}}$, not $\rho_{\mathrm{crit}}$).  The
+numerical PM stellar ODE gives
+\[
+  \boxed{M_{\mathrm{max}}^{\mathrm{PM}} \;=\; \Xi\,M_* \;\approx\; 13.40\;M_\odot}
+  \qquad \Xi = 3.2796 \text{ (numerical, no closed form known)}
+\]
+\emph{Exact identity (no free parameters):}
+\[
+  \mu_G\,\rho_{\mathrm{nuc}}\,\lambda^2
+  \;=\; \frac{2G}{c^2}\cdot\rho_{\mathrm{nuc}}\cdot\frac{c^2}{2G\rho_{\mathrm{crit}}}
+  \;=\; \frac{\rho_{\mathrm{nuc}}}{\rho_{\mathrm{crit}}} \;=\; \frac{1}{e}
+\]
+The dimensionless prefactor 3.28 is determined by the PM stellar ODE;
+its analytic closed form is an open question (Lane--Emden analogy).
 \[
   \rho_c \le \rho_{\mathrm{crit}} = e\,\rho_{\mathrm{nuc}}
   \quad\Longrightarrow\quad
-  M_{\mathrm{max}}^{\mathrm{PM}} \approx 13\text{--}14\,M_\odot
+  M_{\mathrm{max}}^{\mathrm{PM}} = 3.28\,M_* \approx 13.40\,M_\odot
 \]
 
 \textbf{LIGO falsification summary:}
@@ -1867,16 +1903,16 @@ Symbol & Value & Physical meaning \\
 $c$ & $2.998\times10^8$ m/s & Speed of light \\
 $G$ & $6.674\times10^{-11}$ m$^3$\,kg$^{-1}$\,s$^{-2}$ & Newton's constant \\
 $\mu_G$ & $1.486\times10^{-27}$ m$^2$\,kg$^{-1}$ & Grav.\ index coeff.\ ($=2G/c^2$) \\
-$k_{\mathrm{TT}}$ & $1.0$ (exact) & GW power normalisation \\
+$k_{\mathrm{TT}}$ & $\approx 1$ (Hulse--Taylor, not PM-derived) & GW power normalisation \\
 $k_{\mathrm{Fizeau}}$ & $1.0$ (exact) & Moving-lens drag \\
+$c_\phi$ & $= c$ (PM action; GW170817: $|c_\phi/c-1|<5\times10^{-16}$) & Scalar-wave speed \\
 $A_M$ & $G/c^2 \approx 7.43\times10^{-28}$ m$^3$\,kg$^{-1}$\,s$^{-1}$ & Mass-current coupling \\
 $A_q$ & $< 3\times10^{-10}$ m$^3$\,C$^{-1}$\,s$^{-1}$ & Charge-current coupling \\
 $\kappa_B$ & $\approx 0$ (ruled out) & Magnetic potential coupling \\
 $\rho_{\mathrm{nuc}}$ & $2.3\times10^{17}$ kg\,m$^{-3}$ & Nuclear saturation density \\
 \midrule
 \multicolumn{3}{@{}l@{}}{\textit{Unconstrained:}
-  $\mu_E$, $K_E$, $B_q$, $K_{\rm plasma}$, $\alpha_{\rm plasma}$,
-  $c_\phi$, $c_u$ ($\approx c$)} \\
+  $\mu_E$, $K_E$, $B_q$, $K_{\rm plasma}$, $\alpha_{\rm plasma}$, $c_u$} \\
 \bottomrule
 \end{tabular}%
 }

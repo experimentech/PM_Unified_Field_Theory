@@ -45,15 +45,15 @@ The PM refractive index n = exp(φ) directly amplifies the medium density;
 ρ_nuc is the reference (nuclear saturation) density at which the PM medium
 is in its baseline compressed state for stellar matter.
 
-PM pressure law (ultra-relativistic EOS, appropriate at the matter→energy
-transition where the matter component becomes radiation-like):
+PM equation of state (linear compressible EOS):
 
-    P(φ) = ρ(φ) c² / 3
+    P(φ) = (c²/2) [ρ(φ) − ρ_nuc]
 
-At the critical compression φ_crit = 1:
+This is the PM-native EOS P = (c²/2)(ρ − ρ_nuc), derived from the PM
+field action.  At the critical compression φ_crit = 1:
   n_crit  = e          ≈ 2.718
   ρ_crit  = ρ_nuc e   ≈ 6.25 × 10¹⁷ kg m⁻³  (above nuclear density ✓)
-  P_crit  = ρ_nuc e c²/ 3  ≈ 1.9 × 10³⁴ Pa   (finite, positive ✓)
+  P_crit  = (c²/2) ρ_nuc (e − 1)  ≈ 1.78 × 10³⁴ Pa   (finite, positive ✓)
 """
 
 from __future__ import annotations
@@ -171,19 +171,17 @@ def pm_density_from_phi(phi: float, rho_ref: float = RHO_NUC) -> float:
 
 
 def pm_pressure_from_phi(phi: float, rho_ref: float = RHO_NUC) -> float:
-    """PM pressure law:  P(φ) = ρ(φ) c² / 3.
+    """PM pressure law:  P(φ) = (c²/2) [ρ(φ) − ρ_ref].
 
-    Ultra-relativistic (stiff) PM equation of state, valid in the high-
-    compression regime approaching the matter/energy transition.  This is the
-    radiation-fluid EOS P = ε/3 with ε = ρ c², which the PM model predicts
-    for matter at the critical compression threshold.
+    PM-native linear compressible EOS derived from the PM field action.
+    The sound speed c_s = c/√2 follows directly from dP/dρ = c²/2.
 
     Parameters
     ----------
     phi : float
         PM compression field φ = ln n.
     rho_ref : float
-        Reference density [kg m⁻³].
+        Reference (nuclear saturation) density [kg m⁻³].
 
     Returns
     -------
@@ -191,7 +189,7 @@ def pm_pressure_from_phi(phi: float, rho_ref: float = RHO_NUC) -> float:
         Pressure  P(φ)  [Pa].
     """
     rho = pm_density_from_phi(phi, rho_ref=rho_ref)
-    return rho * c * c / 3.0
+    return 0.5 * c * c * (rho - rho_ref)
 
 
 # ---------------------------------------------------------------------------
@@ -209,7 +207,7 @@ class CriticalState:
     rho_crit : float
         Critical density  ρ_crit = ρ_nuc exp(φ_crit)  [kg m⁻³].
     p_crit : float
-        Critical pressure  P_crit = ρ_crit c² / 3  [Pa].
+        Critical pressure  P_crit = (c²/2)(ρ_crit − ρ_nuc)  [Pa].
     """
     phi_crit: float
     rho_crit: float

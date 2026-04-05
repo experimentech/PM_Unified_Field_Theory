@@ -80,6 +80,23 @@ def test_p_crit_finite(critical_state: CriticalState) -> None:
     )
 
 
+def test_p_crit_numerical_value(critical_state: CriticalState) -> None:
+    """P_crit must match the PM-EOS analytic value (c²/2)ρ_nuc(e−1) ≈ 1.776×10³⁴ Pa.
+
+    This pins the EOS to the PM-native linear compressible formula, not the
+    radiation formula ρ_crit c²/3 (which gives 1.873×10³⁴ Pa, 5.5% too high).
+    Tolerance 0.1% covers floating-point constants across platforms.
+    """
+    c = 299792458.0
+    RHO_NUC = 2.3e17
+    p_analytic = 0.5 * c * c * RHO_NUC * (math.e - 1.0)
+    rel_err = abs(critical_state.p_crit - p_analytic) / p_analytic
+    assert rel_err < 1e-3, (
+        f"P_crit = {critical_state.p_crit:.6e} Pa differs from PM-EOS analytic "
+        f"{p_analytic:.6e} Pa by {rel_err:.2e} (should be < 0.1%)"
+    )
+
+
 # ---------------------------------------------------------------------------
 # Deformation-energy curvature vanishes at φ_crit
 # ---------------------------------------------------------------------------

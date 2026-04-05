@@ -148,12 +148,82 @@ expansion of the vector sector to confirm α₁ ≈ 0 for the coupled system.
 
 The reference density `ρ_nuc ≈ 2.3–2.8 × 10¹⁷ kg/m³` appears in the theory as a
 phenomenological parameter — the density at which the medium's restoring pressure goes
-to zero and matter's surface is defined. Its value is set to match observed neutron-star
-properties. But the theory offers no mechanism for why the medium has this particular
-reference density rather than any other. This is PM's equivalent of the cosmological
-constant problem: the number is known, but its origin is not explained.
+to zero and matter's surface is defined. Its value is currently set equal to the nuclear
+saturation density `ρ₀` measured in scattering experiments. But those experiments probe
+symmetric nuclear matter at zero temperature; PM's reference state is the medium's own
+equilibrium, which need not coincide with `ρ₀`.
 
-**Status:** Open. No proposed mechanism.
+#### The pattern
+
+The same logic that resolved all three strong-field gaps applies here.  Every gap had
+the same root cause: a term already present in the theory was not included.
+
+- **Gap 3** (78% elastic pressure missing from the hydrostatic ODE): resolved by
+  including `U(φ)` in the pressure.  M_max jumps from 13.4 to 30.8 M☉, matching
+  GW150914 components. ✓
+- **Radius problem** (R₁.₄ ≈ 14.0 km vs GW170817/NICER bound ≤ 13.3 km): has the
+  same character.  The star's surface condition is `P = 0 ⟺ ρ = ρ_nuc`, so the radius
+  is anchored to `ρ_nuc^{-1/3}` almost independently of the internal EOS (shown
+  numerically in `tests/test_rho_nuc_constraint.py`: R₁.₄ varies < 4% over the full
+  range of elastic-pressure coupling α).  The radius is not wrong because the EOS is
+  wrong — it is wrong because ρ_nuc is being borrowed from nuclear physics rather than
+  derived from PM.
+
+#### Why ρ_nuc should be a PM prediction
+
+PM's introduction states: matter is a *stable localised configuration of the medium*.
+The medium's reference state — where n = 1 (φ = 0) and the net pressure vanishes — is
+a property of the medium's constitutive relation, encoded in the action.  The
+n-field action (derived in §2.0) has coefficient `A = κρ_nuc = (8πG/c²)ρ_nuc`.  This
+means ρ_nuc sets the scale of the stiffening potential V̂(n).  The self-consistent
+value of ρ_nuc is the one for which the medium's equilibrium state at the phase
+boundary (n = 1) is simultaneously consistent with:
+
+1. The bulk-modulus K of the medium (from the elastic free-energy argument that derives
+   α = 2);
+2. The hydrostatic balance at the surface of a matter configuration;
+3. The vacuum stability condition V̂_vac'(1) = 0 (already built in) and U''(1) = 0
+   (the second-order phase transition).
+
+The nuclear physics value `ρ₀ = 2.3×10¹⁷ kg/m³` satisfies none of these — it is a
+measured coincidence, not a derived equality.
+
+#### Observational constraint on ρ_nuc
+
+`test_rho_nuc_constraint.py` established numerically (with the Option-c EOS):
+
+| f = ρ_nuc / ρ₀ | R₁.₄ (km) | M_max (M☉) | Both constraints? |
+|----------------|-----------|-----------|-------------------|
+| 1.00 | 14.00 | 30.8 | ✗ (R too large) |
+| 1.18 | 13.22 | 28.4 | ✓ |
+| 1.20 | 13.14 | 28.1 | ✓ |
+| 1.22 | 13.08 | 27.9 | ✗ (M_max < 28) |
+
+The joint feasibility window is **f ∈ [1.18, 1.21]** — a 3% range in ρ_nuc.  With
+elastic coupling α slightly above 1 (still within the action-derived range), M_max
+exceeds 30 M☉ and R₁.₄ < 13.3 km simultaneously at f = 1.18.
+
+An 18–21% upshift from symmetric nuclear matter `ρ₀` is the observational target.
+An obvious candidate is the nuclear symmetry energy (E_sym ≈ 32 MeV/nucleon, slope
+parameter L ≈ 58 MeV): neutron-rich matter has an additional pressure contribution
+that could shift the zero-pressure point.  However, numerical evaluation
+(`scripts/derive_rho_nuc.py`) shows that the symmetry energy shifts the zero-pressure
+point **downward** (f ≈ 0.96), not upward.  The needed upshift has a different origin.
+
+A second candidate — requiring the action's sound speed from the potential V̂_vac to
+equal the EOS sound speed (`c_φ = c_s = c/√2`) — gives a self-consistent ρ_nuc of
+~10²⁵ kg/m³ (Planck-scale, ~10⁷ × ρ₀), which is not physical.  The bulk-modulus
+condition alone cannot fix ρ_nuc at the nuclear scale.
+
+The fundamental reason is structural: PM's action with parameters (G, c, ρ_nuc) is
+self-consistent for **any** value of ρ_nuc — the field equations have n = 1 as a
+fixed point by construction regardless of scale.  Fixing the absolute value of ρ_nuc
+requires exactly one input from outside the PM action (nuclear physics, Planck scale,
+or observation).  This is PM's analogue of the cosmological constant hierarchy problem.
+
+**Status:** Open.  Mechanism not identified.  The observational window f ∈ [1.18, 1.21]
+is well-determined numerically but has no PM-internal derivation yet.  This is the
+natural next open problem after the bulk-modulus K derivation described in §2.0.
 
 ---
 
@@ -525,6 +595,62 @@ is an interpretive framework, not a set of predictions.
 **What is needed to make this quantitative:** A model of what determines the size,
 energy, and stability of a minimal φ-lump (the PM analog of a nucleon). This probably
 requires solving the nonlinear Poisson equation (see §1.1) in a compact domain.
+
+#### Two-zone compact-star model (numerical results)
+
+When a compact star's central density exceeds ρ_crit = e·ρ_nuc, the medium transitions
+to the energy phase (φ ≥ 1, m²_eff < 0).  The single-zone PM EOS becomes unstable there.
+A two-zone model has been implemented in `stellar_structure.py`
+(`solve_pm_star_two_zone`, `compute_mr_curve_two_zone`) treating the core (r < r_core,
+φ ≥ 1) with an energy-phase EOS and the shell (r > r_core, φ < 1) with the standard PM
+matter EOS.
+
+**Three energy-phase EOS candidates were compared numerically:**
+
+| Energy-phase EOS | PM derivation | P at ρ_crit | Pressure continuity | M_max (stable) |
+|-----------------|---------------|-------------|---------------------|----------------|
+| Constant  `P = U(1) = ⅔ε₀` | PM potential minimum | 0.667 ε₀ | Discontinuous (−61%) | ~13.3 M☉ (second branch unbounded) |
+| **Radiation** `P = ρc²/3` | critical_state.py convention | 1.810 ε₀ | Near-continuous (−5.3%) | **16.48 M☉** |
+| Vacuum `P = 0` | no pressure support | 0 | Discontinuous | ~13 M☉ (second branch unbounded) |
+
+Reference matter-EOS pressure at ρ_crit: P_EOS(ρ_crit) = (e−1)ε₀ ≈ 1.718 ε₀.
+
+**The radiation EOS is the only self-bounded model.**  With P = ρc²/3 in the core, the
+M-R curve has a genuine turning point at ρ_c ≈ 2ρ_crit, giving M_max = **16.48 M☉**.
+The constant and vacuum cores do not turn around in Newtonian gravity (no GR
+upper-mass bound), so their cored branches are unphysical unless treated relativistically.
+
+**Pressure continuity selects radiation.**  An energy-phase EOS that is continuous with
+the matter-phase EOS at ρ_crit requires P_energy(ρ_crit) = (e−1)ε₀.  The radiation EOS
+gives P_rad(ρ_crit) = e·ρ_nuc·c²/3 = (2e/3)ε₀ ≈ 1.810 ε₀ — only 5.3% above the
+matter-phase value.  The constant EOS value 2ε₀/3 is U(1), the potential energy density
+at the transition, which is NOT the thermodynamic fluid pressure.  Using it as a pressure
+boundary condition introduces a first-order-like discontinuity.
+
+**M-R curve (radiation core, Newtonian approximation):**
+
+```
+ρ_c < ρ_crit  : matter-phase branch;  M_max ≈ 13.3 M☉  (r_core = 0)
+ρ_c ≈ ρ_crit  : onset of energy-phase core; M begins to increase above 13.3 M☉
+ρ_c ≈ 1.1 ρ_crit → M ≈ 14.5 M☉,  r_core ≈ 6.5 km
+ρ_c ≈ 1.5 ρ_crit → M ≈ 15.9 M☉,  r_core ≈ 12 km
+ρ_c ≈ 2.0 ρ_crit → M ≈ 16.48 M☉  (maximum),  r_core ≈ 16 km,  R_star ≈ 27 km
+ρ_c > 2.0 ρ_crit → M decreasing (gravitationally unstable branch)
+```
+
+R_1.4 ≈ 13.8 km for all modes (1.4 M☉ stars have ρ_c < ρ_crit — no core, same as
+baseline).  Applying the neutron-matter ρ_nuc correction f ≈ 1.18 (§1.3) would reduce
+this toward the NICER/GW170817 bound ≤ 13.3 km.
+
+**Code:** `solve_pm_star_two_zone`, `compute_mr_curve_two_zone` in
+`src/pushing_medium/stellar_structure.py`; 23 tests in
+`tests/test_two_zone_stellar_structure.py`.
+
+**Open question:** The Newtonian ODE used here does not include GR corrections.  The
+TOV equations would modify both M_max and the stability criterion.  A GR extension
+would also determine whether the energy-phase core is stable against radial oscillations
+(the stability of the upper branch in radiation mode has not been confirmed by a full
+stability analysis — only M(ρ_c) turning sign is used as a proxy here).
 
 ---
 

@@ -402,6 +402,361 @@ def compute_mr_curve(
 
 
 # ---------------------------------------------------------------------------
+# Two-zone solver: matter-phase shell + energy-phase core
+# ---------------------------------------------------------------------------
+#
+# Physical basis
+# --------------
+# PM's EOS P = c²/2(ρ − ρ_nuc) is only valid in the matter phase: φ < 1, i.e.
+# ρ < ρ_crit = e·ρ_nuc.  Stars with ρ_central > ρ_crit contain a core where
+# the medium has undergone the second-order phase transition (m²_eff → 0 at
+# φ = 1, negative above).  The matter-phase EOS cannot be extrapolated there.
+#
+# Two-zone structure:
+#   r  < r_core :  energy-phase core  — φ ≥ 1 throughout
+#   r_core ≤ r  :  matter-phase shell — PM EOS valid
+#
+# The phase boundary is at φ = 1  ⟺  ρ = ρ_crit.  Inside the boundary, the
+# integration switches to the energy-phase EOS.
+#
+# Energy-phase EOS options
+# ------------------------
+# The unambiguous PM prediction for the energy-phase pressure comes from the
+# deformation potential at the transition:
+#
+#   U(φ_crit) = ε₀(φ² − φ³/3)|_{φ=1} = ε₀ · 2/3  where ε₀ = ρ_nuc c²/2
+#
+# This gives  P_core = (2/3) ε₀ = (c²/3) ρ_nuc
+#
+# Three natural choices are implemented:
+#   'constant'  : P_core = U(1) = c² ρ_nuc / 3  (deformation energy at transition)
+#   'radiation' : P = ρ c² / 3                   (ultra-relativistic / radiation EOS)
+#   'vacuum'    : P_core = 0                     (collapsed core, no pressure support)
+#
+# The 'constant' EOS is the PM-theory-derived choice.  'radiation' is what
+# critical_state.py already used for P_crit.  'vacuum' is the lower bound.
+#
+# Gravitational structure in the core uses the same ODE (mass accumulation
+# continues), because the energy-phase density still sources gravity.  The
+# energy density of the core is treated as ρ_core = ρ_crit (constant at the
+# transition value), consistent with a stalled phase transition.
+
+def _energy_phase_eos(rho: float, mode: str, eps0: float) -> float:
+    """Pressure in the energy-phase core.
+
+    Parameters
+    ----------
+    rho : float
+        Local density [kg m⁻³].  Ignored for 'constant' and 'vacuum' modes.
+    mode : str
+        'constant'  — P = U(φ_crit) = (2/3)ε₀ = 2ρ_nuc c²/3
+        'radiation' — P = ρ c²/3
+        'vacuum'    — P = 0
+    eps0 : float
+        ε₀ = ρ_nuc c²  [J m⁻³]  (same convention as critical_state.py)
+    """
+    if mode == 'constant':
+        return 2.0 * eps0 / 3.0          # U(1) = ε₀(1 − 1/3) = 2ε₀/3
+    elif mode == 'radiation':
+        return rho * c * c / 3.0
+    elif mode == 'vacuum':
+        return 0.0
+    else:
+        raise ValueError(f"Unknown energy-phase EOS mode: {mode!r}")
+
+
+def solve_pm_star_two_zone(
+    rho_central: float,
+    core_eos: str = 'constant',
+    r_max: float = 5.0e4,
+    n_eval: int = 5000,
+    rtol: float = 1e-9,
+    atol: float = 1e-6,
+) -> StarSolution:
+    """Integrate PM stellar structure with a two-zone (matter + energy phase) model.
+
+    For central densities ρ_c ≤ ρ_crit, the result is identical to
+    :func:`solve_pm_star` (no energy-phase core exists).
+
+    For ρ_c > ρ_crit, the core (r < r_core, where φ reaches 1) uses the
+    energy-phase EOS and the shell uses the standard PM matter EOS.
+
+    Parameters
+    ----------
+    rho_central : float
+        Central density [kg m⁻³].  May exceed ρ_crit.
+    core_eos : str
+        Energy-phase EOS: 'constant' (PM-derived, default), 'radiation', 'vacuum'.
+    r_max, n_eval, rtol, atol
+        Passed to the ODE integrator.
+
+    Returns
+    -------
+    StarSolution
+        Same structure as :func:`solve_pm_star`, with an additional attribute
+        ``r_core`` accessible via ``sol.r_core`` (the core radius in metres,
+        NaN if no core exists).
+    """
+    eps0 = RHO_NUC * c * c          # ε₀ = ρ_nuc c²  (consistent with critical_state.py)
+    has_core = rho_central > RHO_CRIT
+
+    # ------------------------------------------------------------------ #
+    # Special case: vacuum core + φ > 1.                                  #
+    # P = 0 throughout.  At r_core (φ = 1) the matter shell would start   #
+    # at P = 0 which IS the surface condition, so the star has no shell.   #
+    # A standard 3-variable ODE is numerically stiff here because the full  #
+    # ODE tries to integrate into the matter phase with P = 0 and ρ = ρ_nuc, #
+    # causing dP/dr = −Gmρ_nuc/r² → step-size → 0 immediately.            #
+    # Instead, solve a simpler 2-variable (m, φ) ODE in the core only.    #
+    # ------------------------------------------------------------------ #
+    if core_eos == 'vacuum' and has_core:
+        phi_central = 1.0 + math.log(rho_central / RHO_CRIT)
+
+        def _rhs_vac(r, y2):
+            m2, phi2 = y2
+            rho = RHO_CRIT
+            return [4.0 * math.pi * r * r * rho, -MU_G * m2 / (r * r)]
+
+        def _phase_ev(r, y2):
+            return y2[1] - 1.0   # φ − 1 = 0
+
+        _phase_ev.terminal  = True
+        _phase_ev.direction = -1
+
+        r_start = 1.0
+        sol2 = solve_ivp(
+            _rhs_vac,
+            [r_start, r_max],
+            [(4.0 / 3.0) * math.pi * r_start**3 * rho_central, phi_central],
+            events=[_phase_ev],
+            rtol=rtol, atol=atol, dense_output=False,
+        )
+
+        if sol2.t_events[0].size > 0:
+            r_core_val = float(sol2.t_events[0][0])
+            M_vac      = float(sol2.y_events[0][0][0])       # m at r_core
+            r_arr_vac  = np.append(sol2.t, r_core_val)
+            m_arr_vac  = np.append(sol2.y[0], M_vac)
+            phi_arr_vac = np.append(sol2.y[1], 1.0)
+            P_arr_vac  = np.zeros_like(r_arr_vac)
+            rho_arr_vac = np.full_like(r_arr_vac, RHO_CRIT)
+            result = StarSolution(
+                M_star=M_vac,
+                R_star=r_core_val,
+                rho_central=rho_central,
+                phi_central=phi_central,
+                converged=True,
+                r=r_arr_vac,
+                m=m_arr_vac,
+                rho=rho_arr_vac,
+                P=P_arr_vac,
+                phi=phi_arr_vac,
+            )
+        else:
+            # Core fills r_max — never reached phase boundary
+            result = StarSolution(
+                M_star=float(sol2.y[0, -1]),
+                R_star=r_max,
+                rho_central=rho_central,
+                phi_central=phi_central,
+                converged=False,
+                r=sol2.t, m=sol2.y[0],
+                rho=np.full(sol2.t.size, RHO_CRIT),
+                P=np.zeros(sol2.t.size),
+                phi=sol2.y[1],
+            )
+        result.r_core = r_core_val if sol2.t_events[0].size > 0 else math.nan  # type: ignore[attr-defined]
+        return result
+
+    if has_core:
+        phi_central = 1.0 + math.log(rho_central / RHO_CRIT)   # φ_c > 1
+        # For radiation: P varies freely; start at P(ρ_central) = ρc²/3.
+        # For constant: P is fixed at U(1) = 2ε₀/3 throughout. dP/dr=0, P = P_central throughout.
+        #   At r_core the matter-phase shell inherits this pressure and integrates down to P=0.
+        P_central = _energy_phase_eos(rho_central, core_eos, eps0)
+    else:
+        phi_central = math.log(rho_central / RHO_NUC)
+        P_central = pm_eos_pressure(rho_central)
+
+    # The ODE state is y = [m, P, φ].
+    # The phase boundary is tracked via φ: when φ falls below 1 (outward),
+    # we switch from energy-phase to matter-phase EOS.
+    # Because the ODE is integrated outward from the centre, we enter the
+    # matter phase once φ drops below 1.
+
+    r_core_found = [math.nan]   # mutable container for the core radius
+
+    def rhs(r, y):
+        m, P, phi = y
+        if r < 1.0:
+            # Near-centre: avoid singularity
+            rho = rho_central
+            dm_dr = 4.0 * math.pi * r * r * rho
+            return [dm_dr, 0.0, 0.0]
+
+        # Determine which phase we are in based on φ
+        in_core = phi >= 1.0
+        if in_core:
+            # Energy-phase core.
+            # Density: for radiation, ρ = 3P/c² (normal fluid EOS);
+            #          for constant/vacuum, ρ is pinned at ρ_crit (phase boundary).
+            if core_eos == 'radiation':
+                rho = max(3.0 * P / (c * c), RHO_CRIT)   # radiation fluid in core
+                dP_dr = -G * m * rho / (r * r)
+            else:
+                # 'constant' or 'vacuum': pressure is fixed by the phase state,
+                # not by hydrostatic weight.  dP/dr = 0 in the core.
+                # Mass still accumulates at ρ_crit.
+                rho = RHO_CRIT
+                dP_dr = 0.0
+        else:
+            rho = pm_eos_density(max(P, 0.0))
+            dP_dr = -G * m * rho / (r * r)
+
+        dm_dr   = 4.0 * math.pi * r * r * rho
+        dphi_dr = -MU_G * m / (r * r)
+        return [dm_dr, dP_dr, dphi_dr]
+
+    # Event 1: stellar surface (P = 0 in matter phase, φ < 1)
+    # N.B. we return (P + 1) in the core so the function is continuous
+    # across the phase boundary (avoids integrator stalling on a
+    # sudden 1→0 jump when P_core = 0 in vacuum mode).
+    def surface_event(r, y):
+        m, P, phi = y
+        if phi >= 1.0:
+            return P + 1.0      # always > 0 inside core; continuous at φ=1
+        return P                # matter shell: fires when P → 0
+
+    surface_event.terminal = True
+    surface_event.direction = -1
+
+    # Event 2: phase boundary (φ = 1, crossing outward into matter phase)
+    def phase_boundary_event(r, y):
+        return y[2] - 1.0       # φ − 1 = 0
+
+    # For vacuum mode the matter shell has P = 0 immediately at r_core,
+    # so the phase boundary IS the stellar surface.  Stop there.
+    _vacuum = (core_eos == 'vacuum' and has_core)
+    phase_boundary_event.terminal = _vacuum
+    phase_boundary_event.direction = -1       # φ decreasing through 1
+
+    r_start   = 1.0
+    m_start   = (4.0 / 3.0) * math.pi * r_start**3 * rho_central
+    P_start   = P_central
+    phi_start = phi_central
+
+    r_eval = np.linspace(r_start, r_max, n_eval)
+
+    sol = solve_ivp(
+        rhs,
+        [r_start, r_max],
+        [m_start, P_start, phi_start],
+        method='DOP853',
+        t_eval=r_eval,
+        events=[surface_event, phase_boundary_event],
+        rtol=rtol,
+        atol=atol,
+        dense_output=False,
+    )
+
+    # Extract core radius from phase-boundary event (event index 1)
+    if sol.t_events[1].size > 0:
+        r_core_found[0] = float(sol.t_events[1][0])
+
+    r_arr   = sol.t
+    m_arr   = sol.y[0]
+    P_arr   = np.maximum(sol.y[1], 0.0)
+    phi_arr = sol.y[2]
+    # Density: use matter-phase EOS in shell, ρ_crit in core
+    rho_arr = np.where(phi_arr >= 1.0, RHO_CRIT, pm_eos_density(P_arr))
+
+    surface_mask = (P_arr > 0) & (phi_arr < 1.0)
+    if surface_mask.any():
+        i_surf    = np.where(surface_mask)[0][-1]
+        R_star    = r_arr[i_surf]
+        M_star    = m_arr[i_surf]
+        converged = True
+    elif _vacuum and not math.isnan(r_core_found[0]):
+        # Vacuum star: no matter shell, surface = core boundary
+        R_star    = r_core_found[0]
+        M_star    = m_arr[-1]
+        converged = True
+    else:
+        R_star    = r_max
+        M_star    = m_arr[-1]
+        converged = False
+
+    result = StarSolution(
+        M_star=rho_central,
+        R_star=R_star,
+        rho_central=rho_central,
+        phi_central=phi_central,
+        converged=converged,
+        r=r_arr,
+        m=m_arr,
+        rho=rho_arr,
+        P=P_arr,
+        phi=phi_arr,
+    )
+    # Patch M_star (dataclass is not frozen, can assign)
+    result.M_star = M_star
+    # Attach core radius as extra attribute
+    result.r_core = r_core_found[0]    # type: ignore[attr-defined]
+    return result
+
+
+def compute_mr_curve_two_zone(
+    n_points: int = 60,
+    rho_min_factor: float = 1.01,
+    rho_max_factor: float = 3.0,
+    core_eos: str = 'constant',
+    **solve_kwargs,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """M–R curve sweeping above and below ρ_crit with the two-zone model.
+
+    Parameters
+    ----------
+    n_points : int
+        Number of central density models to integrate.
+    rho_min_factor : float
+        Lower bound as multiple of ρ_nuc.
+    rho_max_factor : float
+        Upper bound as multiple of ρ_crit (default 3.0 — well into energy-phase
+        core territory).
+    core_eos : str
+        Energy-phase EOS for cores: 'constant', 'radiation', or 'vacuum'.
+
+    Returns
+    -------
+    rho_c, M, R, r_core : ndarrays
+        Central densities [kg/m³], masses [M☉], radii [km],
+        core radii [km] (NaN for stars without cores).
+    """
+    rho_c_arr = np.geomspace(
+        rho_min_factor * RHO_NUC,
+        rho_max_factor * RHO_CRIT,
+        n_points,
+    )
+
+    M_arr      = np.full(n_points, np.nan)
+    R_arr      = np.full(n_points, np.nan)
+    r_core_arr = np.full(n_points, np.nan)
+
+    for i, rho_c in enumerate(rho_c_arr):
+        try:
+            star = solve_pm_star_two_zone(rho_c, core_eos=core_eos, **solve_kwargs)
+            if star.converged:
+                M_arr[i]      = star.M_star / M_SUN
+                R_arr[i]      = star.R_star / 1e3
+                r_core_val    = getattr(star, 'r_core', math.nan)
+                r_core_arr[i] = r_core_val / 1e3 if math.isfinite(r_core_val) else math.nan
+        except Exception:
+            pass
+
+    return rho_c_arr, M_arr, R_arr, r_core_arr
+
+
+# ---------------------------------------------------------------------------
 # Option-A: corrected Poisson equation with U'(φ) self-coupling
 # ---------------------------------------------------------------------------
 

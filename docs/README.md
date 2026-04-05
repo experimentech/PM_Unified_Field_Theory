@@ -91,7 +91,7 @@ Compiled PDFs are in `pdf/` with matching filenames.
 ### Critical State (Matter/Energy Transition)
 - Critical compression: **φ_crit = 1** (where U''(φ) = 0)
 - Critical density: **ρ_crit ≈ 6.25 × 10¹⁷ kg/m³** (≈ 2.7 × nuclear saturation density)
-- Critical pressure: **P_crit ≈ 1.87 × 10³⁴ Pa**
+- Critical pressure: **P_crit ≈ 1.78 × 10³⁴ Pa** (PM EOS: c²/2 × ρ_nuc(e−1))
 - Theory: `latex/hamiltonian-formulation-v1.tex` §7
 - Implementation: `src/pushing_medium/critical_state.py`
 - Tests: `tests/test_critical_state.py` (11 tests, all passing)
