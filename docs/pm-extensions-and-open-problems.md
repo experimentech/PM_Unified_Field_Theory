@@ -225,6 +225,63 @@ or observation).  This is PM's analogue of the cosmological constant hierarchy p
 is well-determined numerically but has no PM-internal derivation yet.  This is the
 natural next open problem after the bulk-modulus K derivation described in §2.0.
 
+#### Why this is a deep problem: nucleons are not in PM yet
+
+ρ_nuc is ultimately set by **what a nucleon is**:
+
+    ρ_nuc = (nucleon mass) / (nucleon volume)
+
+Nucleon mass and volume are set by the strong force (QCD) and Pauli exclusion
+(fermionic statistics at close-packing).  None of this exists in PM.
+
+PM's own description says matter is a "stable localised compression of the medium."
+Taken seriously, a nucleon should be a **localised soliton** of the PM field
+equations — a self-bound compression that doesn't disperse, whose mass and radius
+emerge from the balance between:
+
+- Gradient energy ½|∇φ|²n²  — penalises sharp compressions, wants to spread out
+- The potential V(n) — restoring force toward n=1
+
+ρ_nuc would then be the close-packing density of these solitons.
+
+**The circular problem:** V(n) is needed to find the solitons; the solitons are
+needed to fix V(n) at the nuclear scale.  Breaking the circle requires a principle
+that sets the minimum excitation size of the medium — i.e., a quantum theory of the
+medium.  If the medium has a granular structure at small scales (analogous to quantum
+foam, lattice spacing, Planck length, etc.), that granularity sets the minimum soliton
+size, which gives the nucleon volume, which gives ρ_nuc.
+
+PM's classical continuous field equations have no such length scale — they are
+scale-invariant under coordinate rescaling with G absorbed.  A quantum sector is
+structurally required.
+
+#### What continued classical work can still achieve
+
+Even without a quantum theory, the following are tractable and would constrain V(n):
+
+1. **Soliton existence condition (classical):** Does the PM field equation admit
+   stable, spherically-symmetric localised solutions at all?  The Derrick scaling
+   argument (1964) says: for a real scalar field in 3D with potential V(φ), stable
+   static solitons require V to have a minimum away from the vacuum — otherwise
+   all static solutions are scale-unstable and collapse or spread.  Checking whether
+   PM's V̂_vac(n) satisfies the Derrick condition is a one-page calculation and
+   would confirm or rule out classical nucleon-analogues.
+
+2. **If solitons exist:** numerical solutions to `∇²n = κρ_nuc V̂_vac'(n)` without
+   matter source give the vacuum soliton profile n(r).  Its radius r_0 and integral
+   ∫ n d³x (total compression) would be expressible in terms of ρ_nuc and G/c² —
+   the only scales in the classical theory.  This gives r_0 ∝ c²/(G ρ_nuc)^{1/2},
+   which must equal the proton radius (~0.85 fm) to fix ρ_nuc.  This imports one
+   number (the proton radius), but that is arguably better than importing ρ₀ directly.
+
+3. **Two-soliton interaction:** the binding energy of two solitons as a function of
+   separation gives PM's analogue of the nuclear force.  This is computable from the
+   classical field and would test whether close-packing is even stable.
+
+**None of these derive ρ_nuc without one external input.** But they would
+establish whether PM's medium naturally supports particle-like structures at all,
+which is a necessary precondition for the theory to be complete.
+
 ---
 
 ### 1.4 The cosmological energy-phase density
