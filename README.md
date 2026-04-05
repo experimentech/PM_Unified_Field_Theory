@@ -11,12 +11,20 @@ and observations across 18+ falsification vectors.
 
 ## What PM is
 
+Pushing-Medium is set in Euclidean space + absolute time.  Gravity is not spacetime
+curvature — it is the compression of an elastic medium that pervades space.  The
+denser the medium, the slower light travels and the stronger the gravitational
+force.  This density variation under gravitational pressure (encoded by the scalar
+field $\phi = \ln n$) produces all the observable effects attributed to spacetime
+curvature in GR.
+
 | | GR | Pushing-Medium |
-|--|----|---------|
+|--|----|---------||
 | Background | Curved spacetime (Riemann) | Euclidean space + absolute time |
+| Gravity mechanism | Spacetime curvature | Medium density variation under gravitational pressure |
 | Gravity source | Stress-energy $T^{\mu\nu}$ | Scalar field $\phi = \ln n$ |
 | Force law | Geodesic deviation | $\mathbf{a} = +(c^2/2)\nabla\phi$ |
-| Light bending | Null geodesics on curved metric | Refraction: $\alpha = 4GM/c^2b$ |
+| Light bending | Null geodesics on curved metric | Refraction through denser medium near mass |
 | EOS | Arbitrary (TOV) | Self-consistent: $\rho = \rho_\text{nuc}e^\phi$ |
 
 PM reproduces all weak-field GR predictions exactly (PPN $\gamma = \beta = 1$).

@@ -2,19 +2,26 @@
 
 Conceptual foundation
 ---------------------
-PM uses **Euclidean space + absolute time** (not curved spacetime) — but the medium field n(r) = e^φ
-creates a **curved effective optical metric** for all wave propagation and
-dynamics.  These are distinct levels:
+PM is set in Euclidean space + absolute time.  Gravity compresses the pushing
+medium — the denser the medium, the slower light travels and the more strongly
+objects are deflected.  This compression is encoded in the refractive index
+n(r) = e^φ, where φ is the scalar field driven by the local matter density.
+There is no spacetime curvature; the bending of paths arises from the spatial
+variation of medium density under gravitational pressure, exactly as light bends
+in a graded-index optical medium.
 
-  • Background geometry:   Euclidean space + absolute time.  No Einstein equations,
-                           no Riemann curvature of spacetime, no horizons.
-  • Effective optical metric: ds² = −(c²/n²)dt² + dr²  — geometrically curved.
-                           Null geodesics bend, time dilation occurs in this metric.
+  • Space/time:            Euclidean + absolute.  No Riemann tensor, no horizons.
+  • Medium density:        n(r) = e^φ, higher near massive bodies (more compressed).
+  • Effective propagation: ds² = −(c²/n²)dt² + dr²  — this is not background
+                           geometry but the path equation for waves through the
+                           varying-density medium.
+  • Gravity for matter:    a = +(c²/2)∇φ  (gradient of medium compression)
 
-The phrase "flat space" alone is imprecise.  The correct statement is:
-"flat background, but curved effective geometry from the medium density field."
+The phrase "curved effective optical metric" is a mathematical convenience.
+Physically: the medium is denser where gravitational pressure is higher,
+and that density gradient is what curves paths and dilates clocks.
 There is no GR compactness bound GM/(c²R) < 1/2 and no event horizon because
-these are properties of background curvature, which PM does not have.
+those are consequences of spacetime curvature, which PM does not have.
 
 PM force law for massive particles
 -----------------------------------
