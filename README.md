@@ -7,7 +7,7 @@ elastic medium with refractive index $n(r) = e^\phi$.  This repository is the
 research testbench for PM — quantitative comparison of PM predictions against GR
 and observations across 18+ falsification vectors.
 
-**Test suite: 603/603 passing** (as of 2026-03-21)
+**Test suite: 655/655 passing** (as of 2026-04-05)
 
 ## What PM is
 
@@ -38,8 +38,8 @@ GW inspiral waveform at 0PN, SPARC galaxy rotation curves, cosmology fσ8.
   action-derived.
 - **EHT shadow**: M87* and Sgr A* masses are $10^5$–$10^8\times$ PM M_max. Even
   if objects could form, PM shadow ≥ 4.6% larger than GR BH (EHT matches GR to ~5%).
-- **Tidal deformability**: GW170817 $\tilde{\Lambda} \leq 900$; PM's large radii
-  (~23–35 km vs GR ~12 km) imply $\Lambda \sim 3{-}10\times$ too large (not yet computed).
+- **Tidal deformability**: GW170817 $\tilde{\Lambda} \leq 800$; PM 1.4\,M$_\odot$ baseline gives $\Lambda \approx 378$ (within
+  90\% CI, but 1\textendash2$\sigma$ above the GR-preferred range 70\textendash300). With threshold tuning (f=1.18) $\Lambda \approx 315$.
 - **NS radii (NICER)**: PM NS radii 30–50% larger than observed.
 
 ## Recent theoretical work
@@ -144,7 +144,7 @@ These were empirically derived from solar system tests, binary pulsars, and grav
 | Cosmology fσ8 | ✅ Matches ΛCDM |
 | Strong-field (mass gap) | ❌ PM M_max < GWTC masses |
 | EHT shadow | ❌ M87*/Sgr A* masses >> PM M_max |
-| Tidal deformability | ⬜ Not yet computed |
+| Tidal deformability | ⚠️ Within 90% CI, mild tension |
 | Rotating stars | ⬜ Not yet |
 | Cosmological perturbations | ⬜ Not yet |
 
@@ -154,4 +154,4 @@ See `WHAT_TO_DO_NEXT.md` for current priorities.
 
 ---
 
-**Last Updated**: 2026-03-21 — 603/603 tests passing
+**Last Updated**: 2026-04-05 — 655/655 tests passing

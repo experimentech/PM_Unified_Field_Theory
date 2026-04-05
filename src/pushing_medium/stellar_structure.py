@@ -2,11 +2,11 @@
 
 Conceptual foundation
 ---------------------
-PM uses a **flat Minkowski background** — but the medium field n(r) = e^φ
+PM uses **Euclidean space + absolute time** (not curved spacetime) — but the medium field n(r) = e^φ
 creates a **curved effective optical metric** for all wave propagation and
 dynamics.  These are distinct levels:
 
-  • Background geometry:   flat (Euclidean/Minkowski).  No Einstein equations,
+  • Background geometry:   Euclidean space + absolute time.  No Einstein equations,
                            no Riemann curvature of spacetime, no horizons.
   • Effective optical metric: ds² = −(c²/n²)dt² + dr²  — geometrically curved.
                            Null geodesics bend, time dilation occurs in this metric.
@@ -29,7 +29,7 @@ Why the PM structure equations are EXACT — not a Newtonian approximation
 Step 1 — PM Poisson equation:
     ∇²φ = −(8πG/c²) ρ(φ),   ρ(φ) = ρ_nuc exp(φ)
 
-Step 2 — Apply Gauss's theorem on the flat Minkowski background (spherical symmetry):
+Step 2 — Apply Gauss's theorem on the Euclidean background (spherical symmetry):
     ∮ ∇φ · dA = ∫ ∇²φ dV  ⟹  4πr² (dφ/dr) = −(8πG/c²) m(r)
 
     dφ/dr = −(2G/c²) m(r)/r²  =  −μ_G m(r)/r²       [exact]
@@ -39,8 +39,7 @@ Step 3 — Substitute into the force law:
 
 The μ_G = 2G/c² and c²/2 factors cancel algebraically.  The resulting
 acceleration is exactly Newtonian at all compactnesses.  This is not a
-    weak-field limit — it is a consequence of Gauss's theorem on the flat
-    Minkowski background + PM Poisson equation.
+    weak-field limit — it is a consequence of Gauss's theorem on the Euclidean background + PM Poisson equation.
 
 Absent corrections (GR artifacts that do NOT appear in PM):
   • metric factor 1/(1 − 2Gm/c²r):          absent — no background curvature
@@ -196,7 +195,12 @@ def pm_clairaut_k2(y_R: float) -> float:
     Notes
     -----
     The Clairaut-Radau ODE is the correct Newtonian formulation for tidal
-    deformability in flat-space (PM) gravity.
+    deformability in PM's matter sector.  PM uses Euclidean space + absolute time
+    but a curved effective optical metric (ds² = −c²/n² dt² + dr²); the
+    stellar hydrostatics and tidal perturbation of the matter field operate
+    on the flat background via the PM Poisson equation ∇²φ = 4πGρ/c², so
+    the Newtonian Clairaut-Radau equation is the appropriate tidal ODE.
+    (GR Regge-Wheeler/Hinderer tidal terms are absent — no background curvature.)
 
     For a uniform-density star: ν = 1 throughout → y_R = 3 → k₂ = 1/18 ≈ 0.056.
     For compressible PM stars: y_R ≈ 2.7–3.0 → k₂ ≈ 0.04–0.07.
@@ -254,7 +258,7 @@ class StarSolution:
         Pressure  P(r)  [Pa].
     phi : ndarray
         PM scalar field φ(r) integrated directly from the PM Poisson equation,
-        dφ/dr = −μ_G m(r)/r² (exact from Gauss's theorem on flat Minkowski background).
+        dφ/dr = −μ_G m(r)/r² (exact from Gauss's theorem on the Euclidean background).
         Consistent with φ = ln(ρ/ρ_nuc) at every point by construction.
         [dimensionless]
     """
@@ -357,7 +361,7 @@ def solve_pm_star(
         # ── 4-variable ODE: y = [m, P, φ, y2] ──────────────────────────────
         # y2 is the Clairaut-Radau variable for the ℓ=2 tidal perturbation.
         #
-        # Clairaut-Radau ODE (Newtonian, correct for PM flat-space gravity):
+        # Clairaut-Radau ODE (Newtonian hydrostatic perturbation on PM flat background):
         #   dy2/dr = (−y2² − 5y2 + 6ν(1+y2)) / r
         # where ν = ρ/ρ̄ = ρ·4πr³/(3m(r)) is the local/mean-density ratio.
         #
